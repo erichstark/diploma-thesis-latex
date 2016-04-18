@@ -1,7 +1,6 @@
 \section{Cieľ práce}
-Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laborato
-
-Cieľom tejto práce je vytvorenie virtuálneho laboratória ako klient-server architektúru, kde server bude Node.js a klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovanom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
+Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a možností NodeJS pre vytvorenie nového.
+Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude NodeJS a klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovanom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
 
 
 \section{Virtuálne laboratória}
@@ -114,15 +113,69 @@ Je ale dôležité si uvedomiť, že na vytvorenie laboratória nepotrebujeme v�
 \section{Použíté technológie}\label{used-technologies}
 
 \subsection{Matlab R2015b}
-\subsubsection{Simulink}
 \subsubsection{Možnosti získania dát z workspace}
+\subsection{Simulink}
 
-\subsection{Back-end}
-\subsubsection{Node.js}
-\subsubsection{MongoDB}
+\subsection{NodeJS}
+\subsubsection{NPM}
+\subsection{MongoDB}
 
-\subsection{Front-end}
-\subsubsection{Angular.js}
+
+\subsection{AngularJS}
+AngularJS, bežne označovaný aj ako Angular je open-source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA (single page applications), čiže webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC (model-view-controller) alebo MVVM (model-view-view-model) architektúre.
+AngularJS framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstrupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané z statických (väčšinou uložené na súborovom systéme), dynamických (získané z RESTful služby) JSON súborov.
+Je front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpressJS web server framework, \textbf{A}ngular  a \textbf{N}odeJS ako aplikačný server, resp. prostredie.
+
+\subsubsection{Koncept}
+Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju časť práce. Na obrázku je možné vidieť jeho základné komponenty, z ktorých sa skladá. Nižšie si popíšeme hlavne tie, ktoré využívame v práci.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/angular/angularjs_concepts.jpg}
+  \caption{Koncept frameworku AngularJS.}
+  \label{img-real-vs-vl}
+\end{figure}
+
+\textbf{Directives}
+Jednoducho povedané, directívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML compileru (\textit{\$compile}), aby priradil špecifické správanie na daný DOM element (napr. pomocou event listenerov), alebo dokonca transformoval DOM element ako svoje dieťa. V šablónach sa spájajú informácie z modelu a controlleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
+Angular je dodávaný zo vstavanými directivámi, od ktorých sa očakáva, že budú využívané často. Napr. \textit{ngBind}, \textit{ngModel}, \textit{ngClass}.
+
+\textbf{Scope}
+Scope je objekt, ktorý odkazuje na model aplikácie. Je to kontext, na ktorom sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou  textit{\$watch} a vykonávať udalosti (\textit{\$apply}) cez celý systém do view. Je považovaný ako lepidlo medzi aplikačným controllerom a view. Aj controller aj directivy majú prístup k scope, ale nie navzájom k sebe. Vďaka tomu je controller izolovaný od directivy a tak isto aj od DOM. 
+Každá aplikácia ma práve jeden \textit{\$rootScope}, ale môže mať viacero detských \textit{\$scope}. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako dieťa k rodičovskému scope. Toto vytvára stromovú štruktúru paralernú k DOM, kde sú priradené.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/angular/concepts-scope-watch-strategies.png}
+  \caption{Možnosti sledovania modelu v AngularJS.}
+  \label{img-real-vs-vl}
+\end{figure}
+
+popisat vsetky moznosti
+
+
+\textbf{Expressions}
+
+\textbf{Compiler}
+
+\textbf{Filter}
+
+\textbf{View}
+
+\textbf{Data Binding}
+
+\textbf{Controller}
+
+\textbf{Dependency Injection}
+
+\textbf{Module}
+
+\textbf{Service}
+
+\subsubsection{Scope}
+\subsubsection{Bootstrap aplikácie}
+mozno lepsie pred konceptom
+\subsubsection{Two-way data binding}
 
 
 \section{Návrh softwarového systému StarkLab}
