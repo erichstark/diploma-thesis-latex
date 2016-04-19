@@ -119,6 +119,7 @@
 \usepackage{changepage}
 \usepackage{scrextend}
 \usepackage{xstring}
+\usepackage{subfigure}
 
 \IfEqCase*{\FEIcoding}{
    		 {0}{

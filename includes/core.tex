@@ -1,3 +1,22 @@
+% define coloring in language JavaScript
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  sensitive=true
+}
+
 \section{Cieľ práce}
 Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a možností NodeJS pre vytvorenie nového.
 Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude NodeJS a klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovanom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
@@ -136,46 +155,161 @@ Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju č
   \label{img-real-vs-vl}
 \end{figure}
 
-\textbf{Directives}
+\textbf{Directives}\label{angular-directives}
 Jednoducho povedané, directívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML compileru (\textit{\$compile}), aby priradil špecifické správanie na daný DOM element (napr. pomocou event listenerov), alebo dokonca transformoval DOM element ako svoje dieťa. V šablónach sa spájajú informácie z modelu a controlleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
 Angular je dodávaný zo vstavanými directivámi, od ktorých sa očakáva, že budú využívané často. Napr. \textit{ngBind}, \textit{ngModel}, \textit{ngClass}.
 
-\textbf{Scope}
+\subsubsection{Scope}
 Scope je objekt, ktorý odkazuje na model aplikácie. Je to kontext, na ktorom sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou  textit{\$watch} a vykonávať udalosti (\textit{\$apply}) cez celý systém do view. Je považovaný ako lepidlo medzi aplikačným controllerom a view. Aj controller aj directivy majú prístup k scope, ale nie navzájom k sebe. Vďaka tomu je controller izolovaný od directivy a tak isto aj od DOM. 
 Každá aplikácia ma práve jeden \textit{\$rootScope}, ale môže mať viacero detských \textit{\$scope}. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako dieťa k rodičovskému scope. Toto vytvára stromovú štruktúru paralernú k DOM, kde sú priradené.
 
+Dirty checking v scope pre zmeny vlastností objektu je často používaná operácia a preto by mala byť efektívna. V závislosti od potreby môže byť dirty checking využité týmito troma stratégiami: referenciou na objekt, obsah poľa alebo na hodnoty objektu. Líšia sa v spôsobe zaregistrovania zmeny aj výkonostnými rozdielmi.
+
+
+\begin{itemize}
+  \item Sledovanie podľa referencie \textit{\$scope.\$watch(watchExpression, listener)}: detekuje zmenu, keď sa do sledovanej hodnoty nastaví nová. Ak sledovaný objekt, alebo pole, zmeny vnútri nie su detekované. Toto je najúčinnejšia stratégia.
+  \item Sledovanie na celej kolekcii (poli) \textit{\$scope.\$watchCollection(watchExpression, listener)}: detekuje zmeny, ku ktorým dochádza vo vnútri poľa alebo objektu. Napr. keď sú položky pridané, odstránené alebo sa v nich zmenilo poriadie. Detekcia je plytká, čiže nesleduje vnorené kolekcie. Sledovanie celého obsahu kolekcie je výkonovo náročnejsie ako sledovanie podľa referencie, pretože treba uchovávať kópie obsahu. Avšak, táto stratégia sa snaží minimalizovať množstvo potrebných kopírovaní.
+  \item Sledovanie všetkých položiek objektu \textit{\$scope.\$watch(watchExpression, listener, \textbf{true})}: detekuje akúkoľvek zmenu v ľubovolnej vnorenej štruktúry. Táto stratégia má najväčšie možnosti detekovania zmien, ale za to aj výkonovo a pamäťovo náročnejšia. Je potrebné uchovávať kópiu celej vnorenej štruktúry a pri každej zmene, sa musí nakopírovať do pamäte.
+\end{itemize}
+
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.5]{img/angular/concepts-scope-watch-strategies.png}
+  \includegraphics[scale=0.7]{img/angular/concepts-scope-watch-strategies.png}
   \caption{Možnosti sledovania modelu v AngularJS.}
   \label{img-real-vs-vl}
 \end{figure}
 
-popisat vsetky moznosti
+\subsubsection{Expressions}
+Angular výrazy sú kúsky kódu v JavaScripte, ktoré sú umiestnené medzi dvojitými kučeravými zátvorkami. Príklad: \textit{<span title="\textbf{\{\{} attrBinding \textbf{\}\}}">\textbf{\{\{} textBinding \textbf{\}\}}</span>}. Vyhodnotenie môže rovnako prebehnúť aj vo funkcii na kliknutie \textit{ng-click="functionExpression()"}.
+Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často môžu používať: \textit{\{\{ 1 + 2 \}\}}, \textit{\{\{ a + b \}\}}, \textit{\{\{ user.name \}\}} a 
+\textit{\{\{ items[index] \}\}}.
 
+%\textbf{Compiler}
 
-\textbf{Expressions}
+%\textbf{Filter}
 
-\textbf{Compiler}
+%\textbf{View}
 
-\textbf{Filter}
+\subsubsection{Data Binding}
+Data binding v Angulare funguje ako automatická synchronizácia dát medzi modelom a view. Ak sa zmení model, tak zmena sa automaticky prejaví aj do view, alebo aj naopak.
+Na obrázkoch môžeme vidieť pre porovnanie aký je rozdiel medzi One-way a Two-way data binding.
 
-\textbf{View}
+\begin{figure}[H]
+\subfigure[One-way data binding]{\includegraphics[scale=0.55]{img/angular/One_Way_Data_Binding.png}\label{img-real-vs-vl}}
+\subfigure[Two-way data binding]{\includegraphics[scale=0.55]{img/angular/Two_Way_Data_Binding.png}\label{img-real-vs-vl}}
+\caption{Data binding v AngularJS.}
+\end{figure}
 
-\textbf{Data Binding}
+Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu šablónu a komponenty modelu do view. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií vo view sa neprejavujú automatický v zobrazení. Horšie je, že zmeny ktoré úžívateľ v zobrazení sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje view s modelom a model s view.
 
-\textbf{Controller}
+Šablóny v Angulari fungujú inak. Šablóna (čo je neskompiloný HTML kód spolu s ďalšími značkami a directívami) je najprv kompilovaná v browseri. Tento krok produkuje živý view. Akékoľvek zmeny vo view sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do view. Vďaka tomuto spôsobu môžeme o view hovoriť ako o okamžitej projekcii modelu.
 
-\textbf{Dependency Injection}
+Pretože view iba je projekcia modelu, tak controller je kompletne separovaný od view a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať controller izolovane od view.
 
-\textbf{Module}
+\subsubsection{Controller}
+V Angulare je controller definovaný funkciou konštruktoru JavaScriptu, ktorý je používaný pre rozšírenie Angular Scope.
+Keď je controller pripojený k DOM cez \textit{ng-controller} directívu, tak bude vytvorená inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter to konštruktorovej funkcie controlleru ako \textit{\$scope}.
+Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba business logiku potrebnú pre jednotlivý view. Najlepší spôsob ako zachovať controller čo najmenší, je zabalenie niektorej úlohy do service, ktorá tam nepatrí. Potom tieto úlohy zo services voláme v controlleri ako závislosť.\\
 
-\textbf{Service}
+Controller je možné používať na:
+\begin{itemize}
+\item nastavenie počiatočného stavu v \textit{\$scope} objekte.
+\item pridanie vlastností a správania do \textit{\$scope} objektu.
+\end{itemize}
 
-\subsubsection{Scope}
+Nepoužívať controller na:
+\begin{itemize}
+\item manipuláciu s DOM, pretože controller by mal obsahovať iba business logiku. Vložením hociakej prezentačnej logiky do controlleru vo veľkej miere ovplyvňuje jeho testovanie. Na manipuláciu slúžia directívy v sekcii \ref{angular-directives}.
+\item formátovanie vstupu - použite angular from controls
+\item filtrovanie výstupu - použite angular filter
+\item zdielanie kódu alebo stavu naprieč controllermi - použite angular service
+\item spracovanie životného cyklu ostatných komponentov (napr vytváranie inštancíí service).
+\end{itemize}
+
+\begin{algorithm}
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=none,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+\begin{lstlisting}
+var myApp = angular.module('myApp',[]);
+
+myApp.controller('LabController', ['$scope', function($scope) {
+  $scope.name = 'StarkLab!';
+}]);
+
+-----------------------------------------------------------------------
+
+<div ng-controller="LabController">
+  {{ name }}
+</div>
+\end{lstlisting}
+ \caption{Ukážka controlleru v AngularJS a jeho volanie na HTML elemente.}
+ \label{angular-controller}
+\end{algorithm}
+
+%\textbf{Dependency Injection}
+
+\subsubsection{Module}
+Module môžeme uvažovať ako kontainer pre rozličné časti našej aplikácie - controller, service, filter, directivy... Každý modul môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poriadie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov.\\
+Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali existujúci v pamäti.
+
+\begin{algorithm}
+\lstset{
+   language=JavaScript,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=none,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+\begin{lstlisting}
+var myModule = angular.module('myModule', []);
+
+// pridanie directivy a sluzby do modulu
+myModule.service('myService', ...);
+myModule.directive('myDirective', ...);
+
+// toto volanie prepise uz vytvorene myService a myDirective vytvorenim noveho modulu
+var myModule = angular.module('myModule', []);
+
+// vyhodi chybu pretoze volame myOtherModule, ktory este nebol definovany
+var myModule = angular.module('myOtherModule');
+\end{lstlisting}
+ \caption{Ukážka vytvorenia modulov a pridávania funkcionality do nich.}
+ \label{angular-module}
+\end{algorithm}
+
+\subsubsection{Service}
+Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou dependency injection (DI). Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných services, ako napr. \textit{\$http}, ale väčšina aplikácií má potrebu si vytvoriť vlastné.
+Poznáme dva typy services:
+\begin{itemize}
+\item lazily instantiated - angular vytvorí inštanciu service iba v prípade, že na nej závisí komponent/modul
+\item singleton - každý komponent závisiaci na na service získa referenciu na jedinú inštanciu generovanú z service factory.
+\end{itemize}
+
+%\subsubsection{Scope}
 \subsubsection{Bootstrap aplikácie}
 mozno lepsie pred konceptom
-\subsubsection{Two-way data binding}
+%\subsubsection{Two-way data binding}
 
 
 \section{Návrh softwarového systému StarkLab}
