@@ -130,10 +130,27 @@ Je ale dôležité si uvedomiť, že na vytvorenie laboratória nepotrebujeme v�
 
 
 \section{Použíté technológie}\label{used-technologies}
+V predchádzajúcich kapitolách sme popísali cieľe, čo chceme vlastne dosiahnuť. Ďalej sme analyzovali možnosti virtuálnych laboratórií a porovnali už s existujúcimi riešeniami. V tejto sekcii budú v krátkosti rozpísané použité technológie. Je samozrejmé, že nie je možné ku každej popísať všetky jej možnosti, ale budeme sa venovať hlavne tým, ktoré plánujeme využiť aj v implementácií.
 
 \subsection{Matlab R2015b}
-\subsubsection{Možnosti získania dát z workspace}
-\subsection{Simulink}
+Milióny inžinierov a vedcov na celom svete používajú MATLAB na analýzu a návrh systémov a produktov ktore menia náš svet. MATLAB sa používa v automobilových systémoch, vesmírnych staniciach, smart siete, mobilých sieťach LTE alebo aj v škole na štúdium. Ďalej sa používa pre strojové učenie, spracovanie signálu, spracovanie obrazu, počítačové videnie, komunikácie, finančníctvo, riadenie, robotika a mnoho ďalšich využití.
+Celá platforma MATLAB je optimalizovaná pre riešenie inžinierskych a vedeckých problémov. Jazyk MATLABu je založený na práci s maticami. Je považovaný za najprirodzenejší spôsob ako počítať matematické úlohy. Pomocou integrovanej grafickej knižnici je možné vizualizovať a získať výsledky z dát. MATLAB integruje aj množstvo toolboxov, ktoré pomáhajú priamo začať s algoritmami, ktoré potrebujeme pre našu doménu.\cite{matlab-mathworks}
+
+\subsubsection{Simulink}
+Matlab obsahuje viacero integrovaných nástrojov a jeden z nich je aj Simulink. Je to grafické rozhranie, v ktorom je možné modelovať, simulovať a potom aj analyzovať dynamické systémy. Jeho hlavné rozhranie je grafické plátno, kde možme spájať jednotlivé bloky do diagramu. Simulink vie úzko spolupracovať s matlabom, dokonca môže byť odtiaľ aj skriptovaný, resp. počiatočná inicializácia hodnôt. Matlab a simulink sú vlastne dve prostredia integrované do jedného software. Čiže je možné simulovať a analyzovať náš model v každom kroku simulácie v oboch prostrediach. Simulink väčšinou spúštame priamo z Matlabu.
+
+\subsubsection{Komunikácia Matlabu s NodeJS}
+Simulácia dynamickej sústavy, ktorá sa spustí v Simulinku môže odosielať výsledné dáta do Matlab workspace. Odtiaľ ich budeme chciet posielať do NodeJS na ďalšie spracovanie. V matlabe existuje viacero možností získania dát z workspace.\\\\
+\textbf{COM} (Component Object Model) je prvá z technologických možností. COM bolo vytvorené spoločnosťou Microsoft, čiže toto riešenie je obmedzené len na Windows platformu. Používajú sa na prepojenie rôznych aplikácií podporujúcich túto technológiu. Tieto objekty môžu byť vytvorené pomocou rôznych programovacích jazykov ako napr. C++ alebo Java.\cite{matlab-microsoft-com}\\
+Kým idea COM je celkom jasná, terminológia až toľko nie. \textit{COM object} je softwarový komponent, ktorá zodpovedá Component Object Model. COM vnucuje zapuzdrenie objektu a tým predchádza pred priamym prístupom do dát a implementácie. COM objekt poskytne rozhranie, ktoré obsahuje premenné, metódy a udalosti. \textit{COM client} je program, ktorý používa COM objekty. COM objekty, ktorý poskytujú funkcionalitu pre použitie sú volané COM server. COM server môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. \textit{Microsoft ActiveX control} je typ in-process COM servera, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model su tiež príklady control kontajnerov. Matlab može byť použitý aj ako COM klient aj ako COM automation server.\cite{matlab-com}\\\\
+
+popisat matlab webscokety -- narocnejsie implementovat, pretoze nie je nativna implementacia
+%
+% Dlhy komentaaaaaaaaaaaaaaaaaaaaaaaaaaaaaar
+% 
+
+\textbf{RESTful web service}
+Medzi najmodernejšie možnosti komunikácie Matlabu s vonkajškom patria jednoznačne RESTful služby.
 
 \subsection{NodeJS}
 \subsubsection{NPM}
@@ -143,10 +160,10 @@ Je ale dôležité si uvedomiť, že na vytvorenie laboratória nepotrebujeme v�
 \subsection{AngularJS}
 AngularJS, bežne označovaný aj ako Angular je open-source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA (single page applications), čiže webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC (model-view-controller) alebo MVVM (model-view-view-model) architektúre.
 AngularJS framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstrupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané z statických (väčšinou uložené na súborovom systéme), dynamických (získané z RESTful služby) JSON súborov.
-Je front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpressJS web server framework, \textbf{A}ngular  a \textbf{N}odeJS ako aplikačný server, resp. prostredie.
+Je front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpressJS web server framework, \textbf{A}ngular  a \textbf{N}odeJS ako aplikačný server, resp. prostredie.\cite{angular-wiki}\cite{angular-docs}
 
 \subsubsection{Koncept}
-Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju časť práce. Na obrázku je možné vidieť jeho základné komponenty, z ktorých sa skladá. Nižšie si popíšeme hlavne tie, ktoré využívame v práci.
+Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju časť práce. Na obrázku je možné vidieť jeho základné komponenty, z ktorých sa skladá. Nižšie si popíšeme hlavne tie, ktoré využívame v práci.\cite{angular-concept}
 
 \begin{figure}[H]
   \centering
@@ -157,11 +174,11 @@ Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju č
 
 \textbf{Directives}\label{angular-directives}
 Jednoducho povedané, directívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML compileru (\textit{\$compile}), aby priradil špecifické správanie na daný DOM element (napr. pomocou event listenerov), alebo dokonca transformoval DOM element ako svoje dieťa. V šablónach sa spájajú informácie z modelu a controlleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
-Angular je dodávaný zo vstavanými directivámi, od ktorých sa očakáva, že budú využívané často. Napr. \textit{ngBind}, \textit{ngModel}, \textit{ngClass}.
+Angular je dodávaný zo vstavanými directivámi, od ktorých sa očakáva, že budú využívané často. Napr. \textit{ngBind}, \textit{ngModel}, \textit{ngClass}.\cite{angular-docs}
 
 \subsubsection{Scope}
 Scope je objekt, ktorý odkazuje na model aplikácie. Je to kontext, na ktorom sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou  textit{\$watch} a vykonávať udalosti (\textit{\$apply}) cez celý systém do view. Je považovaný ako lepidlo medzi aplikačným controllerom a view. Aj controller aj directivy majú prístup k scope, ale nie navzájom k sebe. Vďaka tomu je controller izolovaný od directivy a tak isto aj od DOM. 
-Každá aplikácia ma práve jeden \textit{\$rootScope}, ale môže mať viacero detských \textit{\$scope}. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako dieťa k rodičovskému scope. Toto vytvára stromovú štruktúru paralernú k DOM, kde sú priradené.
+Každá aplikácia ma práve jeden \textit{\$rootScope}, ale môže mať viacero detských \textit{\$scope}. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako dieťa k rodičovskému scope. Toto vytvára stromovú štruktúru paralernú k DOM, kde sú priradené.\cite{angular-docs}
 
 Dirty checking v scope pre zmeny vlastností objektu je často používaná operácia a preto by mala byť efektívna. V závislosti od potreby môže byť dirty checking využité týmito troma stratégiami: referenciou na objekt, obsah poľa alebo na hodnoty objektu. Líšia sa v spôsobe zaregistrovania zmeny aj výkonostnými rozdielmi.
 
@@ -182,7 +199,7 @@ Dirty checking v scope pre zmeny vlastností objektu je často používaná oper
 \subsubsection{Expressions}
 Angular výrazy sú kúsky kódu v JavaScripte, ktoré sú umiestnené medzi dvojitými kučeravými zátvorkami. Príklad: \textit{<span title="\textbf{\{\{} attrBinding \textbf{\}\}}">\textbf{\{\{} textBinding \textbf{\}\}}</span>}. Vyhodnotenie môže rovnako prebehnúť aj vo funkcii na kliknutie \textit{ng-click="functionExpression()"}.
 Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často môžu používať: \textit{\{\{ 1 + 2 \}\}}, \textit{\{\{ a + b \}\}}, \textit{\{\{ user.name \}\}} a 
-\textit{\{\{ items[index] \}\}}.
+\textit{\{\{ items[index] \}\}}.\cite{angular-docs}
 
 %\textbf{Compiler}
 
@@ -204,12 +221,12 @@ Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu 
 
 Šablóny v Angulari fungujú inak. Šablóna (čo je neskompiloný HTML kód spolu s ďalšími značkami a directívami) je najprv kompilovaná v browseri. Tento krok produkuje živý view. Akékoľvek zmeny vo view sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do view. Vďaka tomuto spôsobu môžeme o view hovoriť ako o okamžitej projekcii modelu.
 
-Pretože view iba je projekcia modelu, tak controller je kompletne separovaný od view a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať controller izolovane od view.
+Pretože view iba je projekcia modelu, tak controller je kompletne separovaný od view a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať controller izolovane od view.\cite{angular-docs}
 
 \subsubsection{Controller}
 V Angulare je controller definovaný funkciou konštruktoru JavaScriptu, ktorý je používaný pre rozšírenie Angular Scope.
 Keď je controller pripojený k DOM cez \textit{ng-controller} directívu, tak bude vytvorená inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter to konštruktorovej funkcie controlleru ako \textit{\$scope}.
-Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba business logiku potrebnú pre jednotlivý view. Najlepší spôsob ako zachovať controller čo najmenší, je zabalenie niektorej úlohy do service, ktorá tam nepatrí. Potom tieto úlohy zo services voláme v controlleri ako závislosť.\\
+Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba business logiku potrebnú pre jednotlivý view. Najlepší spôsob ako zachovať controller čo najmenší, je zabalenie niektorej úlohy do service, ktorá tam nepatrí. Potom tieto úlohy zo services voláme v controlleri ako závislosť.\cite{angular-docs}\\
 
 Controller je možné používať na:
 \begin{itemize}
@@ -262,7 +279,7 @@ myApp.controller('LabController', ['$scope', function($scope) {
 %\textbf{Dependency Injection}
 
 \subsubsection{Module}
-Module môžeme uvažovať ako kontainer pre rozličné časti našej aplikácie - controller, service, filter, directivy... Každý modul môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poriadie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov.\\
+Module môžeme uvažovať ako kontainer pre rozličné časti našej aplikácie - controller, service, filter, directivy... Každý modul môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poriadie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov.\cite{angular-docs}\\
 Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali existujúci v pamäti.
 
 \begin{algorithm}
@@ -299,7 +316,7 @@ var myModule = angular.module('myOtherModule');
 \end{algorithm}
 
 \subsubsection{Service}
-Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou dependency injection (DI). Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných services, ako napr. \textit{\$http}, ale väčšina aplikácií má potrebu si vytvoriť vlastné.
+Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou dependency injection (DI). Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných services, ako napr. \textit{\$http}, ale väčšina aplikácií má potrebu si vytvoriť vlastné.\cite{angular-docs}
 Poznáme dva typy services:
 \begin{itemize}
 \item lazily instantiated - angular vytvorí inštanciu service iba v prípade, že na nej závisí komponent/modul
