@@ -99,8 +99,10 @@
 
 \usepackage{times}
 \usepackage[overload]{textcase}
-\usepackage{chngcntr}  
-\usepackage{tocloft}
+\usepackage{chngcntr}
+% fix http://tex.stackexchange.com/questions/56777/display-chaptername-in-table-of-contents
+\usepackage[subfigure]{tocloft}
+\usepackage{subfigure}
 \usepackage{ifmtarg}
 \usepackage[bookmarksopen,colorlinks,plainpages=false,urlcolor=blue,hypertexnames=false]{hyperref}
 \usepackage{rotating}
@@ -119,7 +121,6 @@
 \usepackage{changepage}
 \usepackage{scrextend}
 \usepackage{xstring}
-\usepackage{subfigure}
 
 \IfEqCase*{\FEIcoding}{
    		 {0}{
