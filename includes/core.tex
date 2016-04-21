@@ -142,20 +142,119 @@ Matlab obsahuje viacero integrovaných nástrojov a jeden z nich je aj Simulink.
 \subsubsection{Komunikácia Matlabu s NodeJS}
 Simulácia dynamickej sústavy, ktorá sa spustí v Simulinku môže odosielať výsledné dáta do Matlab workspace. Odtiaľ ich budeme chciet posielať do NodeJS na ďalšie spracovanie. V matlabe existuje viacero možností získania dát z workspace.\\\\
 \textbf{COM} (Component Object Model) je prvá z technologických možností. COM bolo vytvorené spoločnosťou Microsoft, čiže toto riešenie je obmedzené len na Windows platformu. Používajú sa na prepojenie rôznych aplikácií podporujúcich túto technológiu. Tieto objekty môžu byť vytvorené pomocou rôznych programovacích jazykov ako napr. C++ alebo Java.\cite{matlab-microsoft-com}\\
-Kým idea COM je celkom jasná, terminológia až toľko nie. \textit{COM object} je softwarový komponent, ktorá zodpovedá Component Object Model. COM vnucuje zapuzdrenie objektu a tým predchádza pred priamym prístupom do dát a implementácie. COM objekt poskytne rozhranie, ktoré obsahuje premenné, metódy a udalosti. \textit{COM client} je program, ktorý používa COM objekty. COM objekty, ktorý poskytujú funkcionalitu pre použitie sú volané COM server. COM server môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. \textit{Microsoft ActiveX control} je typ in-process COM servera, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model su tiež príklady control kontajnerov. Matlab može byť použitý aj ako COM klient aj ako COM automation server.\cite{matlab-com}\\\\
+Kým idea COM je celkom jasná, terminológia až toľko nie. \textit{COM object} je softwarový komponent, ktorá zodpovedá Component Object Model. COM vnucuje zapuzdrenie objektu a tým predchádza pred priamym prístupom do dát a implementácie. COM objekt poskytne rozhranie, ktoré obsahuje premenné, metódy a udalosti. \textit{COM client} je program, ktorý používa COM objekty. COM objekty, ktorý poskytujú funkcionalitu pre použitie sú volané COM server. COM server môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. \textit{Microsoft ActiveX control} je typ in-process COM servera, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model su tiež príklady control kontajnerov. Matlab može byť použitý aj ako COM klient aj ako COM automation server.\cite{matlab-com}\\
 
-popisat matlab webscokety -- narocnejsie implementovat, pretoze nie je nativna implementacia
+\textbf{Websockety}
+popisat matlab webscokety -- narocnejsie implementovat, pretoze nie je nativna implementacia\\
 %
 % Dlhy komentaaaaaaaaaaaaaaaaaaaaaaaaaaaaaar
 % 
 
 \textbf{RESTful web service}
-Medzi najmodernejšie možnosti komunikácie Matlabu s vonkajškom patria jednoznačne RESTful služby.
+Medzi najmodernejšie možnosti komunikácie Matlabu s vonkajškom patria jednoznačne RESTful služby. REST (representational state transfer) je softwarový architektonický štýl, pomocou ktorého vieme posielať a získavať dáta zo serveru. REST komunikuje pomocou HTTP/HTTPS protokolu a zväčša sa používa na CRUD aplikácie, čiže tam kde chceme robiť CREATE, READ, UPDATE, DELETE operácie. Dáta je možné vymieňať medzi klientom a serverom cez \textit{JSON} alebo \textit{XML} správ. Pre jednoduchšie projekty sa používajú skôr JSON, hlavne ak sa maju spracovávať JavaScriptom. Výhodou RESTful v tomto riešení je to, že je priamo implementované v Matlabe a nie je potrebné inštalovať ďalšie knižnice a toolboxy.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/rest/rest-http.png}
+  \caption{HTTP request.}
+  \label{rest-http}
+\end{figure}
+
+Na obrázku č.\ref{rest-http} vidíme ako vyzerá HTTP request. V položke \textit{<VERB>} sa nachádza jedna z HTTP metód GET, PUT, POST, DELETE, OPTIONS, ... V \textit{<URI>} je zase linka na zdroj, nad ktorým sa bude vykonávať daná operácia. \textit{<HTTP version>} je verzia HTTP, vo všeobecnosti to bude "HTTP v1.1" ale môže byť aj "HTTP v2.0" v novších systémoch.\\
+\textit{<Request Header>} obsahuje metadáta ako kolekciu párov "key" : "value" hlavičky. Tieto nastavenia obsahujú informáciu o správe a jej odosielateľovi ako typ klienta, aký formát podporuje klient, typ formátu správy tela, nastavenia cache pre odpoveď a mnohé ďalšie informácie.\\
+\textit{<Request Body>} je aktuálny obsah správy. V RESTful službách je toto miesta, kde sa nachádza obsah správy, ktorý sa vymieňa medzi klientom a serverom. V tejto časti nie sú žiadne tagy ani značky pre učenie začiatku alebo konca správy.\cite{rest-vaqqas}
+
+\begin{algorithm}[H]
+\lstset{
+   language=XML,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=none,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+\begin{lstlisting}
+POST http://MyService/Person/
+Host: MyService
+Content-Type: text/xml; charset=utf-8
+Content-Length: 123
+<?xml version="1.0" encoding="utf-8"?>
+<Person>
+  <ID>1</ID>
+  <Name>M Vaqqas</Name>
+  <Email>m.vaqqas@gmail.com</Email>
+  <Country>India</Country>
+</Person>
+\end{lstlisting}
+ \caption{Príklad POST requestu.}
+ \label{post-request}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\lstset{
+   language=XML,
+   backgroundcolor=\color{lightgray},
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=none,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+\begin{lstlisting}
+HTTP/1.1 200 OK
+Date: Sat, 23 Aug 2014 18:31:04 GMT
+Server: Apache/2
+Last-Modified: Wed, 01 Sep 2004 13:24:52 GMT
+Accept-Ranges: bytes
+Content-Length: 32859
+Cache-Control: max-age=21600, must-revalidate
+Expires: Sun, 24 Aug 2014 00:31:04 GMT
+Content-Type: text/html; charset=iso-8859-1
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head><title>Hypertext Transfer Protocol -- HTTP/1.1</title></head>
+<body>
+...
+\end{lstlisting}
+ \caption{Príklad GET requestu.}
+ \label{get-request}
+\end{algorithm}
+
+V ukážke POST requestu č.\ref{post-request} zasielame serveru XML s údajmi o novej osobe. V ukážke GET requestu č.\ref{get-request} je vidieť, že server vráti obsah HTML stránky na ktorú bola požiadavka vytvorená.
+
+Teraz keď sme si vysvetlili v stručnosti ako fungujú RESTful služby, tak sa dostávame k tomu ako ich je možné využiť z Matlabu. Matlab poskytuje viacero funkcií na prácu s REST ako \textit{weboptions}, \textit{webread}, \textit{webwrite}.\\
+Objekt \textit{weboptions} slúži na špecifikáciu parametrov pre RESTful službu. V Matlabe sa volá príkazom \textit{options = weboptions} alebo \textit{options = weboptions(Name,Value)} pričom \textit{Name} je názov parametra, ktorý chceme nastaviť a \textit{Value} jeho hodnota.\\
+Je možné nastaviť tieto parametre: \textit{CharacterEncoding, UserAgent, Timeout, Username, Password, KeyName, KeyValue, ContentType, ContentReader, MediaType, RequestMethod, ArrayFormat}. Ak chceme zobraziť objekt weboptions, tak namiesto hesla tam budú hviezdičky. Každopádne, objekt ukladá heslo ako čistý text. V prípade keď zavoláme túto vlastnosť v Matlabe cez options.Password tak heslo bude viditeľné.\ref{matlab-weboptions}\\
+Objekt \textit{webread} číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \textit{data = webread(url)} kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \textit{data = webread(url,QueryName1,QueryValue1,...,QueryNameN,QueryValueN)} s parametrami url a QueryName, QueryValue ktoré pridá ako parametre do url volania. \textit{data = webread(\_\_\_, options)} kde môžeme špecifikovať aj weboptions objekt.\ref{matlab-webread}\\
+A posledný objekt \textit{webwrite}. Ako aj v predchádzajúcom prípade obsahuje rovnaké metódy s parametrami. \textit{response = webwrite(url,PostName1,PostValue1,...,PostNameN,PostValueN)} zapíše obsah na špecifikovanú url a vráti response. \textit{response = webwrite(url,data)} zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole. \textit{response = webwrite(\_\_\_, options)} zapíše obsah na špecifikovanú url a vráti response.
 
 \subsection{NodeJS}
 \subsubsection{NPM}
-\subsection{MongoDB}
 
+\subsection{MongoDB}
+MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čiže nepoužíva klasickú štruktúru ako v relačnej databáze na báze tabuliek, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka ukladaniu JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie.\cite{mongodb-wiki}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/mongodb/crud-annotated-document.png}
+  \caption{JSON dokument v MondoDB.}
+  \label{mongodb-example}
+\end{figure}
+
+Na obrázku č.\ref{mongodb-example} je príklad dokumentu, ktorý sa ukladá do MongoDB, v jednoduchých prípadoch nie je vidieť žiadny rozdiel oproti klasickému JSON.
 
 \subsection{AngularJS}
 AngularJS, bežne označovaný aj ako Angular je open-source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA (single page applications), čiže webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC (model-view-controller) alebo MVVM (model-view-view-model) architektúre.
