@@ -242,7 +242,135 @@ Objekt \textit{webread} číta obsah z REST služby, na ktorú sme mu poskytli U
 A posledný objekt \textit{webwrite}. Ako aj v predchádzajúcom prípade obsahuje rovnaké metódy s parametrami. \textit{response = webwrite(url,PostName1,PostValue1,...,PostNameN,PostValueN)} zapíše obsah na špecifikovanú url a vráti response. \textit{response = webwrite(url,data)} zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole. \textit{response = webwrite(\_\_\_, options)} zapíše obsah na špecifikovanú url a vráti response.
 
 \subsection{NodeJS}
-\subsubsection{NPM}
+Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych, škálovateľných sieťových aplikácií. NodeJS používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.\\
+Vďaka jeho súčasnej stabilite ho používa v produkcií mnoho svetových firiem, napríklad eBay, GoDaddy, Microsoft, PayPal, Uber, Yahoo...
+
+\subsubsection{História}
+Vytvoril ho Ryan Dahl v roku 2009 a bol dostupný iba pre Linux. Vývoj a údržba bola vedená jeho zakladateľom a neskôr sponzorovaná firmou Joyent. NodeJS sa skladá z JavaScriptového engine V8 od Google, event loop a nízko úrovňové I/O API. V roku 2011 bol vytvorený správca balíkov pre NodeJS volaný NPM (Node Package Manager). Umožnuje programátorom publikovať, zdielať zdrojový kód modulov a bol navrhnutý tak, aby zjednodušoval inštaláciu, aktualizáciu alebo odinštalovanie modulov. Neskôr v júni 2011, Microsoft a Joyent spolupracovali na implementáci natívnej verzii NodeJS pre Windows. V roku 2014 vznikli nezhody pri vývoji, tak Fedor Indutny spravil fork NodeJS a vytvoril ioJS. Na rozdiel od NodeJS autorov, chcel udržiavať ioJS aktuálny súčasne s poslednou verziou V8 JavaScript enginu. Po dohode bola vytvorená NodeJS Foundation, ktorá zastrešila vývoj, a spojila NodeJS v0.12 a ioJS v3.3 do NodeJS 4.0, aby spojila znovu komunity. Táto verzia priniesla V8 ES6 novinky do NodeJS a súčasne sa vytvorila aj verzia LTS vhodná pre produkčné nasadenie, ktorá ma dlhší vývojový cyklus a príjma len opravy chýb.\cite{nodejs-wiki}
+
+\subsubsection{Architektúra}
+V prvom rade by som spomenul kľúčové vlastnosti NodeJS. \textbf{Asynchronné a udalosťami riadené} API, čo znamená, že neblokuje vykonávanie nasledujúcich volaní. V podstate to znamená, že server založený na NodeJS nikdy nečaká, kým API vráti data. Server sa presunie na ďalšie volanie a vďaka pomoci notifikačnému mechanizmu udalostí získa server odpoveď z prechádzajúceho volania.
+Je \textbf{jednovláknový a vysoko škálovateľný} vďaka udalostnej slučke. Udalostný mechanizmus pomôže serveru vrátiť odpoveď tak aby nebol blokujúci a robí server vysoko škálovateľný oproti tradičným serverom, ktoré vytvárajú limitovaný počet vlákien na spracovávanie požiadaviek. NodeJS spustí jednovláknový program, ktorý môže poskytnúť službu omnoho väčšiemu počtu požiadaviek ako tradičný server Apache HTTP. Aplikácie sú \textbf{bez vyrovnávajúcej pamäte}, čiže jednoducho posielajú údaje na výstup v malých blokoch.\\
+
+Ako sme už spomenuli, tak platforma NodeJS sa skladá z viacerých častí. Bolo by možné ju rozdeliť ešte na menšie časti, ale toto je základný pohľad na obrázku č.\ref{img-node-arch}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/node/nodejs-arch.png}
+  \caption{Architektúra NodeJS platformy.}
+  \label{img-node-arch}
+\end{figure}
+
+Na vrchole obrázku máme základné NodeJS API. Je napísané v JavaScripte a je priamo dostupné programátorom, pre využitie v ich aplikáciach. Pod základným API je knižnica, ktorá viaže C/C++ s JavaScriptom. NodeJS tiež poskytuje doplnky (addons), čo sú dynamicky linkované zdielané objekty. Tie sa viažu na C/C++ knižnice. To znamená, že môžeme využiť skoro hocijakú C/C++ knižnicu a vytvoriť z nej doplnok, ktorý použijeme v NodeJS.\\
+Pod týmto všetkým máme už len natívne knižnice vytvorené v C/C++:
+
+\textbf{V8} je open source JavaScript engine, ktorý bol vytvorený pre Google Chrome. Je napísaný v C++ a je možné ho spustiť samostatne alebo v hocijakej C++ aplikácií. V podstate kompiluje JavaScript kód do natívneho strojového kódu, namiesto toho, aby bol interpretovaný.
+
+\textbf{Libuv} je multiplatformová podporná knižnica zo zameraním na asynchónne I/O operácie. Zo začiatku NodeJS začal používať \textit{libuv} ako abstrakčnú vrstvu pre \textit{libev} a \textit{libio}, ale neskôr sa libuv stala robustnejšou a nahradila túto funkcionalitu, aby sa mohla stať multiplatformovou. Keď V8 spravuje vykonávanie JavaScriptu, tak libuv spravuje udalostnú slučku (event loop) a asynchrónne I/O operácie.
+V tomto zozname vidíme všetky možnosti \textit{libuv}:
+\begin{itemize}
+\item plnohodnotnú údalostnú slučku, ktorú tvorí epoll, kqueue, IOCP a udalostné porty,
+\item asynchronné TCP a UDP sockety,
+\item asynchronné DNS,
+\item asynchronné operácie nad súbormy a súborovým systémom,
+\item udalosti nad súborovým systémom,
+\item preklad ANSI kódov kontrolovaných cez TTY,
+\item IPC so zdielaním socketu s využitím Unix socketov alebo pomenované kanály (Windows),
+\item detské procesy,
+\item vlákna a synchronizáciu,
+\item riadenie signálov,
+\item hodiny s presným časovaním (hight resolution clock).
+\end{itemize}
+
+\textbf{c-ares} je C knižnica pre asynchronné DNS žiadosti vrátane prekladanie názvov. Je určená pre aplikácie, ktoré potrebujú vykonávať dotazy na DNS bez blokovania, alebo je potrebné vykonať niekoľko dotazov paralerne.
+
+\textbf{http\_parser} je parser pre požiadavky a odpovede  HTTP napísaný v C. Nerobí žiadne systémové volania ani alokácie, neukladá dáta do vyrovnávacej pamäte, môže byť zrušený okamžite. Jeho hlavné vlastnosti sú:
+\begin{itemize}
+\item žiadne závislosti,
+\item udržiava trvalý stream
+\item dekódovanie blokového kódovania,
+\item chráni buffer proti útokom.
+\end{itemize}
+
+\textbf{OpenSSL} je open source implementácia SSL v2/v3 a TLS v1 protokolov ako aj kryptografickú knižnicu pre všeobecné účely. Je založená na SSLeay knižnici. Tá poskytuje všetky potrebné kryptografické metódy ako je hash, hmac, cipher, decipher, sign a verify metódy.
+
+\textbf{Zlib} je všeobecná knižnica na kompresiu dát napísaná v C.\cite{nodejs-arch}
+
+
+\subsubsection{Event loop}
+Udalostná slučka dáva NodeJS možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná tak sa zavolá callback funkcia. Na obrázku č.\ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci NodeJS.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{img/node/nodejs-event-loop.png}
+  \caption{Udalostná slučka.}
+  \label{img-node-event-loop}
+\end{figure}
+
+Udalostná slučka jednoducho prechádza cez frontu čo je vlastne zoznam udalostí a callbackov vykonaných operácií. Všetky I/O operácie sú vykonané asynchrónne vláknami vo "vláknovom stacku" (thread pool). Tu zohráva dôležitú rolu libuv. Ak nejaká položka vyžaduje I/O operáciu, tak udalostná slučka jednoducho prenechá operáciu do vláknového stacku. Udalostná slučka pokračuje vo vykonávaní položiek v udalostnej fronte. Keď je I/O operácia hotová, tak callback je zaradený na spracovanie. Udalostná slučka vykoná callback a poskytne požadované výstupy. A takto sa celý proces opakuje.\cite{nodejs-event-loop}
+
+\subsubsection{Možnosti a využitie}
+Na základe popísaných základných častí NodeJS v predchádzajúcich sekcií si ukážeme možnosti využitia, resp. výhody a nevýhody.\cite{nodejs-arch}
+
+\textbf{Výhody}
+\begin{itemize}
+\item asynchrónne I/O - vhodné pre webové a sieťové aplikácie,
+\item rôzne možnosti škálovania,
+\item programovací jazyk je JavaScript, čiže rovnaký jazyk aj pre backend aj fronend,
+\item jednoducho je možné s nim začať na rozdiel od Javy alebo .NET, stačí len zmeniť myslienie na asynchrónne,
+\item veľmi aktívna komunita, ktorá zdieľa množstvo kódu na verejných repozitároch ako github,
+\item rýchlo rastúca NPM komunita s množstvom modulov pripravených na použitie.
+\end{itemize}
+
+\textbf{Nevýhody}
+\begin{itemize}
+\item veľmi neefektívne pre ukóny náročné na CPU, ako generovanie reportov, analýzy, výpočty...
+\item použitím udalosťami riadenej metodológie bez pochopenia prístupu môže viesť k nevhodne napísaným kódom (napr. "callback hell"),
+\item neexistuje veľa štandardných knižníc ako pri Java, .NET platforme ako sú napr. XML parsery, alebo zložitejšie dátové štruktúry.
+\end{itemize}
+
+Teda NodeJS nie je vhodný na všetko, vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time údaje, single page aplikácie, websockety tak je na takéto úlohy vhodný. Vo všeobecnosti všade kde sa používa I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení.\cite{nodejs-introduction}
+
+\subsection{Node Package Manager}
+NodeJS po nainštalovaní obsahuje aj \textit{NPM} (Node Package Manger). NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára (\textit{https://www.npmjs.org}). Rovnako aj môžme vytvoriť vlastný modul a uložiť ho do repozitára.\\
+Každý modul by mal mať vlastný adresár, ktorý tiež obsahuje súbor s metadátami volaný \textit{package.json}. V tomto súbore musí byť nastavené aspoň tieto dve vlastnosti: \textit{name, version}.\cite{nodejs-by-example}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/npm/npm-minimum.png}
+\end{figure}
+
+\subsubsection{Použitie modulov}
+Vo všeobecnosti sú tri možnosti ako použiť moduly, ktoré už existujú. Všetky tri zahŕňajú manažéra na spravovanie balíkov:\cite{nodejs-by-example}
+\begin{itemize}
+\item môžme nainštalovať špecifický modul manuálne tak, že sa presunieme do požadovaného priečinka a zavoláme v termináli 
+\textit{npm install nazov-modulu}
+Správca balíkov automaticky nainštaluje poslednú verziu modulu a vloží ju do priečinka \textit{node\_modules}. Ak ho chceme použiť, nepotrebujeme volať celú cestu, ale len \textit{require(nazov-modulu)}.
+\item inštalácia modulu globálne vďaka \textit{-g} značke v príkaze.
+\textit{npm install nazov-modulu -g}
+Je to vhodnejšie používať skor na vývojové nástroje ako na bežné moduly.
+\item posledná možnosť je zavolanie
+\textit{npm install}
+nad priečinkom kde sa nachádza už predtým spomínaný \textit{package.json} a obsahuje v sebe vlastnosť \textit{dependencies}
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/npm/npm-overview-dependency.png}
+\end{figure}
+
+\subsubsection{Vstavané moduly}
+NodeJS je považovaný za technológiu, pomocou ktorej môžeme tvoriť backend aplikácie. Často potrebujeme robiť rôzne úlohy. V NodeJS existujú veľmi nápomocné moduly, ktoré môžeme využiť.\cite{nodejs-by-example}
+
+\subsubsection{Vytvorenie web servera pomocou HTTP modulu}
+Modul \textit{http} patrí medzi veľmi používané, pretože vďaka nemu spustíme web server na konkrétnom porte.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/npm/npm-http-module.png}
+\end{figure}
+
+Máme dostupnú metódu \textit{createServer}, ktorá vracia nový web server objekt. Vo väčšine prípadov zavoláme aj metódu \textit{listen}. Ak je potrebné tak pomocou \textit{close} zastavíme prímanie nových požiadaviek. Callback funkcia, ktorú tam využívame, vždy má \textit{request} (req) a \textit{response} (res) objekty. Prvý objekt môžeme použiť na získanie informácií o prichádzajúcich požiadaviek ako napr. \textit{GET}, \textit{POST} parametre.\cite{nodejs-by-example}
 
 \subsection{MongoDB}
 MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čiže nepoužíva klasickú štruktúru ako v relačnej databáze na báze tabuliek, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka ukladaniu JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie.\cite{mongodb-wiki}
@@ -268,7 +396,7 @@ Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju č
   \centering
   \includegraphics[scale=0.5]{img/angular/angularjs_concepts.jpg}
   \caption{Koncept frameworku AngularJS.}
-  \label{img-real-vs-vl}
+  \label{img-angular-concept}
 \end{figure}
 
 \textbf{Directives}\label{angular-directives}
@@ -292,7 +420,7 @@ Dirty checking v scope pre zmeny vlastností objektu je často používaná oper
   \centering
   \includegraphics[scale=0.7]{img/angular/concepts-scope-watch-strategies.png}
   \caption{Možnosti sledovania modelu v AngularJS.}
-  \label{img-real-vs-vl}
+  \label{img-angular-watchl}
 \end{figure}
 
 \subsubsection{Expressions}
@@ -311,8 +439,8 @@ Data binding v Angulare funguje ako automatická synchronizácia dát medzi mode
 Na obrázkoch môžeme vidieť pre porovnanie aký je rozdiel medzi One-way a Two-way data binding.
 
 \begin{figure}[H]
-\subfigure[One-way data binding]{\includegraphics[scale=0.55]{img/angular/One_Way_Data_Binding.png}\label{img-real-vs-vl}}
-\subfigure[Two-way data binding]{\includegraphics[scale=0.55]{img/angular/Two_Way_Data_Binding.png}\label{img-real-vs-vl}}
+\subfigure[One-way data binding]{\includegraphics[scale=0.55]{img/angular/One_Way_Data_Binding.png}\label{img-angular-onedb}}
+\subfigure[Two-way data binding]{\includegraphics[scale=0.55]{img/angular/Two_Way_Data_Binding.png}\label{img-angular-twodb}}
 \caption{Data binding v AngularJS.}
 \end{figure}
 
