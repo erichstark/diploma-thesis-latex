@@ -372,6 +372,8 @@ Modul \textit{http} patrí medzi veľmi používané, pretože vďaka nemu spust
 
 Máme dostupnú metódu \textit{createServer}, ktorá vracia nový web server objekt. Vo väčšine prípadov zavoláme aj metódu \textit{listen}. Ak je potrebné tak pomocou \textit{close} zastavíme prímanie nových požiadaviek. Callback funkcia, ktorú tam využívame, vždy má \textit{request} (req) a \textit{response} (res) objekty. Prvý objekt môžeme použiť na získanie informácií o prichádzajúcich požiadaviek ako napr. \textit{GET}, \textit{POST} parametre.\cite{nodejs-by-example}
 
+\subsection{Express.js}
+
 \subsection{MongoDB}
 MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čiže nepoužíva klasickú štruktúru ako v relačnej databáze na báze tabuliek, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka ukladaniu JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie.\cite{mongodb-wiki}
 
@@ -557,9 +559,8 @@ mozno lepsie pred konceptom
 
 
 \section{Návrh softwarového systému StarkLab}
-\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme predpokladaný návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. Ich presný popis a využitie si popíšeme viacej v \textit{sekcii č.\ref{used-technologies}}. Teda máme dané, že budeme využívať Node.js framework ako server. To je náš centrálny server (ďalej len StarkLab), ktorý spracováva dáta z Matlab workspace. Do Matlab workspace sú dáta posielané cyklicky zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Nie je isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows.\\
-Na komunikáciu s workspace máme pri našom riešení dve možnosti. Buď volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}, alebo websockets. Websockets by boli asi vhodnejšie pre túto komunikáciu kvôli rýchlosti, ale nie sú implementované priamo v matlabe, kvôli čomu musíme zanášať ďalšie knižnice do matlab path, ktoré sú implementované v Jave.\\
-Komunikácia klienta a StarkLab môže bez problémov prebiehať cez websockets. Keď si užívateľ spustí simuláciu cez klienta, tak sa údaje budú uchovávať v databáze mongoDB pre neskoršie spracovanie.
+\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme predpokladaný návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. Ich presný popis a využitie si popíšeme viacej v sekcii č.\ref{used-technologies}. Teda máme dané, že budeme využívať NodeJS technológiu ako server. To je náš centrálny server (ďalej len StarkLab), ktorý spracováva dáta z Matlab workspace. Do Matlab workspace sú dáta posielané intervalovo zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \textit{tos\_lib.mdl}, ktorá nám túto funkcionalitu poskytla aj pod MAC OS X.\\
+Na komunikáciu s workspace využívame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Keď si užívateľ spustí simuláciu cez klienta, tak sa údaje budú uchovávať v databáze mongoDB pre neskoršie spracovanie.
 
 \begin{figure}[H]
   \centering
@@ -568,14 +569,61 @@ Komunikácia klienta a StarkLab môže bez problémov prebiehať cez websockets.
   \label{img-software-designl}
 \end{figure}
 
-\subsection{Diagramy}
-\subsubsection{Use case}
-\subsubsection{Activity}
-\subsubsection{Model "class"}
-
-
 \section{Implementácia}
 
-\section{Testovanie}
+\subsection{Referenčný model simulácie}
+sem pojdu informáci o pouzitom modeli.
+
+\subsection{Diagramy}
+Diagramy su sucastou sytemu .....
+\subsubsection{Prípad použitia}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/diagrams/use-case.png}
+  \caption{Diagram prípadu použitia na prácu zo systémom.}
+  \label{img-use-case}
+\end{figure}
+
+\subsubsection{Sekvenčný diagram}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/diagrams/sequence-ldap.png}
+  \caption{Sekvenčný diagram pre prihlásenie pomocou LDAP.}
+  \label{img-sequence-ldap-login}
+\end{figure}
+
+Na obrázku č.\ref{img-sequence-ldap-login} si všimneme ako približne funguje prihlásenie pomocou mena a hesla do LDAP systému. Nižšie si popíšeme kód ako to máme implementované v JavaScripte. Toto je len časť kódu, ktorá sa určená pre prihlásenie do systému. Na začiatku súbotu je volaná požadovaná knižnica pre prácu s LDAP ako \textit{var ldap = require("ldapjs");}
+Keď užívateľ príjde na stránku a vyplní prihlasovacie meno a heslo do stuba ldap, tak formulár ho presmeruje na \textit{/login}, kde už sa postaral o routovanie Express.js. Z \textit{request} parametra získame zadané username - \textit{req.body.username} a password - \textit{req.body.password}, ktoré sme vyplnili pred odosielaním formulára. Čiže ak sú oba vyplnené dostaneme sa do vnútra podmienky, kde sa vytvorí spojenie na linku \textit{ldap://ldap.stuba.sk}, vytvorí RDN reťazec v tvare \textit{"uid=xstark", ou=People, DC=stuba, DC=sk"}.
+V momente keď je zostavený reťazec a máme získané heslo užívateľa, tak zavoláme ldap funkciu \textit{bind} s parametrami RDN a heslom. V prípade ak nenastala žiadna chyba pri overovaní, tak sme úspešne overený a vytvoríme \textit{session} a \textit{cookie} pre užívateľa a presmerujeme ho na stránku, kde už môže vidieť možné simulácie.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/ldap-login.png}
+\end{figure}
+
+\subsection{Databázový model MongoDB}
+V našom zadaní sme nepoužívali štandardnú SQL databázu, čiže nie je možné využiť bežné modelovanie cez ERD diagramy. Ako už vieme MongoDB neukladá dáta ako tabuľky, ale JSON dokumenty. Keďže sa jednalo o jednoduchý model šikmého vrhu, tak v tomto prípade nebude model extra zložitý. V tejto časti si ukážeme do akého objektu ho v JavaScripte ukladáme a potom konkrétny príklad z databázy.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/javascript-projectile-model.png}
+  \caption{Model objektu v JavaScripte, pre vytvorenie záznamu v MongoDB.}
+  \label{img-js-projectile-model}
+\end{figure}
+
+Ako vidíme v JavaScripte sa nepoužívajú žiadne typy. Hodnoty \textit{user, experiment} budú vždy typu \textbf{\textit{String}}, \textit{executed} je typu \textbf{\textit{Date}} vo formáte ISO-8601 a jeho formát je YYYY-MM-DDTHH:mm:ss.sssZ. Zvyšok hodnôt \textit{time, x, y, vy} sú hodnoty závislé od simulácie a každá z nich je pole čísiel.
+
+Na obrázku č.\ref{img-mongo-record} je záznam z MongoDB kde konkrétne hodnoty time, x, y, vy nie sú zobrazené, pretože simulácia vygenerovala až 788 hodnôt.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/mongodb-record.png}
+  \caption{Príklad záznamu simulácie v MongoDB.}
+  \label{img-mongo-record}
+\end{figure}
+
+%\section{Testovanie}
 
 \section{Inštalácia vytvoreného riešenia}
