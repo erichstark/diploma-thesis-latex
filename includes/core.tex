@@ -18,8 +18,8 @@
 }
 
 \section{Cieľ práce}
-Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a možností NodeJS pre vytvorenie nového.
-Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude NodeJS a klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovanom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
+Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a možností Node.js pre vytvorenie nového.
+Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude Node.js a klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovanom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
 
 
 \section{Virtuálne laboratória}
@@ -124,11 +124,6 @@ Počet existujúcich laboratórií je veľký, ale väčšinou nie je možné za
 Je ale dôležité si uvedomiť, že na vytvorenie laboratória nepotrebujeme všetky tieto komponenty, resp. môžme využiť aj iné, ktoré sa nám dokonale hodia. Niekedy sa používa napr. aj databázový server ak chceme experimenty ukladať a spracovávať neskôr. Tak isto je potrebné uvedomiť si, aký typ VL chceme vytvoriť. Určite budú rozdiely pri návrhu jednoužívateľského VL narozdiel od viacužívateľského dokonca s viacerými experimentami súčasne. Treba myslieť na to, ako vhodne vyriešiť škálovateľnosť, možné problémy s bezpečnosťou, viacužívateľský prístup, ostatné problémy prístupnosti a podobne.
 
 
-
-
-
-
-
 \section{Použíté technológie}\label{used-technologies}
 V predchádzajúcich kapitolách sme popísali cieľe, čo chceme vlastne dosiahnuť. Ďalej sme analyzovali možnosti virtuálnych laboratórií a porovnali už s existujúcimi riešeniami. V tejto sekcii budú v krátkosti rozpísané použité technológie. Je samozrejmé, že nie je možné ku každej popísať všetky jej možnosti, ale budeme sa venovať hlavne tým, ktoré plánujeme využiť aj v implementácií.
 
@@ -139,8 +134,8 @@ Celá platforma MATLAB je optimalizovaná pre riešenie inžinierskych a vedeck�
 \subsubsection{Simulink}
 Matlab obsahuje viacero integrovaných nástrojov a jeden z nich je aj Simulink. Je to grafické rozhranie, v ktorom je možné modelovať, simulovať a potom aj analyzovať dynamické systémy. Jeho hlavné rozhranie je grafické plátno, kde možme spájať jednotlivé bloky do diagramu. Simulink vie úzko spolupracovať s matlabom, dokonca môže byť odtiaľ aj skriptovaný, resp. počiatočná inicializácia hodnôt. Matlab a simulink sú vlastne dve prostredia integrované do jedného software. Čiže je možné simulovať a analyzovať náš model v každom kroku simulácie v oboch prostrediach. Simulink väčšinou spúštame priamo z Matlabu.
 
-\subsubsection{Komunikácia Matlabu s NodeJS}
-Simulácia dynamickej sústavy, ktorá sa spustí v Simulinku môže odosielať výsledné dáta do Matlab workspace. Odtiaľ ich budeme chciet posielať do NodeJS na ďalšie spracovanie. V matlabe existuje viacero možností získania dát z workspace.\\\\
+\subsubsection{Komunikácia medzi Matlabom a Node.js}
+Simulácia dynamickej sústavy, ktorá sa spustí v Simulinku môže odosielať výsledné dáta do Matlab workspace. Odtiaľ ich budeme chciet posielať do Node.js na ďalšie spracovanie. V matlabe existuje viacero možností získania dát z workspace.\\\\
 \textbf{COM} (Component Object Model) je prvá z technologických možností. COM bolo vytvorené spoločnosťou Microsoft, čiže toto riešenie je obmedzené len na Windows platformu. Používajú sa na prepojenie rôznych aplikácií podporujúcich túto technológiu. Tieto objekty môžu byť vytvorené pomocou rôznych programovacích jazykov ako napr. C++ alebo Java.\cite{matlab-microsoft-com}\\
 Kým idea COM je celkom jasná, terminológia až toľko nie. \textit{COM object} je softwarový komponent, ktorá zodpovedá Component Object Model. COM vnucuje zapuzdrenie objektu a tým predchádza pred priamym prístupom do dát a implementácie. COM objekt poskytne rozhranie, ktoré obsahuje premenné, metódy a udalosti. \textit{COM client} je program, ktorý používa COM objekty. COM objekty, ktorý poskytujú funkcionalitu pre použitie sú volané COM server. COM server môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. \textit{Microsoft ActiveX control} je typ in-process COM servera, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model su tiež príklady control kontajnerov. Matlab može byť použitý aj ako COM klient aj ako COM automation server.\cite{matlab-com}\\
 
@@ -241,32 +236,32 @@ Je možné nastaviť tieto parametre: \textit{CharacterEncoding, UserAgent, Time
 Objekt \textit{webread} číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \textit{data = webread(url)} kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \textit{data = webread(url,QueryName1,QueryValue1,...,QueryNameN,QueryValueN)} s parametrami url a QueryName, QueryValue ktoré pridá ako parametre do url volania. \textit{data = webread(\_\_\_, options)} kde môžeme špecifikovať aj weboptions objekt.\ref{matlab-webread}\\
 A posledný objekt \textit{webwrite}. Ako aj v predchádzajúcom prípade obsahuje rovnaké metódy s parametrami. \textit{response = webwrite(url,PostName1,PostValue1,...,PostNameN,PostValueN)} zapíše obsah na špecifikovanú url a vráti response. \textit{response = webwrite(url,data)} zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole. \textit{response = webwrite(\_\_\_, options)} zapíše obsah na špecifikovanú url a vráti response.
 
-\subsection{NodeJS}
-Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych, škálovateľných sieťových aplikácií. NodeJS používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.\\
+\subsection{Node.js}
+Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych, škálovateľných sieťových aplikácií. Node.js používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.\\
 Vďaka jeho súčasnej stabilite ho používa v produkcií mnoho svetových firiem, napríklad eBay, GoDaddy, Microsoft, PayPal, Uber, Yahoo...
 
 \subsubsection{História}
-Vytvoril ho Ryan Dahl v roku 2009 a bol dostupný iba pre Linux. Vývoj a údržba bola vedená jeho zakladateľom a neskôr sponzorovaná firmou Joyent. NodeJS sa skladá z JavaScriptového engine V8 od Google, event loop a nízko úrovňové I/O API. V roku 2011 bol vytvorený správca balíkov pre NodeJS volaný NPM (Node Package Manager). Umožnuje programátorom publikovať, zdielať zdrojový kód modulov a bol navrhnutý tak, aby zjednodušoval inštaláciu, aktualizáciu alebo odinštalovanie modulov. Neskôr v júni 2011, Microsoft a Joyent spolupracovali na implementáci natívnej verzii NodeJS pre Windows. V roku 2014 vznikli nezhody pri vývoji, tak Fedor Indutny spravil fork NodeJS a vytvoril ioJS. Na rozdiel od NodeJS autorov, chcel udržiavať ioJS aktuálny súčasne s poslednou verziou V8 JavaScript enginu. Po dohode bola vytvorená NodeJS Foundation, ktorá zastrešila vývoj, a spojila NodeJS v0.12 a ioJS v3.3 do NodeJS 4.0, aby spojila znovu komunity. Táto verzia priniesla V8 ES6 novinky do NodeJS a súčasne sa vytvorila aj verzia LTS vhodná pre produkčné nasadenie, ktorá ma dlhší vývojový cyklus a príjma len opravy chýb.\cite{nodejs-wiki}
+Vytvoril ho Ryan Dahl v roku 2009 a bol dostupný iba pre Linux. Vývoj a údržba bola vedená jeho zakladateľom a neskôr sponzorovaná firmou Joyent. Node.js sa skladá z JavaScriptového engine V8 od Google, event loop a nízko úrovňové I/O API. V roku 2011 bol vytvorený správca balíkov pre Node.js volaný NPM (Node Package Manager). Umožnuje programátorom publikovať, zdielať zdrojový kód modulov a bol navrhnutý tak, aby zjednodušoval inštaláciu, aktualizáciu alebo odinštalovanie modulov. Neskôr v júni 2011, Microsoft a Joyent spolupracovali na implementáci natívnej verzii Node.js pre Windows. V roku 2014 vznikli nezhody pri vývoji, tak Fedor Indutny spravil fork Node.js a vytvoril ioJS. Na rozdiel od Node.js autorov, chcel udržiavať ioJS aktuálny súčasne s poslednou verziou V8 JavaScript enginu. Po dohode bola vytvorená Node.js Foundation, ktorá zastrešila vývoj, a spojila Node.js v0.12 a ioJS v3.3 do Node.js 4.0, aby spojila znovu komunity. Táto verzia priniesla V8 ES6 novinky do Node.js a súčasne sa vytvorila aj verzia LTS vhodná pre produkčné nasadenie, ktorá ma dlhší vývojový cyklus a príjma len opravy chýb.\cite{nodejs-wiki}
 
 \subsubsection{Architektúra}
-V prvom rade by som spomenul kľúčové vlastnosti NodeJS. \textbf{Asynchronné a udalosťami riadené} API, čo znamená, že neblokuje vykonávanie nasledujúcich volaní. V podstate to znamená, že server založený na NodeJS nikdy nečaká, kým API vráti data. Server sa presunie na ďalšie volanie a vďaka pomoci notifikačnému mechanizmu udalostí získa server odpoveď z prechádzajúceho volania.
-Je \textbf{jednovláknový a vysoko škálovateľný} vďaka udalostnej slučke. Udalostný mechanizmus pomôže serveru vrátiť odpoveď tak aby nebol blokujúci a robí server vysoko škálovateľný oproti tradičným serverom, ktoré vytvárajú limitovaný počet vlákien na spracovávanie požiadaviek. NodeJS spustí jednovláknový program, ktorý môže poskytnúť službu omnoho väčšiemu počtu požiadaviek ako tradičný server Apache HTTP. Aplikácie sú \textbf{bez vyrovnávajúcej pamäte}, čiže jednoducho posielajú údaje na výstup v malých blokoch.\\
+V prvom rade by som spomenul kľúčové vlastnosti Node.js. \textbf{Asynchronné a udalosťami riadené} API, čo znamená, že neblokuje vykonávanie nasledujúcich volaní. V podstate to znamená, že server založený na Node.js nikdy nečaká, kým API vráti data. Server sa presunie na ďalšie volanie a vďaka pomoci notifikačnému mechanizmu udalostí získa server odpoveď z prechádzajúceho volania.
+Je \textbf{jednovláknový a vysoko škálovateľný} vďaka udalostnej slučke. Udalostný mechanizmus pomôže serveru vrátiť odpoveď tak aby nebol blokujúci a robí server vysoko škálovateľný oproti tradičným serverom, ktoré vytvárajú limitovaný počet vlákien na spracovávanie požiadaviek. Node.js spustí jednovláknový program, ktorý môže poskytnúť službu omnoho väčšiemu počtu požiadaviek ako tradičný server Apache HTTP. Aplikácie sú \textbf{bez vyrovnávajúcej pamäte}, čiže jednoducho posielajú údaje na výstup v malých blokoch.\\
 
-Ako sme už spomenuli, tak platforma NodeJS sa skladá z viacerých častí. Bolo by možné ju rozdeliť ešte na menšie časti, ale toto je základný pohľad na obrázku č.\ref{img-node-arch}.
+Ako sme už spomenuli, tak platforma Node.js sa skladá z viacerých častí. Bolo by možné ju rozdeliť ešte na menšie časti, ale toto je základný pohľad na obrázku č.\ref{img-node-arch}.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/node/nodejs-arch.png}
-  \caption{Architektúra NodeJS platformy.}
+  \caption{Architektúra Node.js platformy.}
   \label{img-node-arch}
 \end{figure}
 
-Na vrchole obrázku máme základné NodeJS API. Je napísané v JavaScripte a je priamo dostupné programátorom, pre využitie v ich aplikáciach. Pod základným API je knižnica, ktorá viaže C/C++ s JavaScriptom. NodeJS tiež poskytuje doplnky (addons), čo sú dynamicky linkované zdielané objekty. Tie sa viažu na C/C++ knižnice. To znamená, že môžeme využiť skoro hocijakú C/C++ knižnicu a vytvoriť z nej doplnok, ktorý použijeme v NodeJS.\\
+Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a je priamo dostupné programátorom, pre využitie v ich aplikáciach. Pod základným API je knižnica, ktorá viaže C/C++ s JavaScriptom. Node.js tiež poskytuje doplnky (addons), čo sú dynamicky linkované zdielané objekty. Tie sa viažu na C/C++ knižnice. To znamená, že môžeme využiť skoro hocijakú C/C++ knižnicu a vytvoriť z nej doplnok, ktorý použijeme v Node.js.\\
 Pod týmto všetkým máme už len natívne knižnice vytvorené v C/C++:
 
 \textbf{V8} je open source JavaScript engine, ktorý bol vytvorený pre Google Chrome. Je napísaný v C++ a je možné ho spustiť samostatne alebo v hocijakej C++ aplikácií. V podstate kompiluje JavaScript kód do natívneho strojového kódu, namiesto toho, aby bol interpretovaný.
 
-\textbf{Libuv} je multiplatformová podporná knižnica zo zameraním na asynchónne I/O operácie. Zo začiatku NodeJS začal používať \textit{libuv} ako abstrakčnú vrstvu pre \textit{libev} a \textit{libio}, ale neskôr sa libuv stala robustnejšou a nahradila túto funkcionalitu, aby sa mohla stať multiplatformovou. Keď V8 spravuje vykonávanie JavaScriptu, tak libuv spravuje udalostnú slučku (event loop) a asynchrónne I/O operácie.
+\textbf{Libuv} je multiplatformová podporná knižnica zo zameraním na asynchónne I/O operácie. Zo začiatku Node.js začal používať \textit{libuv} ako abstrakčnú vrstvu pre \textit{libev} a \textit{libio}, ale neskôr sa libuv stala robustnejšou a nahradila túto funkcionalitu, aby sa mohla stať multiplatformovou. Keď V8 spravuje vykonávanie JavaScriptu, tak libuv spravuje udalostnú slučku (event loop) a asynchrónne I/O operácie.
 V tomto zozname vidíme všetky možnosti \textit{libuv}:
 \begin{itemize}
 \item plnohodnotnú údalostnú slučku, ktorú tvorí epoll, kqueue, IOCP a udalostné porty,
@@ -298,7 +293,7 @@ V tomto zozname vidíme všetky možnosti \textit{libuv}:
 
 
 \subsubsection{Event loop}
-Udalostná slučka dáva NodeJS možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná tak sa zavolá callback funkcia. Na obrázku č.\ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci NodeJS.
+Udalostná slučka dáva Node.js možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná tak sa zavolá callback funkcia. Na obrázku č.\ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci Node.js.
 
 \begin{figure}[H]
   \centering
@@ -310,7 +305,7 @@ Udalostná slučka dáva NodeJS možnosť zvládnuť veľké množstvo súčasn�
 Udalostná slučka jednoducho prechádza cez frontu čo je vlastne zoznam udalostí a callbackov vykonaných operácií. Všetky I/O operácie sú vykonané asynchrónne vláknami vo "vláknovom stacku" (thread pool). Tu zohráva dôležitú rolu libuv. Ak nejaká položka vyžaduje I/O operáciu, tak udalostná slučka jednoducho prenechá operáciu do vláknového stacku. Udalostná slučka pokračuje vo vykonávaní položiek v udalostnej fronte. Keď je I/O operácia hotová, tak callback je zaradený na spracovanie. Udalostná slučka vykoná callback a poskytne požadované výstupy. A takto sa celý proces opakuje.\cite{nodejs-event-loop}
 
 \subsubsection{Možnosti a využitie}
-Na základe popísaných základných častí NodeJS v predchádzajúcich sekcií si ukážeme možnosti využitia, resp. výhody a nevýhody.\cite{nodejs-arch}
+Na základe popísaných základných častí Node.js v predchádzajúcich sekcií si ukážeme možnosti využitia, resp. výhody a nevýhody.\cite{nodejs-arch}
 
 \textbf{Výhody}
 \begin{itemize}
@@ -329,10 +324,10 @@ Na základe popísaných základných častí NodeJS v predchádzajúcich sekci�
 \item neexistuje veľa štandardných knižníc ako pri Java, .NET platforme ako sú napr. XML parsery, alebo zložitejšie dátové štruktúry.
 \end{itemize}
 
-Teda NodeJS nie je vhodný na všetko, vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time údaje, single page aplikácie, websockety tak je na takéto úlohy vhodný. Vo všeobecnosti všade kde sa používa I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení.\cite{nodejs-introduction}
+Teda Node.js nie je vhodný na všetko, vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time údaje, single page aplikácie, websockety tak je na takéto úlohy vhodný. Vo všeobecnosti všade kde sa používa I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení.\cite{nodejs-introduction}
 
 \subsection{Node Package Manager}
-NodeJS po nainštalovaní obsahuje aj \textit{NPM} (Node Package Manger). NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára (\textit{https://www.npmjs.org}). Rovnako aj môžme vytvoriť vlastný modul a uložiť ho do repozitára.\\
+Node.js po nainštalovaní obsahuje aj \textit{NPM} (Node Package Manger). NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára (\textit{https://www.npmjs.org}). Rovnako aj môžme vytvoriť vlastný modul a uložiť ho do repozitára.\\
 Každý modul by mal mať vlastný adresár, ktorý tiež obsahuje súbor s metadátami volaný \textit{package.json}. V tomto súbore musí byť nastavené aspoň tieto dve vlastnosti: \textit{name, version}.\cite{nodejs-by-example}
 
 \begin{figure}[H]
@@ -360,7 +355,7 @@ nad priečinkom kde sa nachádza už predtým spomínaný \textit{package.json} 
 \end{figure}
 
 \subsubsection{Vstavané moduly}
-NodeJS je považovaný za technológiu, pomocou ktorej môžeme tvoriť backend aplikácie. Často potrebujeme robiť rôzne úlohy. V NodeJS existujú veľmi nápomocné moduly, ktoré môžeme využiť.\cite{nodejs-by-example}
+Node.js je považovaný za technológiu, pomocou ktorej môžeme tvoriť backend aplikácie. Často potrebujeme robiť rôzne úlohy. V Node.js existujú veľmi nápomocné moduly, ktoré môžeme využiť.\cite{nodejs-by-example}
 
 \subsubsection{Vytvorenie web servera pomocou HTTP modulu}
 Modul \textit{http} patrí medzi veľmi používané, pretože vďaka nemu spustíme web server na konkrétnom porte.
@@ -386,9 +381,9 @@ MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikova
 
 Na obrázku č.\ref{mongodb-example} je príklad dokumentu, ktorý sa ukladá do MongoDB, v jednoduchých prípadoch nie je vidieť žiadny rozdiel oproti klasickému JSON.
 
-\subsection{AngularJS}
-AngularJS, bežne označovaný aj ako Angular je open-source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA (single page applications), čiže webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC (model-view-controller) alebo MVVM (model-view-view-model) architektúre.
-AngularJS framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstrupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané z statických (väčšinou uložené na súborovom systéme), dynamických (získané z RESTful služby) JSON súborov.
+\subsection{Angular.js}
+Angular.js, bežne označovaný aj ako Angular je open-source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA (single page applications), čiže webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC (model-view-controller) alebo MVVM (model-view-view-model) architektúre.
+Angular.js framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstrupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané z statických (väčšinou uložené na súborovom systéme), dynamických (získané z RESTful služby) JSON súborov.
 Je front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpressJS web server framework, \textbf{A}ngular  a \textbf{N}odeJS ako aplikačný server, resp. prostredie.\cite{angular-wiki}\cite{angular-docs}
 
 \subsubsection{Koncept}
@@ -397,7 +392,7 @@ Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju č
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{img/angular/angularjs_concepts.jpg}
-  \caption{Koncept frameworku AngularJS.}
+  \caption{Koncept frameworku Angular.js.}
   \label{img-angular-concept}
 \end{figure}
 
@@ -421,7 +416,7 @@ Dirty checking v scope pre zmeny vlastností objektu je často používaná oper
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/angular/concepts-scope-watch-strategies.png}
-  \caption{Možnosti sledovania modelu v AngularJS.}
+  \caption{Možnosti sledovania modelu v Angular.js.}
   \label{img-angular-watchl}
 \end{figure}
 
@@ -443,7 +438,7 @@ Na obrázkoch môžeme vidieť pre porovnanie aký je rozdiel medzi One-way a Tw
 \begin{figure}[H]
 \subfigure[One-way data binding]{\includegraphics[scale=0.55]{img/angular/One_Way_Data_Binding.png}\label{img-angular-onedb}}
 \subfigure[Two-way data binding]{\includegraphics[scale=0.55]{img/angular/Two_Way_Data_Binding.png}\label{img-angular-twodb}}
-\caption{Data binding v AngularJS.}
+\caption{Data binding v Angular.js.}
 \end{figure}
 
 Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu šablónu a komponenty modelu do view. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií vo view sa neprejavujú automatický v zobrazení. Horšie je, že zmeny ktoré úžívateľ v zobrazení sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje view s modelom a model s view.
@@ -501,7 +496,7 @@ myApp.controller('LabController', ['$scope', function($scope) {
   {{ name }}
 </div>
 \end{lstlisting}
- \caption{Ukážka controlleru v AngularJS a jeho volanie na HTML elemente.}
+ \caption{Ukážka controlleru v Angular.js a jeho volanie na HTML elemente.}
  \label{angular-controller}
 \end{algorithm}
 
@@ -557,9 +552,8 @@ Poznáme dva typy services:
 mozno lepsie pred konceptom
 %\subsubsection{Two-way data binding}
 
-
-\section{Návrh softwarového systému StarkLab}
-\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme predpokladaný návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. Ich presný popis a využitie si popíšeme viacej v sekcii č.\ref{used-technologies}. Teda máme dané, že budeme využívať NodeJS technológiu ako server. To je náš centrálny server (ďalej len StarkLab), ktorý spracováva dáta z Matlab workspace. Do Matlab workspace sú dáta posielané intervalovo zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \textit{tos\_lib.mdl}, ktorá nám túto funkcionalitu poskytla aj pod MAC OS X.\\
+\section{Návrh a implementácia StarkLab}
+\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme predpokladaný návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. Ich presný popis a využitie si popíšeme viacej v sekcii č.\ref{used-technologies}. Teda máme dané, že budeme využívať Node.js technológiu ako server. To je náš centrálny server (ďalej len StarkLab), ktorý spracováva dáta z Matlab workspace. Do Matlab workspace sú dáta posielané intervalovo zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \textit{tos\_lib.mdl}, ktorá nám túto funkcionalitu poskytla aj pod MAC OS X.\\
 Na komunikáciu s workspace využívame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Keď si užívateľ spustí simuláciu cez klienta, tak sa údaje budú uchovávať v databáze mongoDB pre neskoršie spracovanie.
 
 \begin{figure}[H]
@@ -569,13 +563,12 @@ Na komunikáciu s workspace využívame volanie RESTful služieb, ktoré podporu
   \label{img-software-designl}
 \end{figure}
 
-\section{Implementácia}
-
 \subsection{Referenčný model simulácie}
 sem pojdu informáci o pouzitom modeli.
 
 \subsection{Diagramy}
 Diagramy su sucastou sytemu .....
+
 \subsubsection{Prípad použitia}
 
 \begin{figure}[H]
@@ -625,5 +618,12 @@ Na obrázku č.\ref{img-mongo-record} je záznam z MongoDB kde konkrétne hodnot
 \end{figure}
 
 %\section{Testovanie}
+
+\subsection{Matlab a simulácia}
+
+\subsection{Node.js s frameworkom Express.js}
+
+\subsection{Webový klient s frameworkom Angular.js}
+
 
 \section{Inštalácia vytvoreného riešenia}
