@@ -1,6 +1,6 @@
 \begin{algorithm}
 \lstset{
-    language=C,
+    language=Matlab,
     basicstyle=\small\sffamily,
     frame=none,
     numbers=left,
@@ -15,19 +15,78 @@
     },emphstyle={\color[rgb]{1,0,0}\bfseries}%
 }%
 \begin{lstlisting}
-/* Hello World program */
+while 1
+   fprintf('%s %s%s\n', 'Reading data from', model, '...');
+   
+   % nasilu vlozit data do workspace
+   set_param(bdroot,'SimulationCommand','WriteDataLogs');
+   
+   % delete first column - time duplicity
+   ScopeDataTime(:,1)=[];
+   
+   % C = setdiff(A,B) returns the data in A that is not in B.
+   TimeDataSent = setdiff(ScopeDataTime, TimeDataBefore, 'stable');
+   TimeDataBefore = ScopeDataTime;
+   
+   n = length(TimeDataSent) ; % known final size of array
+   A = zeros(1,n) ; % pre-allocation
+   for i=1:n,
+       A(i) = round(TimeDataSent(i), 2); % a scalar
+   end
+   
+   
+   % delete first column - time duplicity
+   ScopeDataVY(:,1)=[];
+   
+   vyDataSent = setdiff(ScopeDataVY, vyDataBefore, 'stable');
+   vyDataBefore = ScopeDataVY;
+   
+   m = length(vyDataSent); % known final size of array
+   B = zeros(1,m) ; % pre-allocation
+   for i=1:m,
+       B(i) = round(vyDataSent(i), 2); % a scalar
+   end
+   
+   % delete first column - time duplicity
+   ScopeDataY(:,1)=[];
+   
+   % stable is key for difference without sorting! http://www.mathworks.com/help/matlab/ref/setdiff.html#btcnv2b-13
+   yDataSent = setdiff(ScopeDataY, yDataBefore, 'stable');
+   yDataBefore = ScopeDataY;
+   
+   
+   k = length(yDataSent); % known final size of array
+   C = zeros(1,k); % pre-allocation
+   for i=1:k,
+       C(i) = round(yDataSent(i), 2); % a scalar 
+   end
+   
+   % delete first column - time duplicity
+   ScopeDataX(:,1)=[];
+   
+   xDataSent = setdiff(ScopeDataX, xDataBefore, 'stable');
+   xDataBefore = ScopeDataX;
+   
+   j = length(xDataSent); % known final size of array
+   D = zeros(1,j); % pre-allocation
+   for i=1:j,
+       D(i) = round(xDataSent(i), 2); % a scalar
+   end
+   
+   json = savejson('result', struct('user', runBy, 'status', 'running', 'sessionId', 'xxx72', 'data', struct('time', A, 'vy', B, 'y', C, 'x',D)));
+   response = webwrite(url,json,options);
+   
+   % Ked sa ukonci simulacia, ukoncit while
+   if strcmp(get_param(model,'SimulationStatus'), 'running') == 0
+       fprintf('%s\n', 'End of simulation.');
+       json = savejson('result', struct('user', runBy, 'status', 'stopped', 'sessionId', 'xxx72', 'data', []));
+       response = webwrite(url,json,options);
+       break
+   end
 
-#include<stdio.h>
-
-struct cpu_info {
-    long unsigned utime, ntime, stime, itime;
-    long unsigned iowtime, irqtime, sirqtime;
-};
-
-main()
-{
-    printf("Hello World");
+   pause(0.1);
+end
 }\end{lstlisting}
  \caption{Ukážka algoritmu}
- \label{euclid}
+ \label{matlab-simulation}
 \end{algorithm}

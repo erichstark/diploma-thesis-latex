@@ -564,12 +564,42 @@ Na komunikáciu s workspace využívame volanie RESTful služieb, ktoré podporu
 \end{figure}
 
 \subsection{Referenčný model simulácie}
-sem pojdu informáci o pouzitom modeli.
+Systém síce bude mať možnosť spolupracovať s reálnymi zariadeniami, pre vývoj sme použili simuláciu dynamického systému šikmého vrhu. Pre spustenie simulácie je potrebné zavolať dva súbory. Účel prvého je inicializácia premenných potrebných pre výpočet súradníc polohy bodu v šikmom vrhu. Na obrázku č.\ref{img-matlab-function} si všimnime, že je potrebné zadať aj parametre pre spustenie a funkcia nič nevracia. Prvý z parametrov \textit{v0} nastavuje počiatočnú rýchlosť telesa v metroch za sekundu, akou bude vymrštené z bodu (0,0). Druhý parameter \textit{alfa\_deg} zase určuje pod akým uhlom bude teleso vymrštené v stupňoch. Posledný parameter \textit{runBy} nie je potrebný k samotnej simulácií, ale skôr k identifikácií, kto spustil simuláciu. Vďaka tomu je možné neskôr z databázy zistiť kto spustil simuláciu.
+
+Keď sú parametre funkcie správne zadané a spustí sa telo funkcie, tak sa nastavia a vypočítajú hodnoty ako \textit{alfa\_rad, td, d, h} ktorých popis vidíme na obrázku a sú potrebné ako vstupné parametre do simulácie.
+
+Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných do hlavného scope matlabu, čiže workspace. Keby toto neurobíme, tak všetky hodnoty po skončení funkcie zaniknú keďže sa berú ako lokálne. Síce by bolo možné sa tomuto vyhnúť, tak že by sme nevolali funkciu \textit{Sikmy\_vrh\_par(80, 70, 'xstark')} a volali len súbor, čo by vlastne zostali všetky hodnoty v hlavnom workspace. Lenže v tomto prípade by nebolo možné nastavovať inicializačné premenné z webovej aplikácie, ale by museli byť natvrdo nastavené v kóde matlabu.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/matlab-function.png}
+  \caption{Inicializačná funkcia šikmého vrhu v Matlabe.}
+  \label{img-matlab-function}
+\end{figure}
+
+Ako sme si už povedali, že hodnoty sa po spustení úspešne uložia do Matlab workspace a to vidieť aj na obrázku č. \ref{matlab-function-workspace}. Tieto hodnoty boli vygenerované po zavolaní funkcie zo špecifickými hodnotami parametrov \textit{Sikmy\_vrh\_par(80, 70, 'xstark')}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/matlab-function-workspace.png}
+  \caption{Hodnoty v Matlab workspace po spustení funkcie.}
+  \label{matlab-function-workspace}
+\end{figure}
+
+Druhý súbor, ktorý potrebujeme spustiť po tomto je obslužný kód, vďaka ktorému vieme zaslať údaje do Node.js. Kvôli jeho dĺžke a vlastnej implementácii ho nie je možné zobraziť celý, tak si popíšeme len kľúčové vlastnosti.
+
+Pri inicializácií sa nastavi URL cesta pre Express.js API, na ktorú ma komunikovať. Prednačítavanie modelu sa vykoná pomocou funkcie \textit{load\_system('Sikmy\_vrh\_2');}. Táto funkcia vyhladá v aktuálnom priečinku súbor \textit{Sikmy\_vrh\_2.mdl} a nastaví ho ako bdroot čo je aktuálne top-level model. Po nastavení musíme simuláciu aj spustiť. Ovládanie simulácie sa robí pomocou príkazu \textit{set\_param(model, 'SimulationCommand', 'Start');}, kde posledný parameter znamená spustenie simulácie.
+Následne sa spustí nekonečný \textit{while} cyklus, vďaka ktorému je možné zbierať údaje zo simulácie až do stavu kým nie je ukončená. 
+Na začiatku cyklu sa volá \textit{set\_param(bdroot, 'SimulationCommand', 'WriteDataLogs');} čo vlastne pristúpi k aktuálne najvyššie spustenej simulácií a snaží sa zapísať do Matlab workspace aktuálne vypočítane hodnoty. Bez tohto príkazu by sa zapísali až po skončení simulácie.
+
+Medzitým sa údaje upravujú na potrebný formát a pred odoslaním na REST API je vhodné ho zabaliť do JSON štruktúry. Tú vieme vytvoriť pomocou knižnice \textit{jsonlab} v aktuálnej verzií 1.2.
+Pomocou sekvencie týchto dvoch príkazov vytvoríme požadovaný JSON formát a odošleme ho na API. Vytvorenie JSON \textit{json = savejson('result', struct('user', runBy, 'status', 'running', 'sessionId', 'xxx72', 'data', struct('time', A, 'vy', B, 'y', C, 'x',D)));} a zaslanie do služby \textit{response = webwrite(url,json,options);}. Pomocou príkazu \textit{get\_param(model, 'SimulationStatus')} vieme získať aktuálny stav simulácie. V prípade, že simulácia stále beží tak získame výstup \textit{'running'} inak je ukočená a vráti reťazec \textit{'stopped'}. Hneď ako dostaneme status 'stopped' tak ukončíme cyklus pomocou \textit{break} a vieme že všetky dáta su prenesené do Node.js.
 
 \subsection{Diagramy}
 Diagramy su sucastou sytemu .....
 
 \subsubsection{Prípad použitia}
+Na obrazku ...
 
 \begin{figure}[H]
   \centering
@@ -577,6 +607,9 @@ Diagramy su sucastou sytemu .....
   \caption{Diagram prípadu použitia na prácu zo systémom.}
   \label{img-use-case}
 \end{figure}
+
+popis tohto pripadu, mozno z tabulky na ceskom webe alebo vseobecne
+
 
 \subsubsection{Sekvenčný diagram}
 
