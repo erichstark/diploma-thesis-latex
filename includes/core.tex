@@ -563,7 +563,7 @@ Na komunikáciu s workspace využívame volanie RESTful služieb, ktoré podporu
   \label{img-software-designl}
 \end{figure}
 
-\subsection{Referenčný model simulácie}
+\subsection{Referenčný model simulácie v Matlabe}
 Systém síce bude mať možnosť spolupracovať s reálnymi zariadeniami, pre vývoj sme použili simuláciu dynamického systému šikmého vrhu. Pre spustenie simulácie je potrebné zavolať dva súbory. Účel prvého je inicializácia premenných potrebných pre výpočet súradníc polohy bodu v šikmom vrhu. Na obrázku č.\ref{img-matlab-function} si všimnime, že je potrebné zadať aj parametre pre spustenie a funkcia nič nevracia. Prvý z parametrov \textit{v0} nastavuje počiatočnú rýchlosť telesa v metroch za sekundu, akou bude vymrštené z bodu (0,0). Druhý parameter \textit{alfa\_deg} zase určuje pod akým uhlom bude teleso vymrštené v stupňoch. Posledný parameter \textit{runBy} nie je potrebný k samotnej simulácií, ale skôr k identifikácií, kto spustil simuláciu. Vďaka tomu je možné neskôr z databázy zistiť kto spustil simuláciu.
 
 Keď sú parametre funkcie správne zadané a spustí sa telo funkcie, tak sa nastavia a vypočítajú hodnoty ako \textit{alfa\_rad, td, d, h} ktorých popis vidíme na obrázku a sú potrebné ako vstupné parametre do simulácie.
@@ -611,7 +611,7 @@ Na obrazku ...
 popis tohto pripadu, mozno z tabulky na ceskom webe alebo vseobecne
 
 
-\subsubsection{Sekvenčný diagram}
+\subsubsection{Sekvenčný diagram}\label{diagram-sequence-section}
 
 \begin{figure}[H]
   \centering
@@ -652,11 +652,83 @@ Na obrázku č.\ref{img-mongo-record} je záznam z MongoDB kde konkrétne hodnot
 
 %\section{Testovanie}
 
-\subsection{Matlab a simulácia}
-
 \subsection{Node.js s frameworkom Express.js}
+Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js.
 
 \subsection{Webový klient s frameworkom Angular.js}
+Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý generujé údaje. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/angular-login.png}
+  \caption{Prihlásenie do LDAP pomocou STUBA údajov.}
+  \label{img-angular-login}
+\end{figure}
+
+Ako to funguje na pozadí už sme si popísali v sekcií \ref{diagram-sequence-section}, kde sa pojednávajú sekvenčné diagramy, konkrétne prihlásenie do LDAP.
+Po prihlásení sa zobrazí stránka vyhradená pre zadanie parametrov šikmého vrhu, počiatočnú rýchlosť v0 a uhol vystrelenia alfa\_deg. Pri zadaní rýchlosti v0=40 a alfa\_deg=60 sme presmerovaní na stránku /matlab.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/angular-simulation-param.png}
+  \caption{Parametre simulácie - počiatočná rýchlosť a uhol v stupňoch.}
+  \label{img-angular-params}
+\end{figure}
 
 
-\section{Inštalácia vytvoreného riešenia}
+\subsubsection{Grafy s Chart.js}
+
+Treba počkať kým sa spustí Matlab zo simuláciou a následne sa začnú generovať údaje realtime do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku č. \ref{img-angular-chartjs} je využitá knižnica Chart.js pre tvorbu grafov.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/code/angular-chartjs.png}
+  \caption{Graf vykreslujúci závislosti [x, y] v šikmom vrhu.}
+  \label{img-angular-chartjs}
+\end{figure}
+
+\subsubsection{Animácia pomocou html canvas}\label{section-canvas}
+
+Na ďalšom obrázku č. \ref{img-angular-canvas} sa vykreslujú rovnaké údaje ako na grafe, len je to spôsobom animácie guličky. Táto animácia bola vytvorená pomocou html canvas technológie. Viac o canvas v sekcii \ref{section-canvas}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/code/angular-canvas.png}
+  \caption{Animácia vykreslujúca závislosti [x, y] v šikmom vrhu.}
+  \label{img-angular-canvas}
+\end{figure}
+
+\subsubsection{Tabuľka dát}
+
+Ako posledná časť sledovania dát je tabulka, ktorej údaje sa generujú rovnako realtime ako aj pri grafe a animácii pred ním.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/code/angular-table.png}
+  \caption{Tabuľka dát času, x, y a smer rýchlosti vy.}
+  \label{img-angular-table}
+\end{figure}
+
+
+\subsubsection{Zobrazenie existujúcich simulácií}
+V tomto systéme nejde len o real-time vykreslenie dát, ale aj o ich neskoršie zobrazenie, spracovanie. Po prejdení na stránku /results, vidíme všetky spustené simulácie pre aktuálne prihlaseného užívateľa.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/code/angular-results-projectile.png}
+  \caption{Zoznam uložených simulácií pre prihláseného užívateľa.}
+  \label{img-angular-results-projectile}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/code/angular-fulldata.png}
+  \caption{Graf a animácia pre vybranú vzorku dát.}
+  \label{img-angular-fulldata}
+\end{figure}
+
+Na webovej stránke sa ešte nachádza pod animáciou sa nachádza rovnaká tabuľka ako v obrázku č. \ref{img-angular-table} s rozdielom, že v tejto tabuľke sú kompletné údaje.
+
+
+%\section{Inštalácia vytvoreného riešenia}
+%asi lepsie do prilohy
