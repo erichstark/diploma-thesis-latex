@@ -671,7 +671,7 @@ Volanie \textit{app.use} nám zabezpečí, že sa táto funkcia zaregistruje ako
 Ak nie je splnená ani jedna z dvoch podmienok, tak nás server presmeruje na hlavnú stránku, kde sa od nás požaduje znovu prihlásenie.
 
 
-\subsubsection{Spustenie Matlabu zo Simuláciou}
+\subsubsection{Spustenie Matlabu z príkazového riadku}
 Nebolo isté ako budeme spúšťať simuláciu, pretože nebolo isté či Node.js umožuje vykonávať príkazy nad operačným systémom, resp. spúšťať programy. Spočiatku sme riešili komunikáciu takým spôsobom, že Matlab sa spustil ručne a v ňom potrebné inicializačné súbory a následne samotná simulácia. Takéto riešenie nie je postačujúce z hladiska automatizácie a samostatnosti.
 
 Potom sme zistili, že Node.js má možnosti na spustenie hocijakého software, ktorý je možné spustiť cez terminál. Pre zjednodušenie práce som využil modul \textit{shelljs}, ktorý túto funkcionalitu poskytuje. Na obrázku č. \ref{img-express-shelljs} je funkcionalita, ktorá sa vykoná po prístupe na route /matlab/run. Táto časť sa volá po odoslaní formuláru s parametrami počiatočnej rýchlosti a uhlu z webového prehliadača.
@@ -684,10 +684,47 @@ Po zostrojení tohto reťazca ako parametra funkcie \textit{exec} a jeho spusten
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/code/express-shelljs.png}
+  \includegraphics[scale=0.6]{img/code/express-shelljs.png}
   \caption{Spustenie príkazu v OS pomocou shelljs modulu.}
   \label{img-express-shelljs}
 \end{figure}
+
+\subsubsection{Práca s dátami simulácie}
+Keď je simulácia spustená a Matlab pripravený zasielať výsledky na route, ktorú vidíme na obrázku č. \ref{img-express-socketio}. Výsledky z Matlabu máme uložené v tele každého requestu, ktorý prijde. Následne môžeme k nim prístupiť pomocou \textit{req.body}. Pôvodne socket.io odosielal údaje len na adresu "message". V tom prípade by sme ale nevedeli identifikovať, ku ktorému uživateľovi sa majú posielať údaje. Po implementácii session sme zvážili, že by ich bolo lepšie posielať priamo na adresu "message:xstark",teda s menom prihláseného užívateľa. Vždy po prijatí je potrebné odoslať status kód 200, čo v HTTP znamená OK pre prijatie dát.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/express-socketio.png}
+  \caption{Prijímanie dát a zasielanie pomocou socket.io do prehliadača.}
+  \label{img-express-socketio}
+\end{figure}
+
+\subsubsection{Zápis dát do MongoDB}
+Po prijímaní a zobrazovaní údajov nasleduje ich spracovanie. Ich spracovanie sa vykonáva na úrovni Express.js za pomoci MongoDB ovládača.\\
+Na začiatku je potrebné najprv zavolať modul a následne jeho klientskú časť cez \textit{var MongoClient = require('mongodb').MongoClient;}. Potom nasleduje definovanie URL, na ktorej máme spustenú databázu \textit{mongodb://localhost:27017/test}.
+
+Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich použitie. Prvá z nich je vloženie dokumentu do databázy na obrázku č. \ref{img-express-mongo-insert}. Táto funkcia na vytvorenie jedného záznamu, sa pokúsi vložiť \textit{obj} do kolekcie projectile čo je vlastne náš kompletný záznam zo simulácie. Po úspešnom vložení zatvorí konekciu na databázu a vráti HTTP status 200.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/express-mongo-insert.png}
+  \caption{Vloženie záznamu do MongoDB pomocou JavaScriptu.}
+  \label{img-express-mongo-insert}
+\end{figure}
+
+Druhú funkciu, ktorú využívame na prácu s databázou je na obrázku č. \ref{img-express-mongodb-find}. Slúži na vyhladanie záznamu v závislosti od parametrov. Jednu funkciu vieme využiť na viacero účelov. V prípade ak zadáme parameter funkcie \textit{sim}, tak v podmienke sa skontroluje, či je dostupná vlastnosť id. Ak áno, tak vyhľadanie v databáze, prebehne na základe parametrov užívateľského mena a konkretného id, čiže nám vyhľadá iba jeden záznam. V opačnom prípade vyhľadá všetky záznamy simulácií pre daného užívateľa. Táto funkcionalita sa využíva pri zobrazení všetkých záznamov u klienta.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/express-mongodb-find.png}
+  \caption{Vyhľadanie záznamu v MongoDB pomocou JavaScriptu.}
+  \label{img-express-mongodb-find}
+\end{figure}
+
+
+=========Volanie funkciii na zapis, citanie.
+
+ 
 
 \subsection{Webový klient s frameworkom Angular.js}
 Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý generujé údaje. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
