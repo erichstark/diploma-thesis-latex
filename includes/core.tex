@@ -721,11 +721,24 @@ Druhú funkciu, ktorú využívame na prácu s databázou je na obrázku č. \re
   \label{img-express-mongodb-find}
 \end{figure}
 
+Po ukážke implementácií funkcií, ktoré vykonávajú zápis/čítanie si ukážeme ich volanie. Na obrázku č. \ref{img-express-mongodb-insert2} je vloženie záznamu po prístupe na route /mongo/insert/one. Pre vykonanie nejakej operácie nad databázou musíme vytvoriť spojenie medzi klientom a MongoDB. Slúži na to funkcia \textit{connect(url, callback)}, ktorej prvej parameter je URL kde sa nachádza DB a druhý je callback, kde sa vracajú údaje.
 
-=========Volanie funkciii na zapis, citanie.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/express-mongo-insert2.png}
+  \caption{Volanie vloženia záznamu do MongoDB.}
+  \label{img-express-mongodb-insert2}
+\end{figure}
 
+Pre vyhľadanie záznamu na obrázku č. \ref{img-express-mongodb-insert2} sa s pripojením nič nemení. Rozdiel vidíme vo využití volania route. Dvojbodka pred názvom \textit{:user} znamená, že tento parameter môže byť v URL meniteľný, ak je tam ešte otáznik ako pri \textit{:id?} znamená to, že tento parameter nie je povinný, a URL može byť volaná aj bez neho. Ak sa v URl nachádzaju parametre, pristupujeme k nim pomocou poľa \textit{req.params}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/express-mongodb-find2.png}
+  \caption{Volanie vyhľadania záznamu v MongoDB.}
+  \label{img-express-mongodb-find}
+\end{figure}
  
-
 \subsection{Webový klient s frameworkom Angular.js}
 Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý generujé údaje. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
 
