@@ -653,7 +653,41 @@ Na obrázku č.\ref{img-mongo-record} je záznam z MongoDB kde konkrétne hodnot
 %\section{Testovanie}
 
 \subsection{Node.js s frameworkom Express.js}
-Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js.
+Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Je to vlastne len nadstavba a umožnuje jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \textit{middleware}. Ako sme si už hovorili je to funkcia, ktorá má prístup do request objektu a response objektu. Použili sme \textit{body-parser}, vďaka ktorému bolo možné spracovávať telo POST požiadavky, ktorá sa zasielala z Matlabu. Potom ho je potrebné ešte aj aktivoať ako middleware v kóde \textit{app.use(bodyParser.json({limit: '2mb'}));}. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s príjmutím POST requestu, v prípade ak boli údaje v tele moc dlhé.
+
+\subsubsection{Vlastný middleware prihlasovania}
+V aktuálnom softwarovom riešení nebolo potrebné vytvoriť prihlasovanie, pretože neskôr bude integrované do LMS Moodle, ktorý si takéto veci už rieši svojím spôsobom. Ale pre ukážku možností frameworku Express.js som implementoval middleware \textit{express-session}, vďaka ktorému môžme vytvoriť reláciu pre úspešne autorizovaného užívateľa. 
+
+Pri implementácii prihlasovania cez nastavovania session som zistil, že v každom smerovaní (route), bolo potrebné kontrolovať na začiatku kódu, či je prihlásený používateľ alebo či je to požiadavka z Matlab služby. Pri väčšom projekte, prípadne viacerých route by to začalo byť neefektívne a neprehľadné. Vytvorili sme vlastný middleware na obrázku č. \ref{img-express-middleware}, ktorý nam overuje prihláseného človeka pri každom prístupe na hocijakú route.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{img/code/express-middleware.png}
+  \caption{Middleware kód v Express.js na kontrolu prihlásenia.}
+  \label{img-express-middleware}
+\end{figure}
+
+Volanie \textit{app.use} nám zabezpečí, že sa táto funkcia zaregistruje ako middleware a bude volaná pri každom requeste. Prvá časť podmienky overuje, či prichádzame z webového prehliadača a je nastavená session. Kedže Matlabu nevieme nastaviť session, pretože tá sa ukladá len na webserveri tak sme to vyriešili iným spôsobom. V príchádzajúcom tele POST requestu od Matlabu je objekt \textit{result}, kde sú uložené vygenerované údaje. Priradili sme mu ďalšiu property \textit{user}, ktorá keď je nastavená, tak vieme, že požiadavka prichádza z Matlabu a vieme jej povoliť prístup. V prípade splnenej aspoň jednej podmienky sa zavolá callback \textit{next()}, čo vlastne vyvolá buď nejaký ďalší zaregistrovaný middleware, alebo route, na ktorú sme posielali požiadavku.
+Ak nie je splnená ani jedna z dvoch podmienok, tak nás server presmeruje na hlavnú stránku, kde sa od nás požaduje znovu prihlásenie.
+
+
+\subsubsection{Spustenie Matlabu zo Simuláciou}
+Nebolo isté ako budeme spúšťať simuláciu, pretože nebolo isté či Node.js umožuje vykonávať príkazy nad operačným systémom, resp. spúšťať programy. Spočiatku sme riešili komunikáciu takým spôsobom, že Matlab sa spustil ručne a v ňom potrebné inicializačné súbory a následne samotná simulácia. Takéto riešenie nie je postačujúce z hladiska automatizácie a samostatnosti.
+
+Potom sme zistili, že Node.js má možnosti na spustenie hocijakého software, ktorý je možné spustiť cez terminál. Pre zjednodušenie práce som využil modul \textit{shelljs}, ktorý túto funkcionalitu poskytuje. Na obrázku č. \ref{img-express-shelljs} je funkcionalita, ktorá sa vykoná po prístupe na route /matlab/run. Táto časť sa volá po odoslaní formuláru s parametrami počiatočnej rýchlosti a uhlu z webového prehliadača.
+
+Ako vidíme vstupný reťazec, ktorý chceme vykonať, bolo potrebné zadať cestu k Matlabu kde sa nachádza na súborom systéme. Ďalej je vidieť, že sa spúšta aj s istými parametrami. Všetky potrebné možnosti som našiel v online dokumentácii Matlabu. \cite{matlab-macos}
+
+Keďže sa spúšta z terminálu a nie je potrebné, aby nám ukazoval výsledky aj v okne, tak jeho spúštanie vieme urýchliť použitím parametrov, ktoré vidíme na obrázku. Pomocou parametra \textit{-r} vieme vykonávat príkazy v príkazovom riadku Matlabu, napr. špecifikovať cestu, kde sa nachádza naša simulácia a potrebné súbory. Následne zavoláme funkciu \textit{Sikmy\_vrh\_par()} kam sa pošlú parametre počiatočnej rýchlosti a uhla a zároveň prihlásený používateľ. Hneď ako sa skončí vykonávanie tejto funkcie, spustí sa súbor \textit{projectile\_sim} čo je už konkrétna simulácia. Po skončení už môžeme zatvoriť aj Matlab cez príkaz \textit{exit;}.
+
+Po zostrojení tohto reťazca ako parametra funkcie \textit{exec} a jeho spustení sa čaká na vykonávanie Matlabu. Medzitým nás server presmeruje na stránku /dashboard kde sa čaká na údaje zo simulácie. Hneď ako sa načíta simulácia zo vstupými parametrami a začne vykonávať v momente sa údaje zobrazia aj vo webovom prehliadači realtime.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/express-shelljs.png}
+  \caption{Spustenie príkazu v OS pomocou shelljs modulu.}
+  \label{img-express-shelljs}
+\end{figure}
 
 \subsection{Webový klient s frameworkom Angular.js}
 Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý generujé údaje. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
