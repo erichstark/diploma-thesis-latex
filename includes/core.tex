@@ -653,7 +653,7 @@ Na obrázku č.\ref{img-mongo-record} je záznam z MongoDB kde konkrétne hodnot
 %\section{Testovanie}
 
 \subsection{Node.js s frameworkom Express.js}
-Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Je to vlastne len nadstavba a umožnuje jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \textit{middleware}. Ako sme si už hovorili je to funkcia, ktorá má prístup do request objektu a response objektu. Použili sme \textit{body-parser}, vďaka ktorému bolo možné spracovávať telo POST požiadavky, ktorá sa zasielala z Matlabu. Potom ho je potrebné ešte aj aktivoať ako middleware v kóde \textit{app.use(bodyParser.json({limit: '2mb'}));}. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s príjmutím POST requestu, v prípade ak boli údaje v tele moc dlhé.
+Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Využívame ich posledné verzie Node.js verzie 6.0.0 a Express.js verzie 4.13.4. Je to vlastne len framework a umožnuje jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \textit{middleware}. Ako sme si už hovorili je to funkcia, ktorá má prístup do request objektu a response objektu. Použili sme \textit{body-parser}, vďaka ktorému bolo možné spracovávať telo POST požiadavky, ktorá sa zasielala z Matlabu. Potom ho je potrebné ešte aj aktivoať ako middleware v kóde \textit{app.use(bodyParser.json({limit: '2mb'}));}. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s príjmutím POST requestu, v prípade ak boli údaje v tele moc dlhé.
 
 \subsubsection{Vlastný middleware prihlasovania}
 V aktuálnom softwarovom riešení nebolo potrebné vytvoriť prihlasovanie, pretože neskôr bude integrované do LMS Moodle, ktorý si takéto veci už rieši svojím spôsobom. Ale pre ukážku možností frameworku Express.js som implementoval middleware \textit{express-session}, vďaka ktorému môžme vytvoriť reláciu pre úspešne autorizovaného užívateľa. 
@@ -739,7 +739,7 @@ Pre vyhľadanie záznamu na obrázku č. \ref{img-express-mongodb-insert2} sa s 
   \label{img-express-mongodb-find}
 \end{figure}
  
-\subsection{Webový klient s frameworkom Angular.js}
+\subsection{Webový klient s frameworkom Angular.js}\label{section-angular-web}
 Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý generujé údaje. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
 
 \begin{figure}[H]
@@ -761,8 +761,21 @@ Po prihlásení sa zobrazí stránka vyhradená pre zadanie parametrov šikmého
 
 
 \subsubsection{Grafy s Chart.js}
+Pre vizualiáziu prichádzajúcich dát používame knižnicu na grafy \textit{Chart.js}, ktorá je vytvorená pomocou HTML canvas. Využívame poslednú verziu jednotkovej rady 1.1.1. Použiť ju môžeme ako skript v HTML stránke \textit{<script src="/node\_modules/chart.js/Chart.min.js"></script>}. Ako si môžeme všimnúť tak nie je závisla od žiadnej online CDN služby, ale jej inštalácia prebehla lokálne pomocou NPM.
 
-Treba počkať kým sa spustí Matlab zo simuláciou a následne sa začnú generovať údaje realtime do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku č. \ref{img-angular-chartjs} je využitá knižnica Chart.js pre tvorbu grafov.
+Použije sa tak, že v HTML stránke sa zavolá ako canvas, ktorému priradíme id \textit{<canvas id="updating-chart" width="1200" height="300"></canvas>}. Na obrázku č. \ref{img-angular-chartjs-canvas} vidíme vytvorenie grafu a nastavenie hodnôt. Na začiatku je potrebné získať element v HTML DOM, pre ktorý sme si predtým vytvorili ID, získať kontext canvasu a vytvoriť objekt \textit{startingData} s nastaveniami pre inicializačné dáta. 
+Následne je potrebné vytvoriť inštanciu grafu v prehliadači, kde ako parameter grafu smeruje kontext canvasu, a vola sa funcia čiarového grafu, ktorý tam potrebujeme. Tá zase vyžaduje ako vstupný parameter inicializačné dáta.
+
+Ak by sme chceli rozšíriť graf, resp. ak by bolo rozumné súčasne vykreslovať viacero závislých veličín, tak je možné zadefinovať ďalší dataset.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/angular-chartjs-code.png}
+  \caption{Inicializácia hodnôt pre Chart.js.}
+  \label{img-angular-chartjs-canvas}
+\end{figure}
+
+V sekcií \ref{section-angular-web} sme si hovorili o tom, čo musíme spraviť, aby nám generovalo údaje. Po presmerovaní na stránku /matlab treba počkať kým sa spustí Matlab zo simuláciou a následne sa začnú generovať údaje realtime do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku č. \ref{img-angular-chartjs} je využitá knižnica Chart.js pre tvorbu grafov.
 
 \begin{figure}[H]
   \centering
