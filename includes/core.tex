@@ -596,10 +596,10 @@ Medzitým sa údaje upravujú na potrebný formát a pred odoslaním na REST API
 Pomocou sekvencie týchto dvoch príkazov vytvoríme požadovaný JSON formát a odošleme ho na API. Vytvorenie JSON \textit{json = savejson('result', struct('user', runBy, 'status', 'running', 'sessionId', 'xxx72', 'data', struct('time', A, 'vy', B, 'y', C, 'x',D)));} a zaslanie do služby \textit{response = webwrite(url,json,options);}. Pomocou príkazu \textit{get\_param(model, 'SimulationStatus')} vieme získať aktuálny stav simulácie. V prípade, že simulácia stále beží tak získame výstup \textit{'running'} inak je ukočená a vráti reťazec \textit{'stopped'}. Hneď ako dostaneme status 'stopped' tak ukončíme cyklus pomocou \textit{break} a vieme že všetky dáta su prenesené do Node.js.
 
 \subsection{Diagramy}
-Diagramy su sucastou sytemu .....
+Pred tvorbou rôznych softwarových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe systému. Niektoré nám ukážu správanie len zo všeobecnosti čo by sa mohlo dať v systéme robiť ako napr. "Prípady použitia". Potom existuje aj "Diagram tried", ktorý hovorí o jednotlivých triedach, ktoré sa vytvoria v kóde a jeho vlastnostiach. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžme využiť sekvenčné diagramy, pretože tie nám hovoria o interakcií medzi jednotlivými modelmi, prípadne časťami kódu.
 
 \subsubsection{Prípad použitia}
-Na obrazku ...
+popis tohto pripadu, mozno z tabulky na ceskom webe alebo vseobecne
 
 \begin{figure}[H]
   \centering
@@ -608,8 +608,15 @@ Na obrazku ...
   \label{img-use-case}
 \end{figure}
 
-popis tohto pripadu, mozno z tabulky na ceskom webe alebo vseobecne
+\subsubsection{Diagram "tried" pre StarkLab}
+Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť pre JavaScript aplikáciu, ale našli sme knižnicu \textit{wavi} (https://www.npmjs.com/package/wavi), ktorá dokáže vygenerovať takýto diagram. Síce to nie je prehľadné ako pri klasickom diagrame, ale je vhodné ho vygenerovať už len pre to, aby mal programátor informáciu o základnej štruktúre aplikácie ako vidíme na obrázku č. \ref{img-class-diagram}.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.40]{img/diagrams/class.png}
+  \caption{Diagram "tried" pre náš systém.}
+  \label{img-class-diagram}
+\end{figure}
 
 \subsubsection{Sekvenčný diagram}\label{diagram-sequence-section}
 
