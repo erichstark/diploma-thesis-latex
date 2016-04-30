@@ -368,6 +368,45 @@ Modul \textit{http} patrí medzi veľmi používané, pretože vďaka nemu spust
 Máme dostupnú metódu \textit{createServer}, ktorá vracia nový web server objekt. Vo väčšine prípadov zavoláme aj metódu \textit{listen}. Ak je potrebné tak pomocou \textit{close} zastavíme prímanie nových požiadaviek. Callback funkcia, ktorú tam využívame, vždy má \textit{request} (req) a \textit{response} (res) objekty. Prvý objekt môžeme použiť na získanie informácií o prichádzajúcich požiadaviek ako napr. \textit{GET}, \textit{POST} parametre.\cite{nodejs-by-example}
 
 \subsection{Express.js}
+Express.js sa zaraďuje medzi minimalistické a flexibilné Node.js webové frameworky. Poskytuje robustné možnosti pre vývoj webových a mobilných aplikácií. Uľahčuje vývoj webových aplikácií založených na Node.js.\cite{express-tutorial}\\
+
+Medzi jeho hlavné vymoženosti patria:
+\begin{itemize}
+\item umožňuje nastaviť middleware pre odpovede na HTTP požiadavky,
+\item definuje smerovaciu tabuľku, ktorá je použitá na vykonanie rôznych požiadaviek založených na HTTP,
+\item umožňuje dynamicky vykreslovať HTML stránky, tak aby bolo možné vkladať argumenty do šablóny.
+\end{itemize}
+
+Často pri inštalácií Expressu inštalujeme aj \textit{body-parser}, ktorý slúži ako middleware pre narábanie s JSON, Raw, Text a URL kódovanými údajmi.
+
+\subsubsection{Web server}
+Následujúca ukážka na obrázku č. \ref{express-example} je základná kostra Express aplikácie, ktorá spustí server a počúva na porte 8081. Po príchode na stránku bude vždy odpovedať textom \textbf{Hello wordl!}.\cite{express-tutorial}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/express/express-example.png}
+  \caption{Spustenie web servera na porte 8081.}
+  \label{express-example}
+\end{figure}
+
+Na spustenie tohto kódu ho musíme vložiť do súboru s koncovkou .js a následne spustiť \textit{node app.js} a potom dostaneme výstup v termináli \textit{Example app listening at http://0.0.0.0:8081}.
+
+\subsubsection{Objekty Request a Response}
+Webová aplikácia používa objekty request a reponse, ktoré sú dostupné ako callback funkcia.\cite{express-tutorial}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/express/express-req.png}
+  \caption{Objekt req a res ako parametre callback funkcie.}
+  \label{express-example}
+\end{figure}
+
+
+\subsubsection{Smerovanie}
+\cite{express-tutorial}
+
+\subsubsection{Middleware}
+\cite{express-tutorial}
 
 \subsection{MongoDB}
 MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čiže nepoužíva klasickú štruktúru ako v relačnej databáze na báze tabuliek, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka ukladaniu JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie.\cite{mongodb-wiki}
@@ -405,7 +444,6 @@ Scope je objekt, ktorý odkazuje na model aplikácie. Je to kontext, na ktorom s
 Každá aplikácia ma práve jeden \textit{\$rootScope}, ale môže mať viacero detských \textit{\$scope}. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako dieťa k rodičovskému scope. Toto vytvára stromovú štruktúru paralernú k DOM, kde sú priradené.\cite{angular-docs}
 
 Dirty checking v scope pre zmeny vlastností objektu je často používaná operácia a preto by mala byť efektívna. V závislosti od potreby môže byť dirty checking využité týmito troma stratégiami: referenciou na objekt, obsah poľa alebo na hodnoty objektu. Líšia sa v spôsobe zaregistrovania zmeny aj výkonostnými rozdielmi.
-
 
 \begin{itemize}
   \item Sledovanie podľa referencie \textit{\$scope.\$watch(watchExpression, listener)}: detekuje zmenu, keď sa do sledovanej hodnoty nastaví nová. Ak sledovaný objekt, alebo pole, zmeny vnútri nie su detekované. Toto je najúčinnejšia stratégia.
@@ -599,7 +637,9 @@ Pomocou sekvencie týchto dvoch príkazov vytvoríme požadovaný JSON formát a
 Pred tvorbou rôznych softwarových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe systému. Niektoré nám ukážu správanie len zo všeobecnosti čo by sa mohlo dať v systéme robiť ako napr. "Prípady použitia". Potom existuje aj "Diagram tried", ktorý hovorí o jednotlivých triedach, ktoré sa vytvoria v kóde a jeho vlastnostiach. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžme využiť sekvenčné diagramy, pretože tie nám hovoria o interakcií medzi jednotlivými modelmi, prípadne časťami kódu.
 
 \subsubsection{Prípad použitia}
-popis tohto pripadu, mozno z tabulky na ceskom webe alebo vseobecne
+Diagram prípadov použitia sa používa k popisu chovania systému z hľadiska užívateľa a zachytáva, ktoré typy užívateľov so systémom pracujú a aké činnosti v rámci systému vykonávajú.\cite{uml-usecase}
+
+Na obrázku č. \ref{img-use-case} vidíme možnosti používania systému na diagrame prípadov použitia. V systéme vystupuje len jeden typ používateľa a musí to byť člen STUBA LDAP. Bez prihlásenia sú jeho možnosti obmedzené a nemôže nič pozerať ani vykonávať. Po prihlásení môže vykonať dve úlohy. Zobrazenie už existujúcich simulácií alebo vybrať simuláciu, ktorú chce spustiť s počiatočnými parametrami ak sú potrebné.
 
 \begin{figure}[H]
   \centering
@@ -619,6 +659,7 @@ Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť p
 \end{figure}
 
 \subsubsection{Sekvenčný diagram}\label{diagram-sequence-section}
+Sekvenčný diagram patrí medzi najviac používané diagramy pre zobrazenie interakcií. Zachytáva priebeh spracovania v systéme v podobe posielania správ.
 
 \begin{figure}[H]
   \centering
@@ -627,7 +668,7 @@ Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť p
   \label{img-sequence-ldap-login}
 \end{figure}
 
-Na obrázku č.\ref{img-sequence-ldap-login} si všimneme ako približne funguje prihlásenie pomocou mena a hesla do LDAP systému. Nižšie si popíšeme kód ako to máme implementované v JavaScripte. Toto je len časť kódu, ktorá sa určená pre prihlásenie do systému. Na začiatku súbotu je volaná požadovaná knižnica pre prácu s LDAP ako \textit{var ldap = require("ldapjs");}
+Na obrázku č.\ref{img-sequence-ldap-login} si všimneme ako približne funguje prihlásenie pomocou mena a hesla do LDAP systému. Nižšie si popíšeme kód ako to máme implementované v JavaScripte. Toto je len časť kódu, ktorá sa určená pre prihlásenie do systému. Na začiatku súboru je volaná požadovaná knižnica pre prácu s LDAP ako \textit{var ldap = require("ldapjs");}
 Keď užívateľ príjde na stránku a vyplní prihlasovacie meno a heslo do stuba ldap, tak formulár ho presmeruje na \textit{/login}, kde už sa postaral o routovanie Express.js. Z \textit{request} parametra získame zadané username - \textit{req.body.username} a password - \textit{req.body.password}, ktoré sme vyplnili pred odosielaním formulára. Čiže ak sú oba vyplnené dostaneme sa do vnútra podmienky, kde sa vytvorí spojenie na linku \textit{ldap://ldap.stuba.sk}, vytvorí RDN reťazec v tvare \textit{"uid=xstark", ou=People, DC=stuba, DC=sk"}.
 V momente keď je zostavený reťazec a máme získané heslo užívateľa, tak zavoláme ldap funkciu \textit{bind} s parametrami RDN a heslom. V prípade ak nenastala žiadna chyba pri overovaní, tak sme úspešne overený a vytvoríme \textit{session} a \textit{cookie} pre užívateľa a presmerujeme ho na stránku, kde už môže vidieť možné simulácie.
 
