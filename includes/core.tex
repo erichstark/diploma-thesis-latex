@@ -659,7 +659,10 @@ Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť p
 \end{figure}
 
 \subsubsection{Sekvenčný diagram}\label{diagram-sequence-section}
-Sekvenčný diagram patrí medzi najviac používané diagramy pre zobrazenie interakcií. Zachytáva priebeh spracovania v systéme v podobe posielania správ.
+Sekvenčný diagram patrí medzi najviac používané diagramy pre zobrazenie interakcií. Zachytáva priebeh spracovania v systéme v podobe posielania správ.\\
+
+
+\noindent \textbf{Prihlásenie do LDAP}
 
 \begin{figure}[H]
   \centering
@@ -675,6 +678,17 @@ V momente keď je zostavený reťazec a máme získané heslo užívateľa, tak 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/code/ldap-login.png}
+\end{figure}
+
+\noindent \textbf{Komunikácia komponentov v systéme}
+
+Medzi jednotlivými komponentami systému prebieha komunikácia. Síce v každej časti prebieha inak, ale ich spoločný menovateľ je komunikácia založená na HTTP protokole. Na obrázku č. \ref{img-sequence-realtime} vidíme, že komunikácia začína od webového klienta v prehliadači. Užívateľ zadá parametre simulácie a tie budú zaslané do StarkLab. Ten následne spustí Matlab na aktuálnom operačnom systéme s potrebnými súbormi simulácie a ich parametrami. Medzitým užívateľ čaká kým sa na pozadí spustí Matlab. Hneď na to začne vykonávať simuláciu a posielať údaje do StarkLab, ktorý ich pošle priamo webovému klientovi, kde bola spustená simulácia. Každé prijatie údajov sa prejaví zapísaním do grafu, animácie a tabuľky vo webovom rozhraní. Táto sekvencia sa opakuje pokiaľ platí podmienka, že je simulácia stále spustená. Po zastavení simulácie klient zašle požiadavku na zapísanie kompletných dát cez StarkLab priamo do dokumentovej databáze MongoDB.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.35]{img/diagrams/sequence-realtime-communication.png}
+  \caption{Komunikácia medzi jednotlivými komponentami systému.}
+  \label{img-sequence-realtime}
 \end{figure}
 
 \subsection{Databázový model MongoDB}
