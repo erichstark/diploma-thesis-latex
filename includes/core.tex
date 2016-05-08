@@ -392,7 +392,7 @@ Následujúca ukážka na obrázku č. \ref{express-example} je základná kostr
 Na spustenie tohto kódu ho musíme vložiť do súboru s koncovkou .js a následne spustiť \textit{node app.js} a potom dostaneme výstup v termináli \textit{Example app listening at http://0.0.0.0:8081}.
 
 \subsubsection{Objekty Request a Response}
-Webová aplikácia používa objekty request a reponse, ktoré sú dostupné ako callback funkcia.\cite{express-tutorial}
+Webová aplikácia používa objekty request a reponse z Node.js, ktoré sú dostupné ako callback funkcia.\cite{express-tutorial}
 
 \begin{figure}[H]
   \centering
@@ -401,12 +401,39 @@ Webová aplikácia používa objekty request a reponse, ktoré sú dostupné ako
   \label{express-example}
 \end{figure}
 
+\subsubsection{Routing}
+Routing, teda smerovanie slúži na určenie ako bude aplikácia reagovať na požiadavku klienta, čo zahŕňa URI a špecifické metódy (GET, POST, PUT, DELETE, ...) HTTP požiadavky.\cite{express-tutorial}
+Každý \verb|route| môže mať viacero callback funkcií, ktoré sa vykonajú ak je zavolaná daná route.
 
-\subsubsection{Smerovanie}
-\cite{express-tutorial}
+\noindent Definícia route má následujúcu štruktúru \verb|app.METHOD(PATH, CALLBACK)|, kde:
+\begin{itemize}
+\item \verb|app| je inštancia express,
+\item \verb|METHOD| je jedna z dostupných HTTP metód,
+\item \verb|PATH| je cesta na serveri,
+\item \verb|CALLBACK| je funkcia, ktorá sa vykoná v prípade, že sa zhoduje cesta.\cite{express-routing}
+\end{itemize}
 
 \subsubsection{Middleware}
-\cite{express-tutorial}
+Funkcie označované middleware, sú také, ktoré majú prístup do request \verb|(req)|, response \verb|(res)| objektu a následnujúcej middleware funkcie. Následujúca funkcia sa bežne označuje názvom \verb|next|.\cite{express-middleware} \\
+
+\noindent Úlohy middleware funkcií:
+\begin{itemize}
+\item vykonávať akýkoľvek kód,
+\item robiť zmeny na \verb|request| a \verb|response| objekoch,
+\item ukončiť request-reponse cyklus,
+\item zavolať ďalšiu middleware funkciu v poradí. 
+\end{itemize}
+
+Na obrázku č. \ref{img-express-middleware} nižšie sú popísane vlastnosti tejto funkcie.\cite{express-middleware}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/express/express-middleware.png}
+  \caption{Vlastnosti middleware funkcie.}
+  \label{img-express-middleware}
+\end{figure}
+
+V prípade, že middleware funkcia neukončí volanie, musí posunúť obsluhu ďalšej middleware funkcií zavolaním \verb|next()|. Inak sa request zasekne a klient bude stále čakať na odpoveď a po určitom omeškaní sa ukončí.\cite{express-middleware}
 
 \subsection{MongoDB}
 MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čiže nepoužíva klasickú štruktúru ako v relačnej databáze na báze tabuliek, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka ukladaniu JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie.\cite{mongodb-wiki}
