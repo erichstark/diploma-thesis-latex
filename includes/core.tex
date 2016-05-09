@@ -208,17 +208,26 @@ A posledný objekt \verb|webwrite|. Ako aj v predchádzajúcom prípade obsahuje
 \verb|response = webwrite(___, options)| zapíše obsah na špecifikovanú url a vráti response.
 
 \subsection{Node.js}
-Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych, škálovateľných sieťových aplikácií. Node.js používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.\\
+Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych a škálovateľných sieťových aplikácií. Node.js používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.
+
 Vďaka jeho súčasnej stabilite ho používa v produkcií mnoho svetových firiem, napríklad eBay, GoDaddy, Microsoft, PayPal, Uber, Yahoo...
 
+
 \subsubsection{História}
-Vytvoril ho Ryan Dahl v roku 2009 a bol dostupný iba pre Linux. Vývoj a údržba bola vedená jeho zakladateľom a neskôr sponzorovaná firmou Joyent. Node.js sa skladá z JavaScriptového engine V8 od Google, event loop a nízko úrovňové I/O API. V roku 2011 bol vytvorený správca balíkov pre Node.js volaný NPM (Node Package Manager). Umožnuje programátorom publikovať, zdielať zdrojový kód modulov a bol navrhnutý tak, aby zjednodušoval inštaláciu, aktualizáciu alebo odinštalovanie modulov. Neskôr v júni 2011, Microsoft a Joyent spolupracovali na implementáci natívnej verzii Node.js pre Windows. V roku 2014 vznikli nezhody pri vývoji, tak Fedor Indutny spravil fork Node.js a vytvoril ioJS. Na rozdiel od Node.js autorov, chcel udržiavať ioJS aktuálny súčasne s poslednou verziou V8 JavaScript enginu. Po dohode bola vytvorená Node.js Foundation, ktorá zastrešila vývoj, a spojila Node.js v0.12 a ioJS v3.3 do Node.js 4.0, aby spojila znovu komunity. Táto verzia priniesla V8 ES6 novinky do Node.js a súčasne sa vytvorila aj verzia LTS vhodná pre produkčné nasadenie, ktorá ma dlhší vývojový cyklus a príjma len opravy chýb.\cite{nodejs-wiki}
+Vytvoril ho Ryan Dahl v roku 2009 a bol dostupný iba pre Linux. Vývoj a údržba bola vedená jeho zakladateľom a neskôr sponzorovaná firmou Joyent. Node.js sa skladá z JavaScriptového engine V8 od Google, event loop a nízkoúrovňového I/O API. V roku 2011 bol vytvorený správca balíkov pre Node.js zvaný NPM. Umožnuje programátorom publikovať, zdielať zdrojový kód modulov a bol navrhnutý tak, aby zjednodušoval inštaláciu, aktualizáciu alebo odinštalovanie modulov. Neskôr v júni 2011, Microsoft a Joyent spolupracovali na implementáci natívnej verzii Node.js pre Windows. V roku 2014 vznikli nezhody pri vývoji, tak programátor Fedor Indutny spravil fork Node.js a vytvoril io.js. Na rozdiel od Node.js autorov, chcel udržiavať io.js aktuálny súčasne s poslednou verziou V8 JavaScript enginu.
+
+Po dohode bola vytvorená Node.js Foundation, ktorá zastrešila vývoj, a spojila Node.js v0.12 a ioJS v3.3 do Node.js 4.0, aby znovu spojila roztrieštenú komunitu. Táto verzia priniesla ES6 novinky z V8 do Node.js a súčasne bola vytvorená aj LTS verzia vhodná pre produkčné nasadenie, ktorá ma dlhší vývojový cyklus a príjma len opravy chýb.\cite{nodejs-wiki}
 
 \subsubsection{Architektúra}
-V prvom rade by som spomenul kľúčové vlastnosti Node.js. \textbf{Asynchronné a udalosťami riadené} API, čo znamená, že neblokuje vykonávanie nasledujúcich volaní. V podstate to znamená, že server založený na Node.js nikdy nečaká, kým API vráti data. Server sa presunie na ďalšie volanie a vďaka pomoci notifikačnému mechanizmu udalostí získa server odpoveď z prechádzajúceho volania.
-Je \textbf{jednovláknový a vysoko škálovateľný} vďaka udalostnej slučke. Udalostný mechanizmus pomôže serveru vrátiť odpoveď tak aby nebol blokujúci a robí server vysoko škálovateľný oproti tradičným serverom, ktoré vytvárajú limitovaný počet vlákien na spracovávanie požiadaviek. Node.js spustí jednovláknový program, ktorý môže poskytnúť službu omnoho väčšiemu počtu požiadaviek ako tradičný server Apache HTTP. Aplikácie sú \textbf{bez vyrovnávajúcej pamäte}, čiže jednoducho posielajú údaje na výstup v malých blokoch.\\
+Tak ako pri iných platformách aj Node.js má svoju architektúru a v tejto sekcií si popišeme jeho kľúčové vlastnosti. Síce ich nebudeme priamo používať, ale je dobré o nich vedieť.
 
-Ako sme už spomenuli, tak platforma Node.js sa skladá z viacerých častí. Bolo by možné ju rozdeliť ešte na menšie časti, ale toto je základný pohľad na obrázku č.\ref{img-node-arch}.
+Má \textbf{asynchronné a udalosťami riadené} API, čo znamená, že neblokuje vykonávanie nasledujúcich volaní. V podstate ide o to, že server založený na Node.js nikdy nečaká, kým volaná služba/funkcia vráti dáta. Server sa presunie na ďalšie volanie a pomocou notifikačného mechanizmu udalostí získa odpoveď z prechádzajúceho volania, keď bude ukončené a vyzdvihne jeho výsledok.
+
+Vďaka udalostnej slučke je \textbf{jednovláknový a vysoko škálovateľný}. Udalostný mechanizmus pomôže serveru vrátiť odpoveď tak, aby nebol blokovaný a tak robí server vysoko škálovateľný oproti tradičným serverovým riešeniam, ktoré vytvárajú limitovaný počet vlákien na spracovávanie požiadaviek. Node.js spustí jednovláknový program, ktorý môže poskytnúť službu omnoho väčšiemu počtu požiadaviek ako tradičný server Apache httpd. 
+
+Aplikácie sú \textbf{bez vyrovnávajúcej pamäte}, čiže jednoducho posielajú údaje na výstup v malých blokoch.\\
+
+Ako sme už spomenuli, tak platforma Node.js sa skladá z viacerých častí. Bolo by možné ju rozdeliť ešte na menšie časti, ale z nášho pohľadu stačí pre ilustráciu zobrazenie na obrázku \ref{img-node-arch}.
 
 \begin{figure}[H]
   \centering
@@ -227,75 +236,75 @@ Ako sme už spomenuli, tak platforma Node.js sa skladá z viacerých častí. Bo
   \label{img-node-arch}
 \end{figure}
 
-Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a je priamo dostupné programátorom, pre využitie v ich aplikáciach. Pod základným API je knižnica, ktorá viaže C/C++ s JavaScriptom. Node.js tiež poskytuje doplnky (addons), čo sú dynamicky linkované zdielané objekty. Tie sa viažu na C/C++ knižnice. To znamená, že môžeme využiť skoro hocijakú C/C++ knižnicu a vytvoriť z nej doplnok, ktorý použijeme v Node.js.\\
-Pod týmto všetkým máme už len natívne knižnice vytvorené v C/C++:
+Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a je priamo dostupné programátorom, pre využitie v ich aplikáciach. Pod týmto základným API je knižnica, ktorá viažš C/C++ s JavaScriptom. Node.js tiež poskytuje doplnky (addons), čo sú dynamicky linkované zdielané objekty. Tie sa viažu na C/C++ knižnice. To znamená, že môžeme využiť skoro akúkoľvek C/C++ knižnicu a vytvoriť z nej doplnok, ktorý použijeme v Node.js.\\
 
-\textbf{V8} je open source JavaScript engine, ktorý bol vytvorený pre Google Chrome. Je napísaný v C++ a je možné ho spustiť samostatne alebo v hocijakej C++ aplikácií. V podstate kompiluje JavaScript kód do natívneho strojového kódu, namiesto toho, aby bol interpretovaný.
+\noindent Pod týmto všetkým máme už len natívne knižnice vytvorené v C/C++:
 
-\textbf{Libuv} je multiplatformová podporná knižnica zo zameraním na asynchónne I/O operácie. Zo začiatku Node.js začal používať \textit{libuv} ako abstrakčnú vrstvu pre \textit{libev} a \textit{libio}, ale neskôr sa libuv stala robustnejšou a nahradila túto funkcionalitu, aby sa mohla stať multiplatformovou. Keď V8 spravuje vykonávanie JavaScriptu, tak libuv spravuje udalostnú slučku (event loop) a asynchrónne I/O operácie.
-V tomto zozname vidíme všetky možnosti \textit{libuv}:
+\textbf{V8} je open source JavaScript engine, ktorý bol vytvorený pre internetový prehliadač Google Chrome. Je napísaný v C++ a je možné ho spustiť samostatne alebo v ktorejkoľvek C++ aplikácií. V podstate kompiluje JavaScript kód do natívneho strojového kódu, namiesto toho, aby bol interpretovaný.
+
+\textbf{Libuv} je multiplatformová podporná knižnica so zameraním na asynchónne I/O operácie. Zo začiatku Node.js začal používať \verb|libuv| ako abstrakčnú vrstvu pre \verb|libev| a \verb|libio|, ale neskôr sa libuv stala robustnejšou a nahradila túto funkcionalitu, aby sa mohla stať multiplatformovou. Keď V8 spravuje vykonávanie JavaScriptu, tak libuv spravuje udalostnú slučku (event loop) a asynchrónne I/O operácie. V tomto zozname sú všetky možnosti \verb|libuv|:
 \begin{itemize}
-\item plnohodnotnú údalostnú slučku, ktorú tvorí epoll, kqueue, IOCP a udalostné porty,
+\item plnohodnotná údalostná slučka, ktorú tvorí epoll, kqueue, IOCP a udalostné porty,
 \item asynchronné TCP a UDP sockety,
 \item asynchronné DNS,
-\item asynchronné operácie nad súbormy a súborovým systémom,
+\item asynchronné operácie nad súbormi a súborovým systémom,
 \item udalosti nad súborovým systémom,
 \item preklad ANSI kódov kontrolovaných cez TTY,
-\item IPC so zdielaním socketu s využitím Unix socketov alebo pomenované kanály (Windows),
+\item IPC so zdielaním socketu s využitím Unix socketov alebo pomenované kanály (vo Windows),
 \item detské procesy,
-\item vlákna a synchronizáciu,
+\item vlákna a synchronizácia,
 \item riadenie signálov,
 \item hodiny s presným časovaním (hight resolution clock).
 \end{itemize}
 
-\textbf{c-ares} je C knižnica pre asynchronné DNS žiadosti vrátane prekladanie názvov. Je určená pre aplikácie, ktoré potrebujú vykonávať dotazy na DNS bez blokovania, alebo je potrebné vykonať niekoľko dotazov paralerne.
+\textbf{c-ares} je C knižnica pre asynchronné DNS žiadosti vrátane prekladanie názvov. Je určená pre aplikácie, ktoré potrebujú vykonávať dotazy na DNS bez blokovania, alebo ak potrebujú vykonať niekoľko dotazov paralerne.
 
-\textbf{http\_parser} je parser pre požiadavky a odpovede  HTTP napísaný v C. Nerobí žiadne systémové volania ani alokácie, neukladá dáta do vyrovnávacej pamäte, môže byť zrušený okamžite. Jeho hlavné vlastnosti sú:
+\textbf{http\_parser} je parser pre požiadavky a odpovede HTTP napísaný v C. Nerobí žiadne systémové volania ani alokácie, neukladá dáta do vyrovnávacej pamäte a môže byť zrušený okamžite. Jeho hlavné vlastnosti sú:
 \begin{itemize}
-\item žiadne závislosti,
+\item nemá žiadne závislosti,
 \item udržiava trvalý stream
 \item dekódovanie blokového kódovania,
 \item chráni buffer proti útokom.
 \end{itemize}
 
-\textbf{OpenSSL} je open source implementácia SSL v2/v3 a TLS v1 protokolov ako aj kryptografickú knižnicu pre všeobecné účely. Je založená na SSLeay knižnici. Tá poskytuje všetky potrebné kryptografické metódy ako je hash, hmac, cipher, decipher, sign a verify metódy.
+\textbf{OpenSSL} je open source implementácia SSL v2/v3 a TLS v1 protokolov ako aj kryptografická knižnica pre všeobecné účely. Je založená na SSLeay knižnici. Tá poskytuje všetky potrebné kryptografické metódy ako je hash, hmac, cipher, decipher, sign a verify metódy.
 
 \textbf{Zlib} je všeobecná knižnica na kompresiu dát napísaná v C.\cite{nodejs-arch}
 
 
 \subsubsection{Event loop}
-Udalostná slučka dáva Node.js možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná tak sa zavolá callback funkcia. Na obrázku č.\ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci Node.js.
+Udalostná slučka dáva Node.js možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná tak sa zavolá callback funkcia. Na obrázku \ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci Node.js.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.6]{img/node/nodejs-event-loop.png}
-  \caption{Udalostná slučka.}
+  \caption{Udalostná slučka v Node.js.}
   \label{img-node-event-loop}
 \end{figure}
 
 Udalostná slučka jednoducho prechádza cez frontu čo je vlastne zoznam udalostí a callbackov vykonaných operácií. Všetky I/O operácie sú vykonané asynchrónne vláknami vo "vláknovom stacku" (thread pool). Tu zohráva dôležitú rolu libuv. Ak nejaká položka vyžaduje I/O operáciu, tak udalostná slučka jednoducho prenechá operáciu do vláknového stacku. Udalostná slučka pokračuje vo vykonávaní položiek v udalostnej fronte. Keď je I/O operácia hotová, tak callback je zaradený na spracovanie. Udalostná slučka vykoná callback a poskytne požadované výstupy. A takto sa celý proces opakuje.\cite{nodejs-event-loop}
 
 \subsubsection{Možnosti a využitie}
-Na základe popísaných základných častí Node.js v predchádzajúcich sekcií si ukážeme možnosti využitia, resp. výhody a nevýhody.\cite{nodejs-arch}
+Na základe popísaných základných častí Node.js v predchádzajúcich sekcií si ukážeme možnosti využitia, resp. výhody a nevýhody.\cite{nodejs-arch}\\
 
-\textbf{Výhody}
+\noindent \textbf{Výhody}
 \begin{itemize}
 \item asynchrónne I/O - vhodné pre webové a sieťové aplikácie,
 \item rôzne možnosti škálovania,
-\item programovací jazyk je JavaScript, čiže rovnaký jazyk aj pre backend aj fronend,
-\item jednoducho je možné s nim začať na rozdiel od Javy alebo .NET, stačí len zmeniť myslienie na asynchrónne,
+\item programovací jazyk je JavaScript, čiže rovnaký jazyk pre backend aj frontend aplikácie,
+\item rýchly prechod od Javy, .NET stačí len zmeniť myslienie na asynchrónne,
 \item veľmi aktívna komunita, ktorá zdieľa množstvo kódu na verejných repozitároch ako github,
 \item rýchlo rastúca NPM komunita s množstvom modulov pripravených na použitie.
 \end{itemize}
 
-\textbf{Nevýhody}
+\noindent \textbf{Nevýhody}
 \begin{itemize}
-\item veľmi neefektívne pre ukóny náročné na CPU, ako generovanie reportov, analýzy, výpočty...
+\item veľmi neefektívne pre úlohy náročné na CPU, ako generovanie reportov, analýzy, výpočty...
 \item použitím udalosťami riadenej metodológie bez pochopenia prístupu môže viesť k nevhodne napísaným kódom (napr. "callback hell"),
-\item neexistuje veľa štandardných knižníc ako pri Java, .NET platforme ako sú napr. XML parsery, alebo zložitejšie dátové štruktúry.
+\item neexistuje toľko štandardných knižníc ako pri Java, .NET platforme ako sú napr. XML parsery, alebo zložitejšie dátové štruktúry.
 \end{itemize}
 
-Teda Node.js nie je vhodný na všetko, vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time údaje, single page aplikácie, websockety tak je na takéto úlohy vhodný. Vo všeobecnosti všade kde sa používa I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení.\cite{nodejs-introduction}
+Ako teda vidíme, Node.js nie je vhodný na všetky úlohy, ale vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time získavanie údajov, single page aplikácie, websockety tak je na takéto úlohy veľmi vhodný. Vo všeobecnosti všade kde sa používajú I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení.\cite{nodejs-introduction}
 
 \subsection{Node Package Manager}
 Node.js po nainštalovaní obsahuje aj \textit{NPM} (Node Package Manger). NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára (\textit{https://www.npmjs.org}). Rovnako aj môžme vytvoriť vlastný modul a uložiť ho do repozitára.\\
