@@ -19,23 +19,30 @@
 
 \section{Cieľ práce}
 Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a možností Node.js pre vytvorenie nového.
-Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude Node.js a klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovanom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
+
+Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude Node.js, klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
 
 
 \section{Virtuálne laboratória}
-\indent V dobe keď internet ešte nebol rozšírený, experimenty sa robili vo fyzických laboratóriach. Bolo potrebné dodržiavať isté bezpečnostné predpisy, kvôli možnému úrazu osoby alebo možnému poškodeniu nástrojov.\\
-\indent Vzdialenosť a hlavne nedostatok finančných zdrojov nám sťažuje podmienky pri testovaní experimentov, hlavne v prípadoch ked je potrebné mať pokrokové sofistikované nástroje. Ďalší problém s ktorým sa stretávame je nedostatok kvalitných lektorov. V dnešnej dobe existujú online kurzy, ktoré poskytujú aj video ukážky, ale to tento problém rieši len čiastočne. Vždy bolo výzvou vykonávanie spoločných experimentov viacerými inštitúciami súčasne a zároveň zdielanie nákladov na prostriedky. V súčasnej dobe internetu a počítačových technológií už tieto obmedzenia nemusia trápiť študentov ani výskumníkov. Internet umožnil to, že experimenty môžu byť štruktorované tak, aby boli ovládané a prezerané na ďiaľku. Práve to by pomohlo v učení v základných ale aj pokročilých konceptov prostredníctvom vzdialeného experimentovania. V súčasnosti veľa vybavenia už poskytuje rozhranie pre pripojenie počítača a spracovanie dát z neho. Vďaka tomu je možné navrhnúť experimenty, ktoré pomôžu študentom pri učení. Experimentovanie cez internet umožňuje využívanie zdrojov, znalostí, software a dát z  internetu narozdiel od fyzických experimentov, ktoré by vznikali súčasne na rôznych miestach.\cite{vlabphylosopfy}\\
-\indent V tejto práci sa budeme zaoberať tvorbou virtuálneho laboratória (ďalej len VL). Predtým ako si popíšeme detailné fungovanie technológií pre vytvorenie VL, si musíme vysvetliť čo považujeme za VL, pochopiť aké hodnoty nám môže priniesť, ale samozrejme aj tie ktoré nemôže. Vo všeobecnosti môžme povedať ze VL je počítačový program, kde študenti sú v interakcii s experimentom prostredníctvom počítača. Typický príklad je simulácia experimentu, kedy je študent v interakcii s naprogramovaným rozhraním. Ďalšia možnosť je diaľkovo ovládaný experiment, kde študent je v interakcii s reálnym zariadením cez počítačové rozhranie, napriek tomu že sa nenachádza pri ňom. Keď vylúčime druhú variantu tak si môžme utvoriť definíciu nasledovne: \textit{Virtuálnym laboratóriom voláme to, keď je študent študent v interakcií s experimentom, ktorá je od neho fyzicky vzdialená alebo nemá za sebou žiadnu fyzickú realitu.}\cite{hatherly}
+\indent V dobe keď internet ešte nebol rozšírený, experimenty sa robili vo fyzických laboratóriach. Bolo dôležité dodržiavať rôzne bezpečnostné predpisy, kvôli možnému úrazu osoby prípadne poškodeniu prístrojov.
+
+Vzdialenosť ale aj nedostatok finančných zdrojov nám sťažuje podmienky pri vykonávaní experimentov, hlavne v prípadoch ked je potrebné mať pokrokové sofistikované nástroje. Ďalší problém, s ktorým sa stretávame, je nedostatok kvalitných lektorov. Síce v súčasnosti už existujú online kurzy, ktoré poskytujú aj video ukážky, ale to tento problém rieši len čiastočne. Vždy bolo výzvou vykonávanie spoločných experimentov viacerými inštitúciami súčasne a zároveň aj zdielanie nákladov na prostriedky. So súčasnými možnosťami internetu a počítačových technológií už tieto obmedzenia nemusia trápiť študentov ani výskumníkov. Internet umožnil to, že experimenty môžu byť štruktorované tak, aby boli ovládané a vizualizované na ďiaľku. Práve to by mohlo pomôcť v učení základných ale aj pokročilých konceptov prostredníctvom vzdialeného experimentovania. V súčasnosti veľa vybavenia už poskytuje rozhranie pre pripojenie počítača a spracovanie dát z neho. Preto je možné navrhnúť experimenty, ktoré pomôžu študentom pri učení. Experimentovanie cez internet umožňuje využívanie zdrojov, znalostí, software a dát z internetu narozdiel od fyzických experimentov, ktoré by vznikali súčasne na rôznych miestach.\cite{vlabphylosopfy}
+
+V tejto práci sa budeme zaoberať tvorbou virtuálneho laboratória (ďalej len VL). Predtým ako si popíšeme detailné fungovanie technológií pre vytvorenie VL, si musíme vysvetliť čo považujeme za VL, pochopiť aké hodnoty nám môže priniesť, ale samozrejme aj tie ktoré nemôže. Vo všeobecnosti môžme povedať, že VL je počítačový program, kde študenti sú v interakcii s experimentom prostredníctvom počítača ako na obrázku \ref{img-real-vs-remote}. 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.5]{img/VL_vs_real.png}
-  \caption{Porovnanie medzi počítačovo riadneným experimentom vľavo a vzdialene riadeným experimentom vpravo.}
-  \label{img-real-vs-vl}
+  \includegraphics[scale=0.40]{img/VL_vs_real.png}
+  \caption{Rozdiel medzi osobne a vzdialene riadneným experimentom.}
+  \label{img-real-vs-remote}
 \end{figure}
 
-Po vysvetlení čo je VL sa pozrieme na výhody, ktoré nám môže priniesť. Sú popísané v bodoch v \textit{tabuľke č.\ref{table-real-remote-virtual-laboratory}.}
-Človek často radí medzi "výhody" to, že môže nahradiť fyzické laboratória. Lenže to medzi výhody nepatrí. Nie je možné nahradiť skúsenosti z fyzickej práce zo zariadením VL aj keď je to lepšie ako žiadna skúsenosť. VL by nemalo byť vnímané tak, že poskytuje maximálnu možnú skúsenosť.
+Typický príklad je simulácia experimentu, kedy je študent v interakcii s naprogramovaným rozhraním. Ďalšia možnosť je diaľkovo ovládaný experiment, kde študent je v interakcii s reálnym zariadením cez počítačové rozhranie, napriek tomu že sa nenachádza pri ňom. 
+Keď vylúčime druhú variantu tak si môžme utvoriť definíciu nasledovne: \textit{"Virtuálnym laboratóriom voláme to, keď je študent študent v interakcií s experimentom, ktorý je od neho fyzicky vzdialený alebo nemá na pozadí žiadnu fyzickú realitu."}\cite{hatherly}\\
+
+Po vysvetlení čo je VL sa pozrieme na výhody, ktoré nám môže priniesť. Sú popísané v bodoch v tabuľke \ref{table-real-remote-virtual-laboratory}.
+Človek často počíta medzi výhody to, že môže nahradiť fyzické laboratórium. Lenže to medzi výhody nepatrí. Nie je možné nahradiť skúsenosti z fyzickej práce so zariadením VL aj keď je to lepšie ako žiadna skúsenosť. VL by nemalo byť vnímané tak, že poskytuje maximálnu možnú skúsenosť.\\
+
 \begin{table}[H]
 \small
 \begin{tabular}{l l l}
@@ -55,12 +62,12 @@ Po vysvetlení čo je VL sa pozrieme na výhody, ktoré nám môže priniesť. S
 & bez obmedzenia na čas a miesto & \\
 & stredné náklady & \\ \hline
 \end{tabular}
-\caption{Porovnanie fyzických, virtuálnych a vzdialených a laboratórií}
+\caption{Porovnanie fyzických, virtuálnych a vzdialených a laboratórií.}
 \label{table-real-remote-virtual-laboratory}
 \end{table}
 
 \subsection{Prehľad existujúcich virtuálnych laboratórií}
-V dobe písania tohto dokumentu existuje množstvo rôznych virtuálnych/vzdialených laboratórií, ktoré používajú zahraničné školy pre výučbu alebo výskum. V práci \cite{vlabtablecomparison} je zoznam veľmi používaných laboratórií, ktoré sú prístupne cez internet. Porovnanie funkcionality a využitých technológií je možné vidieť v  \textit{tabuľke č.\ref{table-vlab-comparison}.}
+V čase písania tohto dokumentu existuje množstvo rôznych virtuálnych/vzdialených laboratórií, ktoré sú používané zahraničnými školami pre výučbu alebo výskum. V práci \cite{vlabtablecomparison} je zoznam veľmi často používaných laboratórií, ktoré sú prístupne cez internet. Porovnanie funkcionality a využitých technológií je možné vidieť v tabuľke \ref{table-vlab-comparison}.
 
 \begin{table}[H]
 \scriptsize
@@ -80,7 +87,8 @@ SLD & AJAX, HTML & Web services, PHP & Matlab, Simulink\\ \hline\hline
 \label{table-vlab-comparison}
 \end{table}
 
-Následne som preskúmal možnosti existujúcich riešení v \textit{tabuľke č.\ref{table-feistu}}, ktoré boli vytvorené na Fakulte elektrotechniky a informatiky STU.\cite{table-vlab-farkas}\cite{table-vlab-borka}\cite{table-vlab-kundrat}\cite{table-vlab-cerveny}\cite{table-vlab-varga}
+Následne som preskúmal možnosti existujúcich riešení a vložil do tabuľky \ref{table-feistu}, ktoré boli vytvorené na Fakulte elektrotechniky a informatiky STU.\cite{table-vlab-farkas}\cite{table-vlab-borka}\cite{table-vlab-kundrat}\cite{table-vlab-cerveny}\cite{table-vlab-varga}
+
 \begin{table}[H]
 \tiny
 \begin{tabular}{l l l l l l}
@@ -105,48 +113,55 @@ Následne som preskúmal možnosti existujúcich riešení v \textit{tabuľke č
 \end{table}
 
 \subsubsection{Nevýhody existujúcich riešení}
-Pri tvorbe softwarového systému, či už všeobecne, alebo v našom prípade virtuálneho laboratória je vhodné preskúmať možnosti existujúcich riešení. Robí sa to kvôli tomu, aby sme sa pri návrhu vyvarovali rôznym chybám ktoré môžu nastať, alebo technológiam, ktoré už časom zastarali. V dnešnej dobe je vývoj nových technológií neskutočne rýchly. Takúto analýzu existujúch riešení sme spravili v predchádzajúcej sekcii.
-Naša téma je zameraná na vytvorenie multiplatformového riešenia, kde nie je možné využiť WCF ani COM technológie ako v predchádzajúcich riešeniach. JMI je zase vhodné len pre riešenie, kde sa využíva Java. Pre server nie je možné využiť technológie LabVIEW, .NET (momentálne je vo vývoji multiplatformová verzia). Čo sa týka klienských riešení tak Flash, ActiveX, Java applets už nie sú podporované v prehliadačoch, taktiež ich nie je vhodné použiť.
+Pri tvorbe softwarového systému, či už všeobecne, alebo v našom prípade virtuálneho laboratória je vhodné preskúmať zo začiatku možnosti existujúcich riešení. Robí sa to z dôvodu vyvarovania rôznym chybám, ktoré môžu nastať pri návrhu, prípadne overenie technológií, ktoré boli použité a časom zastarali. V súčasnosti je vývoj nových technológií neskutočne rýchly. Takúto analýzu existujúch riešení sme urobili v predchádzajúcej sekcii.
+Naša téma je zameraná na vytvorenie multiplatformového riešenia, kde nie je možné využiť WCF ani COM technológie ako v predchádzajúcich riešeniach. JMI je zase vhodné len pre riešenie, kde sa využíva Java. Pre server nie je možné využiť technológie LabVIEW, .NET (momentálne je už vo vývoji multiplatformová verzia). Čo sa týka klienských riešení tak Flash, ActiveX, Java applets už nie sú podporované v prehliadačoch, taktiež ich nie je vhodné použiť.
 
 \subsection{Komponenty virtuálneho laboratória}
-Počet existujúcich laboratórií je veľký, ale väčšinou nie je možné zaručiť kompatibilitu, pretože tu neexistuje žiadny štandard. Ale vždy je možné identifikovať základné komponenty, ktoré tieto VL využívajú. Niektoré z nich môžu byť dokonca využité viac krát.\cite{article-components-vl}
+Počet existujúcich laboratórií je veľký, ale väčšinou nie je možné zaručiť kompatibilitu, pretože tu neexistuje žiadny štandard. Každopádne vždy je možné identifikovať základné komponenty, ktoré tieto VL využívajú. Niektoré z nich môžu byť dokonca využité viac krát.\cite{article-components-vl}\\
 
-\begin{enumerate}
-  \item Samotný experiment
-  \item Zariadenie umožnujúce kontrolu experimentu a získavanie hodnôt z neho.
-  \item Laboratórny server, ktorý zabezpečí kontrolu, monitorovanie a spracovanie dát z experimentu.
-  \item Server, ktorý zabezpečí prepojenie medzi vzdialenými uživateľmi a laboratórneho servera, zvyčajne prostredníctvom internetu.
-  \item Webová kamera pripojená k serveru, ktorá môže byť použitá pre vzdialeného používateľa ako vizuálna a zvuková spätná väzba o stave experimentu.
-  \item Nástroje umožňujúce viacužívateľské audio, video a chat komunikáciu.
-  \item Klientské zariadenia, ktoré sa pripoja vzdialene k experimentu. Väčšinou sa jedná o webovú aplikáciu alebo java aplikáciu.
-\end{enumerate}
+\noindent Komponenty:
+\begin{itemize}
+  \item samotný experiment,
+  \item zariadenie umožnujúce kontrolu experimentu a získavanie hodnôt z neho,
+  \item laboratórny server, ktorý zabezpečí kontrolu, monitorovanie a spracovanie dát z experimentu,
+  \item server, ktorý zabezpečí prepojenie medzi vzdialenými uživateľmi a laboratórneho servera, zvyčajne prostredníctvom internetu,
+  \item webová kamera pripojená k serveru, ktorá môže byť použitá pre vzdialeného používateľa ako vizuálna a zvuková spätná väzba o stave experimentu,
+  \item nástroje umožňujúce viacužívateľské audio, video a chat komunikáciu.
+  \item klientský software, pripojiteľné k experimentu.\\
+\end{itemize}
 
-Je ale dôležité si uvedomiť, že na vytvorenie laboratória nepotrebujeme všetky tieto komponenty, resp. môžme využiť aj iné, ktoré sa nám dokonale hodia. Niekedy sa používa napr. aj databázový server ak chceme experimenty ukladať a spracovávať neskôr. Tak isto je potrebné uvedomiť si, aký typ VL chceme vytvoriť. Určite budú rozdiely pri návrhu jednoužívateľského VL narozdiel od viacužívateľského dokonca s viacerými experimentami súčasne. Treba myslieť na to, ako vhodne vyriešiť škálovateľnosť, možné problémy s bezpečnosťou, viacužívateľský prístup, ostatné problémy prístupnosti a podobne.
+Dôležité je uvedomiť si, ktoré z týchto komponentov chceme využiť, pretože na vytvorenie laboratória nie vždy potrebujeme všetky. Prípadne môžme využiť aj iné, ktoré sa nám dokonale hodia na danú úlohu. Niekedy sa používa napr. aj databázový server ak chceme experimenty ukladať a spracovávať neskôr. Tak isto je potrebné uvedomiť si, aký typ VL chceme vytvoriť. Určite budú rozdiely pri návrhu jednoužívateľského VL narozdiel od viacužívateľského dokonca s viacerými experimentami súčasne. Treba myslieť na to, ako vhodne vyriešiť škálovateľnosť, možné problémy s bezpečnosťou, viacužívateľský prístup, ostatné problémy prístupnosti a podobne.
 
 
 \section{Použíté technológie}\label{used-technologies}
-V predchádzajúcich kapitolách sme popísali cieľe, čo chceme vlastne dosiahnuť. Ďalej sme analyzovali možnosti virtuálnych laboratórií a porovnali už s existujúcimi riešeniami. V tejto sekcii budú v krátkosti rozpísané použité technológie. Je samozrejmé, že nie je možné ku každej popísať všetky jej možnosti, ale budeme sa venovať hlavne tým, ktoré plánujeme využiť aj v implementácií.
+V predchádzajúcich kapitolách sme popísali cieľe, ktoré chceme vlastne dosiahnuť. Ďalej sme analyzovali možnosti virtuálnych laboratórií a porovnali už s existujúcimi riešeniami. V tejto sekcii budú v krátkosti rozpísané použité technológie. Je samozrejmé, že nie je možné ku každej popísať všetky jej možnosti, ale budeme sa venovať hlavne tým, ktoré plánujeme využiť aj v implementácií.
 
-\subsection{Matlab R2015b}
+\subsection{MATLAB R2015b}
 Milióny inžinierov a vedcov na celom svete používajú MATLAB na analýzu a návrh systémov a produktov ktore menia náš svet. MATLAB sa používa v automobilových systémoch, vesmírnych staniciach, smart siete, mobilých sieťach LTE alebo aj v škole na štúdium. Ďalej sa používa pre strojové učenie, spracovanie signálu, spracovanie obrazu, počítačové videnie, komunikácie, finančníctvo, riadenie, robotika a mnoho ďalšich využití.
 Celá platforma MATLAB je optimalizovaná pre riešenie inžinierskych a vedeckých problémov. Jazyk MATLABu je založený na práci s maticami. Je považovaný za najprirodzenejší spôsob ako počítať matematické úlohy. Pomocou integrovanej grafickej knižnici je možné vizualizovať a získať výsledky z dát. MATLAB integruje aj množstvo toolboxov, ktoré pomáhajú priamo začať s algoritmami, ktoré potrebujeme pre našu doménu.\cite{matlab-mathworks}
 
 \subsubsection{Simulink}
-Matlab obsahuje viacero integrovaných nástrojov a jeden z nich je aj Simulink. Je to grafické rozhranie, v ktorom je možné modelovať, simulovať a potom aj analyzovať dynamické systémy. Jeho hlavné rozhranie je grafické plátno, kde možme spájať jednotlivé bloky do diagramu. Simulink vie úzko spolupracovať s matlabom, dokonca môže byť odtiaľ aj skriptovaný, resp. počiatočná inicializácia hodnôt. Matlab a simulink sú vlastne dve prostredia integrované do jedného software. Čiže je možné simulovať a analyzovať náš model v každom kroku simulácie v oboch prostrediach. Simulink väčšinou spúštame priamo z Matlabu.
+Matlab obsahuje viacero integrovaných nástrojov a jeden z nich je aj Simulink. Je to grafické rozhranie, v ktorom je možné modelovať, simulovať a potom aj analyzovať dynamické systémy. Jeho hlavné rozhranie je grafické plátno, kde možme spájať jednotlivé bloky do diagramu. Simulink vie úzko spolupracovať s matlabom, dokonca môže byť odtiaľ aj skriptovaný, resp. počiatočná inicializácia hodnôt. Matlab a Simulink sú vlastne dve prostredia integrované do jedného software. Čiže je možné simulovať a analyzovať náš model v každom kroku simulácie v oboch prostrediach. Simulink väčšinou spúštame priamo z Matlabu.
 
 \subsubsection{Komunikácia medzi Matlabom a Node.js}
-Simulácia dynamickej sústavy, ktorá sa spustí v Simulinku môže odosielať výsledné dáta do Matlab workspace. Odtiaľ ich budeme chciet posielať do Node.js na ďalšie spracovanie. V matlabe existuje viacero možností získania dát z workspace.\\\\
-\textbf{COM} (Component Object Model) je prvá z technologických možností. COM bolo vytvorené spoločnosťou Microsoft, čiže toto riešenie je obmedzené len na Windows platformu. Používajú sa na prepojenie rôznych aplikácií podporujúcich túto technológiu. Tieto objekty môžu byť vytvorené pomocou rôznych programovacích jazykov ako napr. C++ alebo Java.\cite{matlab-microsoft-com}\\
-Kým idea COM je celkom jasná, terminológia až toľko nie. \textit{COM object} je softwarový komponent, ktorá zodpovedá Component Object Model. COM vnucuje zapuzdrenie objektu a tým predchádza pred priamym prístupom do dát a implementácie. COM objekt poskytne rozhranie, ktoré obsahuje premenné, metódy a udalosti. \textit{COM client} je program, ktorý používa COM objekty. COM objekty, ktorý poskytujú funkcionalitu pre použitie sú volané COM server. COM server môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. \textit{Microsoft ActiveX control} je typ in-process COM servera, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model su tiež príklady control kontajnerov. Matlab može byť použitý aj ako COM klient aj ako COM automation server.\cite{matlab-com}\\
+Simulácia dynamickej sústavy, ktorá sa spustí v Simulinku môže odosielať výsledné dáta do Matlab workspace. Odtiaľ ich budeme chciet posielať do Node.js na ďalšie spracovanie. V Matlabe existuje viacero možností získania dát z workspace.\\
 
-\textbf{Websockety}
-popisat matlab webscokety -- narocnejsie implementovat, pretoze nie je nativna implementacia\\
-%
-% Dlhy komentaaaaaaaaaaaaaaaaaaaaaaaaaaaaaar
-% 
+\textbf{COM} je prvá z technologických možností. COM bolo vytvorené spoločnosťou Microsoft, teda problémom tohto riešenia je obmedzené len na Windows platformu. Používajú sa na prepojenie rôznych aplikácií podporujúcich túto technológiu. Tieto objekty môžu byť vytvorené pomocou rôznych programovacích jazykov ako napr. C++ alebo Java.\cite{matlab-microsoft-com}
+Kým idea COM je celkom jasná, terminológia až toľko nie je.
 
-\textbf{RESTful web service}
-Medzi najmodernejšie možnosti komunikácie Matlabu s vonkajškom patria jednoznačne RESTful služby. REST (representational state transfer) je softwarový architektonický štýl, pomocou ktorého vieme posielať a získavať dáta zo serveru. REST komunikuje pomocou HTTP/HTTPS protokolu a zväčša sa používa na CRUD aplikácie, čiže tam kde chceme robiť CREATE, READ, UPDATE, DELETE operácie. Dáta je možné vymieňať medzi klientom a serverom cez \textit{JSON} alebo \textit{XML} správ. Pre jednoduchšie projekty sa používajú skôr JSON, hlavne ak sa maju spracovávať JavaScriptom. Výhodou RESTful v tomto riešení je to, že je priamo implementované v Matlabe a nie je potrebné inštalovať ďalšie knižnice a toolboxy.
+\verb|COM object| je softwarový komponent, ktorý zodpovedá Component Object Model. COM vnucuje zapuzdrenie objektu a tým predchádza pred priamym prístupom do dát a implementácie. COM objekt poskytne rozhranie, ktoré obsahuje premenné, metódy a udalosti.
+
+\verb|COM client| je program, ktorý používa COM objekty. COM objekty, ktoré poskytujú funkcionalitu pre použitie sú volané COM server.
+
+\verb|COM server| môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. Microsoft ActiveX control je typ in-process COM servera, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model sú tiež príklady control kontajnerov. Matlab može byť použitý aj ako COM klient aj ako COM automation server.\cite{matlab-com}\\
+
+\textbf{WebSockets} je protokol poskytujúci obojsmernú komunikáciu cez jediné TCP spojenie. WebSocket bol vytvorený a použitý pre webové prehliadače a serveri, ale môže byť použitý akýmkoľvek klientom alebo serverom. Špecifikácia protokolu definuje \verb|ws| a \verb|wss| ako dve nové URI schémy, ktoré sú použité pre nešifrované a šifrované spojenia.
+
+Nevýhodou tohto riešenia pre náš systém je ten, že nie je priamo implementovaný v Matlabe. Keďže pod Matlabom beží JVM, tak je možné implementovať WebSockety pomocou programovacieho jazyku Java a spraviť z toho knižnicu pre Matlab.
+
+Narazili sme na jednu knižnicu vytvorenú týmto spôsobom na odkaze\\ \textit{https://bitbucket.org/kvasnica/wsclient/wiki/Home}. Jej nevýhodou je, že by bolo potrebné inštalovať externé závislosti, ktoré by sa mohli stať nekompatibilné pri zmene Matlabu na vyššiu verziu. Najprv je potrebný \verb|tbxmanager|, ako manažér balíkov a následne pomocou neho inštalácia už konkrétnych balíkov \verb|wsclient, matwebsocks, eventcollector|.\\
+
+\textbf{RESTful web service} patrí medzi modernejšie možnosti komunikácie Matlabu s vonkajším svetom rovnako ako WebSockets. REST je softwarový architektonický štýl, pomocou ktorého vieme posielať a získavať dáta zo serveru. REST komunikuje pomocou HTTP/HTTPS protokolu a zväčša sa používa na CRUD aplikácie, čiže tam kde chceme robiť CREATE, READ, UPDATE, DELETE operácie. Dáta je možné vymieňať medzi klientom a serverom cez \verb|JSON| alebo \verb|XML| správ. Pre jednoduchšie projekty sa používajú skôr JSON, hlavne ak sa maju spracovávať JavaScriptom. Výhodou RESTful v tomto riešení je to, že je priamo implementované v Matlabe a nie je potrebné inštalovať ďalšie knižnice a toolboxy.
 
 \begin{figure}[H]
   \centering
@@ -155,86 +170,42 @@ Medzi najmodernejšie možnosti komunikácie Matlabu s vonkajškom patria jednoz
   \label{rest-http}
 \end{figure}
 
-Na obrázku č.\ref{rest-http} vidíme ako vyzerá HTTP request. V položke \textit{<VERB>} sa nachádza jedna z HTTP metód GET, PUT, POST, DELETE, OPTIONS, ... V \textit{<URI>} je zase linka na zdroj, nad ktorým sa bude vykonávať daná operácia. \textit{<HTTP version>} je verzia HTTP, vo všeobecnosti to bude "HTTP v1.1" ale môže byť aj "HTTP v2.0" v novších systémoch.\\
-\textit{<Request Header>} obsahuje metadáta ako kolekciu párov "key" : "value" hlavičky. Tieto nastavenia obsahujú informáciu o správe a jej odosielateľovi ako typ klienta, aký formát podporuje klient, typ formátu správy tela, nastavenia cache pre odpoveď a mnohé ďalšie informácie.\\
-\textit{<Request Body>} je aktuálny obsah správy. V RESTful službách je toto miesta, kde sa nachádza obsah správy, ktorý sa vymieňa medzi klientom a serverom. V tejto časti nie sú žiadne tagy ani značky pre učenie začiatku alebo konca správy.\cite{rest-vaqqas}
+Na obrázku \ref{rest-http} je štruktúra HTTP requestu. V položke \verb|<VERB>| sa nachádza jedna z HTTP metód GET, PUT, POST, DELETE, OPTIONS, ...
 
-\begin{algorithm}[H]
-\lstset{
-   language=XML,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=none,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b
-}
-\begin{lstlisting}
-POST http://MyService/Person/
-Host: MyService
-Content-Type: text/xml; charset=utf-8
-Content-Length: 123
-<?xml version="1.0" encoding="utf-8"?>
-<Person>
-  <ID>1</ID>
-  <Name>M Vaqqas</Name>
-  <Email>m.vaqqas@gmail.com</Email>
-  <Country>India</Country>
-</Person>
-\end{lstlisting}
- \caption{Príklad POST requestu.}
- \label{post-request}
-\end{algorithm}
+\verb|<URI>| slúži na učenie zdroju, nad ktorým sa bude vykonávať operácia a je tam uložený jeho odkaz.
 
-\begin{algorithm}[H]
-\lstset{
-   language=XML,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=none,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b
-}
-\begin{lstlisting}
-HTTP/1.1 200 OK
-Date: Sat, 23 Aug 2014 18:31:04 GMT
-Server: Apache/2
-Last-Modified: Wed, 01 Sep 2004 13:24:52 GMT
-Accept-Ranges: bytes
-Content-Length: 32859
-Cache-Control: max-age=21600, must-revalidate
-Expires: Sun, 24 Aug 2014 00:31:04 GMT
-Content-Type: text/html; charset=iso-8859-1
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns='http://www.w3.org/1999/xhtml'>
-<head><title>Hypertext Transfer Protocol -- HTTP/1.1</title></head>
-<body>
-...
-\end{lstlisting}
- \caption{Príklad GET requestu.}
- \label{get-request}
-\end{algorithm}
+\verb|<HTTP version>| je verzia HTTP, vo všeobecnosti to bude "HTTP v1.1" ale môže byť aj "HTTP v2.0" v novších systémoch.
 
-V ukážke POST requestu č.\ref{post-request} zasielame serveru XML s údajmi o novej osobe. V ukážke GET requestu č.\ref{get-request} je vidieť, že server vráti obsah HTML stránky na ktorú bola požiadavka vytvorená.
+\verb|<Request Header>| obsahuje metadáta ako kolekciu párov "key" : "value" v hlavičke. Tieto nastavenia obsahujú informáciu o správe a jej odosielateľovi ako typ klienta, aký formát podporuje klient, formát správy tela, nastavenia cache pre odpoveď a mnohé ďalšie informácie.
 
-Teraz keď sme si vysvetlili v stručnosti ako fungujú RESTful služby, tak sa dostávame k tomu ako ich je možné využiť z Matlabu. Matlab poskytuje viacero funkcií na prácu s REST ako \textit{weboptions}, \textit{webread}, \textit{webwrite}.\\
-Objekt \textit{weboptions} slúži na špecifikáciu parametrov pre RESTful službu. V Matlabe sa volá príkazom \textit{options = weboptions} alebo \textit{options = weboptions(Name,Value)} pričom \textit{Name} je názov parametra, ktorý chceme nastaviť a \textit{Value} jeho hodnota.\\
-Je možné nastaviť tieto parametre: \textit{CharacterEncoding, UserAgent, Timeout, Username, Password, KeyName, KeyValue, ContentType, ContentReader, MediaType, RequestMethod, ArrayFormat}. Ak chceme zobraziť objekt weboptions, tak namiesto hesla tam budú hviezdičky. Každopádne, objekt ukladá heslo ako čistý text. V prípade keď zavoláme túto vlastnosť v Matlabe cez options.Password tak heslo bude viditeľné.\ref{matlab-weboptions}\\
-Objekt \textit{webread} číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \textit{data = webread(url)} kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \textit{data = webread(url,QueryName1,QueryValue1,...,QueryNameN,QueryValueN)} s parametrami url a QueryName, QueryValue ktoré pridá ako parametre do url volania. \textit{data = webread(\_\_\_, options)} kde môžeme špecifikovať aj weboptions objekt.\ref{matlab-webread}\\
-A posledný objekt \textit{webwrite}. Ako aj v predchádzajúcom prípade obsahuje rovnaké metódy s parametrami. \textit{response = webwrite(url,PostName1,PostValue1,...,PostNameN,PostValueN)} zapíše obsah na špecifikovanú url a vráti response. \textit{response = webwrite(url,data)} zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole. \textit{response = webwrite(\_\_\_, options)} zapíše obsah na špecifikovanú url a vráti response.
+\verb|<Request Body>| je aktuálny obsah správy. V RESTful službách je toto miesto, kde sa nachádza obsah správy, ktorý sa vymieňa medzi klientom a serverom. V tejto časti nie sú žiadne tagy ani značky pre učenie začiatku alebo konca správy.\cite{rest-vaqqas}
+
+V ukážke POST requestu na obrázku \ref{post-http} zasielame serveru JSON s jednoduchým párom.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/rest/post-request.png}
+  \caption{HTTP POST request.}
+  \label{post-http}
+\end{figure}
+
+A zase na obrázku \ref{get-http} v prípade GET requestu vidíme, že server vráti zdroje, ktoré server vracia, alebo v našom prípade celý obsah HTML stránky na ktorú bola požiadavka vytvorená.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/rest/get-request.png}
+  \caption{HTTP GET request.}
+  \label{get-http}
+\end{figure}
+
+Teraz keď sme si vysvetlili v stručnosti ako fungujú RESTful služby, tak sa dostávame k tomu ako ich je možné využiť v Matlabe. Matlab poskytuje viacero funkcií na prácu s REST ako \verb|weboptions, webread, webwrite.|
+
+Objekt \verb|weboptions| slúži na špecifikáciu parametrov pre RESTful službu. V Matlabe sa volá príkazom \verb|options = weboptions| alebo \verb|options = weboptions(Name,Value)| pričom \verb|Name| je názov parametra, ktorý chceme nastaviť a \verb|Value| jeho hodnota. Je možné nastaviť tieto parametre: \verb|CharacterEncoding, UserAgent, Timeout, Username,| \\ \verb|Password, KeyName, KeyValue, ContentType, ContentReader, MediaType,| \\ \verb|RequestMethod, ArrayFormat|. Ak chceme zobraziť heslo v objekte weboptions, tak na pozícií hesla síce budú hviezdičky, každopádne objekt ukladá heslo ako čistý text. V prípade keď zavoláme túto vlastnosť v Matlabe cez \verb|options.Password| tak heslo bude viditeľné.\cite{matlab-weboptions}
+
+Objekt \verb|webread| číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \verb|data = webread(url)| kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \verb|data = webread(url, QueryName1, QueryValue1,| \\ \verb|..., QueryNameN, QueryValueN)| kde vložené parametre pridá do url volania. Posledná možnosť je \verb|data = webread(___, options)|, kde môžeme špecifikovať aj \hyphenation{weboptions} objekt.\cite{matlab-webread}
+
+A posledný objekt \verb|webwrite|. Ako aj v predchádzajúcom prípade obsahuje rovnaké metódy s parametrami. \verb|response = webwrite(url, PostName1, PostValue1, ...,| \\ \verb|PostNameN, PostValueN)| zapíše obsah na špecifikovanú url a vráti response.\\ \verb|response = webwrite(url, data)| zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole.\\
+\verb|response = webwrite(___, options)| zapíše obsah na špecifikovanú url a vráti response.
 
 \subsection{Node.js}
 Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych, škálovateľných sieťových aplikácií. Node.js používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.\\
