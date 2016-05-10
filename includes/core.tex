@@ -307,83 +307,92 @@ Na základe popísaných základných častí Node.js v predchádzajúcich sekci
 Ako teda vidíme, Node.js nie je vhodný na všetky úlohy, ale vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time získavanie údajov, single page aplikácie, websockety tak je na takéto úlohy veľmi vhodný. Vo všeobecnosti všade kde sa používajú I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení.\cite{nodejs-introduction}
 
 \subsection{Node Package Manager}
-Node.js po nainštalovaní obsahuje aj \textit{NPM} (Node Package Manger). NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára (\textit{https://www.npmjs.org}). Rovnako aj môžme vytvoriť vlastný modul a uložiť ho do repozitára.\\
-Každý modul by mal mať vlastný adresár, ktorý tiež obsahuje súbor s metadátami volaný \textit{package.json}. V tomto súbore musí byť nastavené aspoň tieto dve vlastnosti: \textit{name, version}.\cite{nodejs-by-example}
+Node.js po nainštalovaní obsahuje aj \verb|NPM|. NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára\\ \textit{https://www.npmjs.org}. Rovnako je možné aj vytvoriť vlastný modul a uložiť ho do repozitára.
+
+Každý modul by mal mať vlastný adresár, ktorý tiež obsahuje súbor s metadátami volaný \verb|package.json|. V tomto súbore musia byť nastavené vlastnosti a ich hodnoty ako na obrázku \ref{img-npm-packagejson}, čiže: \verb|name| a \verb|version|.\cite{nodejs-by-example}
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/npm/npm-minimum.png}
+  \caption{Potrebné vlastnosti nastavené v package.json.}
+  \label{img-npm-packagejson}
 \end{figure}
 
+Ďalšia dôležitá vec je, že pri \verb|version| musíme používať sémantické verziovanie\\ (\textit{http://semver.org/}), kde pri verzií \verb|1.2.3| je prvá major verzia, druhá minor a tretia len oprava chýb.
+
 \subsubsection{Použitie modulov}
-Vo všeobecnosti sú tri možnosti ako použiť moduly, ktoré už existujú. Všetky tri zahŕňajú manažéra na spravovanie balíkov:\cite{nodejs-by-example}
+Vo všeobecnosti existujú tri možnosti ako použiť moduly, ktoré sú už publikované na npmjs.org. Všetky tri možnosti si vyžadujú použitie Node manažéra na prácu s balíkmi:\cite{nodejs-by-example}
+
 \begin{itemize}
-\item môžme nainštalovať špecifický modul manuálne tak, že sa presunieme do požadovaného priečinka a zavoláme v termináli 
-\textit{npm install nazov-modulu}
-Správca balíkov automaticky nainštaluje poslednú verziu modulu a vloží ju do priečinka \textit{node\_modules}. Ak ho chceme použiť, nepotrebujeme volať celú cestu, ale len \textit{require(nazov-modulu)}.
-\item inštalácia modulu globálne vďaka \textit{-g} značke v príkaze.
-\textit{npm install nazov-modulu -g}
-Je to vhodnejšie používať skor na vývojové nástroje ako na bežné moduly.
-\item posledná možnosť je zavolanie
-\textit{npm install}
-nad priečinkom kde sa nachádza už predtým spomínaný \textit{package.json} a obsahuje v sebe vlastnosť \textit{dependencies}
+\item môžme nainštalovať špecifický modul manuálne tak, že sa presunieme do požadovaného priečinka a zavoláme v termináli \verb|npm install nazov-modulu|. Správca balíkov automaticky nainštaluje poslednú verziu modulu a vloží ju do priečinka \verb|node_modules|. V prípade použitia, nevoláme celú cestu, ale len \verb|require(nazov-modulu)|.
+\item inštalácia modulu globálne pre celý systém s použitím \verb|-g| prepínača v príkaze. \verb|npm install nazov-modulu -g|. Toto použitie slúži skôr na inštaláciu vývojových nástrojov, ktorých verzia sa tak často nemení a nie na bežné moduly.
+\item posledná možnosť je príkaz \verb|npm install| v priečinku, kde sa nachádza už spomínaný súbor \verb|package.json| a má v sebe vlastnosť \verb|dependencies| ako na obrázku \ref{img-npm-dependencies}.
 \end{itemize}
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/npm/npm-overview-dependency.png}
+   \caption{Dependencies vlastnosť v package.json.}
+  \label{img-npm-dependencies}
 \end{figure}
 
 \subsubsection{Vstavané moduly}
-Node.js je považovaný za technológiu, pomocou ktorej môžeme tvoriť backend aplikácie. Často potrebujeme robiť rôzne úlohy. V Node.js existujú veľmi nápomocné moduly, ktoré môžeme využiť.\cite{nodejs-by-example}
+Node.js je považovaný za technológiu, pomocou ktorej môžeme programovať backend aplikácie. Často potrebujeme robiť rôzne úlohy. V Node.js existujú veľmi nápomocné moduly, ktoré môžeme využiť.\cite{nodejs-by-example}
 
 \subsubsection{Vytvorenie web servera pomocou HTTP modulu}
-Modul \textit{http} patrí medzi veľmi používané, pretože vďaka nemu spustíme web server na konkrétnom porte.
+Modul \verb|http| patrí asi medzi najviac používané, pretože vďaka nemu spustíme web server na konkrétnom porte.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/npm/npm-http-module.png}
+  \caption{Dependencies vlastnosť v package.json.}
+  \label{img-npm-http}
 \end{figure}
 
-Máme dostupnú metódu \textit{createServer}, ktorá vracia nový web server objekt. Vo väčšine prípadov zavoláme aj metódu \textit{listen}. Ak je potrebné tak pomocou \textit{close} zastavíme prímanie nových požiadaviek. Callback funkcia, ktorú tam využívame, vždy má \textit{request} (req) a \textit{response} (res) objekty. Prvý objekt môžeme použiť na získanie informácií o prichádzajúcich požiadaviek ako napr. \textit{GET}, \textit{POST} parametre.\cite{nodejs-by-example}
+Máme dostupnú metódu \verb|createServer()|, ktorá vracia nový web server objekt. Často hneď za tým voláme aj \verb|listen()| metódu pre nastavenie portu. Ak je potrebné tak pomocou funkcie \verb|close()| zastavíme prímanie nových požiadaviek. Telo callback funkcie, ktorú používame má vždy \verb|request| a \verb|response| objekty. Prvý objekt sa používa na získanie informácií o prichádzajúcich požiadavkách ako napr. parametre z \verb|GET| a \verb|POST|.\cite{nodejs-by-example}
+
 
 \subsection{Express.js}
-Express.js sa zaraďuje medzi minimalistické a flexibilné Node.js webové frameworky. Poskytuje robustné možnosti pre vývoj webových a mobilných aplikácií. Uľahčuje vývoj webových aplikácií založených na Node.js.\cite{express-tutorial}\\
+Express.js patrí medzi minimalistické a flexibilné Node.js webové frameworky. Poskytuje robustné možnosti pre vývoj webových a mobilných aplikácií. Uľahčuje vývoj webových aplikácií založených na Node.js.\cite{express-tutorial}\\
 
-Medzi jeho hlavné vymoženosti patria:
+\noindent Medzi jeho hlavné možnosti patrí:
 \begin{itemize}
-\item umožňuje nastaviť middleware pre odpovede na HTTP požiadavky,
-\item definuje smerovaciu tabuľku, ktorá je použitá na vykonanie rôznych požiadaviek založených na HTTP,
+\item možnosť nastaviť middleware funkciu pre odpovede na HTTP požiadavky,
+\item definuje smerovaciu tabuľku, ktorá je použitá na vykonanie požiadaviek založených na HTTP,
 \item umožňuje dynamicky vykreslovať HTML stránky, tak aby bolo možné vkladať argumenty do šablóny.
 \end{itemize}
 
-Často pri inštalácií Expressu inštalujeme aj \textit{body-parser}, ktorý slúži ako middleware pre narábanie s JSON, Raw, Text a URL kódovanými údajmi.
+Vo väčšine prípadov web aplikácií s použitím Expressu inštalujeme aj \verb|body-parser|, ktorý slúži ako middleware pre narábanie s JSON, Raw, Text a URL parametrami.
 
 \subsubsection{Web server}
-Následujúca ukážka na obrázku č. \ref{express-example} je základná kostra Express aplikácie, ktorá spustí server a počúva na porte 8081. Po príchode na stránku bude vždy odpovedať textom \textbf{Hello wordl!}.\cite{express-tutorial}
+Následujúca ukážka na obrázku \ref{img-express-base} je základná kostra Express aplikácie, ktorá spustí web server a počúva na porte 8081. Po príchode na stránku bude vždy odpovedať textom \textbf{Hello wordl!}.\cite{express-tutorial}
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/express/express-example.png}
   \caption{Spustenie web servera na porte 8081.}
-  \label{express-example}
+  \label{img-express-base}
 \end{figure}
 
-Na spustenie tohto kódu ho musíme vložiť do súboru s koncovkou .js a následne spustiť \textit{node app.js} a potom dostaneme výstup v termináli \textit{Example app listening at http://0.0.0.0:8081}.
+Na spustenie tohto kódu je potrebné ho vložiť do súboru s koncovkou app\textbf{.js} a následne spustiť \verb|node app.js| čoho výsledkom bude výstup v termináli \textbf{Example app listening at http://0.0.0.0:8081}.
 
-\subsubsection{Objekty Request a Response}
-Webová aplikácia používa objekty request a reponse z Node.js, ktoré sú dostupné ako callback funkcia.\cite{express-tutorial}
+\subsubsection{Request a Response objekty}
+Ak webová aplikácia používa smerovanie tak obsahuje objekty request a reponse z Node.js, ktoré sú dostupné v callback funkcii. Na obrázku \ref{express-res-req} je smerovanie na hlavnú stránku.\cite{express-tutorial}
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/express/express-req.png}
   \caption{Objekt req a res ako parametre callback funkcie.}
-  \label{express-example}
+  \label{express-res-req}
 \end{figure}
+
+\textbf{Request} objekt reprezentuje HTTP request a obsahuje isté vlastnosti a funkcie. Ich zoznam je celkom dlhý a nebudeme ich potrebovať všetky. Ale niektoré stoja za zmienku ako \verb|req.body|, obsahujúci páry \verb|"kľúč": "hodnota"|, ktoré boli vytvorené ako telo správy. \verb|req.cookies| umožňuje získať cookies z klienta na server. \verb|req.params| slúži na získanie parametrov z URL, ked používame dynamické volania ako napr. \textbf{/user/:id} tak \textbf{id} je parameter dostupný v \verb|req.params.id|. Čo sa týka funkcií request objektu, tak tie zvyčajne nie sú používané.\cite{nodejs-exp-request}
+
+\textbf{Response} objekt predstavuje HTTP response, ktorý Express odošle po prijatí GET prípadne POST požiadavky. Pri tomto popise zase nie sú pre nás zaujímavé vlastnosti, ale skôr funkcie. Pomocou \verb|res.cookie(name, value [, options])| vieme nastaviť hodnotu cookie a s \verb|res.clearCookie(name [, options])| ju zase vymazať. Ďalej môžme odoslať kód, aby klient vedel akým statusom skončila požiadavka. Používa sa na to funkcia \verb|res.status(200).end()|, kde číselný kód sa určuje podľa štandardných HTTP status hodnôt. Užitočná je aj funkcia \verb|res.json({ user: 'xstark' })| pre zaslanie odpovede vo formáte JSON. V prípade, že potrebujeme sa presmerovať na inú stránku, tak použijeme \verb|res.redirect([status,] path)| funkciu.\cite{nodejs-exp-response}
 
 \subsubsection{Routing}
 Routing, teda smerovanie slúži na určenie ako bude aplikácia reagovať na požiadavku klienta, čo zahŕňa URI a špecifické metódy (GET, POST, PUT, DELETE, ...) HTTP požiadavky.\cite{express-tutorial}
-Každý \verb|route| môže mať viacero callback funkcií, ktoré sa vykonajú ak je zavolaná daná route.
+Každý \verb|route| môže mať viacero callback funkcií, ktoré sa vykonajú ak je zavolaná daná route.\\
 
 \noindent Definícia route má následujúcu štruktúru \verb|app.METHOD(PATH, CALLBACK)|, kde:
 \begin{itemize}
@@ -404,19 +413,17 @@ Funkcie označované middleware, sú také, ktoré majú prístup do request \ve
 \item zavolať ďalšiu middleware funkciu v poradí. 
 \end{itemize}
 
-Na obrázku č. \ref{img-express-middleware} nižšie sú popísane vlastnosti tejto funkcie.\cite{express-middleware}
+Obrázok \ref{img-express-middleware} popisuje vlastnosti middleware funkcie. V prípade, že middleware funkcia neukončí volanie, musí posunúť obsluhu ďalšej middleware funkcii zavolaním \verb|next()|. Inak sa request zasekne a klient bude stále čakať na odpoveď a po určitom omeškaní sa ukončí.\cite{express-middleware}
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{img/express/express-middleware.png}
-  \caption{Vlastnosti middleware funkcie.}
+  \caption{Vlastnosti middleware funkcie.\cite{express-middleware}}
   \label{img-express-middleware}
 \end{figure}
 
-V prípade, že middleware funkcia neukončí volanie, musí posunúť obsluhu ďalšej middleware funkcií zavolaním \verb|next()|. Inak sa request zasekne a klient bude stále čakať na odpoveď a po určitom omeškaní sa ukončí.\cite{express-middleware}
-
 \subsection{MongoDB}
-MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čiže nepoužíva klasickú štruktúru ako v relačnej databáze na báze tabuliek, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka ukladaniu JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie.\cite{mongodb-wiki}
+MongoDB je multiplatformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čo znamená, že nepoužíva klasickú tabuľkovú štruktúru ako v relačnej databáze, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka formáte JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie.\cite{mongodb-wiki}
 
 \begin{figure}[H]
   \centering
@@ -425,15 +432,17 @@ MongoDB je multi platformová dokumentovo orientovaná databáza. Je klasifikova
   \label{mongodb-example}
 \end{figure}
 
-Na obrázku č.\ref{mongodb-example} je príklad dokumentu, ktorý sa ukladá do MongoDB, v jednoduchých prípadoch nie je vidieť žiadny rozdiel oproti klasickému JSON.
+Obrázku \ref{mongodb-example} je príklad dokumentu, ktorý sa ukladá do MongoDB. V jednoduchých prípadoch ako tento nie je vidieť žiadny rozdiel oproti klasickému JSON.
 
 \subsection{Angular.js}
-Angular.js, bežne označovaný aj ako Angular je open-source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA (single page applications), čiže webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC (model-view-controller) alebo MVVM (model-view-view-model) architektúre.
-Angular.js framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstrupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané z statických (väčšinou uložené na súborovom systéme), dynamických (získané z RESTful služby) JSON súborov.
-Je front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpressJS web server framework, \textbf{A}ngular  a \textbf{N}odeJS ako aplikačný server, resp. prostredie.\cite{angular-wiki}\cite{angular-docs}
+Angular.js, bežne označovaný aj ako Angular je open source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA, teda takých webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC alebo MVVM architektúre.
+
+Framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané z statických (väčšinou uložených na súborovom systéme), dynamických (získaných z RESTful služby) JSON súborov.
+
+Slúži ako front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpress.js web server framework, \textbf{A}ngular.js  a \textbf{N}ode.js ako aplikačný web server.\cite{angular-wiki}\cite{angular-docs}
 
 \subsubsection{Koncept}
-Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju časť práce. Na obrázku je možné vidieť jeho základné komponenty, z ktorých sa skladá. Nižšie si popíšeme hlavne tie, ktoré využívame v práci.\cite{angular-concept}
+Angular ako framework sa skladá z viacerých časti, z ktorých každá má svoju úlohu. Na obrázku \ref{img-angular-concept} sú zobrazené základné komponenty, z ktorých sa skladá. Nižšie si popíšeme hlavne tie, ktoré chceme využíť v našom softwarovom riešení.\cite{angular-concept}
 
 \begin{figure}[H]
   \centering
@@ -442,33 +451,33 @@ Angular teda ako framework sa skladá z viacerých časti, ktoré robia svoju č
   \label{img-angular-concept}
 \end{figure}
 
-\textbf{Directives}\label{angular-directives}
-Jednoducho povedané, directívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML compileru (\textit{\$compile}), aby priradil špecifické správanie na daný DOM element (napr. pomocou event listenerov), alebo dokonca transformoval DOM element ako svoje dieťa. V šablónach sa spájajú informácie z modelu a controlleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
-Angular je dodávaný zo vstavanými directivámi, od ktorých sa očakáva, že budú využívané často. Napr. \textit{ngBind}, \textit{ngModel}, \textit{ngClass}.\cite{angular-docs}
 
 \subsubsection{Scope}
-Scope je objekt, ktorý odkazuje na model aplikácie. Je to kontext, na ktorom sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou  textit{\$watch} a vykonávať udalosti (\textit{\$apply}) cez celý systém do view. Je považovaný ako lepidlo medzi aplikačným controllerom a view. Aj controller aj directivy majú prístup k scope, ale nie navzájom k sebe. Vďaka tomu je controller izolovaný od directivy a tak isto aj od DOM. 
-Každá aplikácia ma práve jeden \textit{\$rootScope}, ale môže mať viacero detských \textit{\$scope}. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako dieťa k rodičovskému scope. Toto vytvára stromovú štruktúru paralernú k DOM, kde sú priradené.\cite{angular-docs}
+Scope je objekt, ktorý odkazuje na model aplikácie. V tomto kontexte sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou \verb|$watch| a vykonávať udalosti s \verb|$apply| cez celý systém do view. Slúži na previazanie aplikačného controlleru a viewu. Rovnako ako controller aj directivy majú prístup k scope, ale nie navzájom medzi sebou. Vďaka tomu je controller izolovaný od directivy a tak isto aj od DOM.
 
-Dirty checking v scope pre zmeny vlastností objektu je často používaná operácia a preto by mala byť efektívna. V závislosti od potreby môže byť dirty checking využité týmito troma stratégiami: referenciou na objekt, obsah poľa alebo na hodnoty objektu. Líšia sa v spôsobe zaregistrovania zmeny aj výkonostnými rozdielmi.
+Každá aplikácia ma práve jeden \verb|$rootScope|, ale môže mať viacero detských \verb|$scope|. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako detský k rodičovskému scope. Tento systém vytvára stromovú štruktúru paralernú k DOM, v ktorej sú vytvorené.\cite{angular-docs}
 
-\begin{itemize}
-  \item Sledovanie podľa referencie \textit{\$scope.\$watch(watchExpression, listener)}: detekuje zmenu, keď sa do sledovanej hodnoty nastaví nová. Ak sledovaný objekt, alebo pole, zmeny vnútri nie su detekované. Toto je najúčinnejšia stratégia.
-  \item Sledovanie na celej kolekcii (poli) \textit{\$scope.\$watchCollection(watchExpression, listener)}: detekuje zmeny, ku ktorým dochádza vo vnútri poľa alebo objektu. Napr. keď sú položky pridané, odstránené alebo sa v nich zmenilo poriadie. Detekcia je plytká, čiže nesleduje vnorené kolekcie. Sledovanie celého obsahu kolekcie je výkonovo náročnejsie ako sledovanie podľa referencie, pretože treba uchovávať kópie obsahu. Avšak, táto stratégia sa snaží minimalizovať množstvo potrebných kopírovaní.
-  \item Sledovanie všetkých položiek objektu \textit{\$scope.\$watch(watchExpression, listener, \textbf{true})}: detekuje akúkoľvek zmenu v ľubovolnej vnorenej štruktúry. Táto stratégia má najväčšie možnosti detekovania zmien, ale za to aj výkonovo a pamäťovo náročnejšia. Je potrebné uchovávať kópiu celej vnorenej štruktúry a pri každej zmene, sa musí nakopírovať do pamäte.
-\end{itemize}
+Často používaná operácia pre zistenie zmien na objekte v scope sa volá \textbf{dirty checking} a preto by mala byť efektívna. V závislosti od potreby môže byť dirty checking využité týmito troma stratégiami: referenciou na objekt, obsah poľa alebo na hodnoty objektu - obrázok \ref{img-angular-watch}.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/angular/concepts-scope-watch-strategies.png}
   \caption{Možnosti sledovania modelu v Angular.js.}
-  \label{img-angular-watchl}
+  \label{img-angular-watch}
 \end{figure}
 
+\noindent Líšia sa v spôsobe sledovania zmeny a výkonostnými rozdielmi:
+\begin{itemize}
+  \item \textbf{podľa referencie:} \verb|$scope.$watch(watchExpression, listener)| - detekcia zmeny, keď sa na sledovanú hodnotu nastaví nová. Ak sa zmení vnorený objekt alebo pole objektu ktorý sledujeme, zmeny vnútri nie su detekované. Toto je najúčinnejšia stratégia.
+  \item \textbf{na celej kolekcii:} \verb|$scope.$watchCollection(watchExpression, listener)| - detekcia zmien, ku ktorým dochádza vo vnútri poľa alebo objektu. Napr. keď sú položky pridané, odstránené alebo sa v nich zmenilo poriadie. Detekcia je plytká, čiže nesleduje vnorené polia. Sledovanie celého obsahu kolekcie je výkonovo náročnejsie ako sledovanie na referenciu, pretože treba uchovávať kópiu obsahu. Avšak, táto stratégia sa snaží minimalizovať množstvo potrebných kopírovaní.
+  \item \textbf{všetky položky objektu:} \verb|$scope.$watch(watchExpression, listener, true)| - detekcia akéjkoľvek zmeny v ľubovolnej vnorenej štruktúry. Táto stratégia má najväčšie možnosti detekcie zmien, ale za to aj výkonovo a pamäťovo najnáročnejšia. Je potrebné uchovávať kópiu celej vnorenej štruktúry a pri každej zmene, sa musí skopírovať do pamäte.
+\end{itemize}
+
+
 \subsubsection{Expressions}
-Angular výrazy sú kúsky kódu v JavaScripte, ktoré sú umiestnené medzi dvojitými kučeravými zátvorkami. Príklad: \textit{<span title="\textbf{\{\{} attrBinding \textbf{\}\}}">\textbf{\{\{} textBinding \textbf{\}\}}</span>}. Vyhodnotenie môže rovnako prebehnúť aj vo funkcii na kliknutie \textit{ng-click="functionExpression()"}.
-Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často môžu používať: \textit{\{\{ 1 + 2 \}\}}, \textit{\{\{ a + b \}\}}, \textit{\{\{ user.name \}\}} a 
-\textit{\{\{ items[index] \}\}}.\cite{angular-docs}
+Angular výrazy sú kúsky kódu v JavaScripte, ktoré sú umiestnené medzi dvojitými kučeravými zátvorkami.\\
+Príklad: \verb|<span title="{{ attrBinding }}">{{ textBinding }}</span>|. Vyhodnotenie môže rovnako prebehnúť aj vo funkcii na kliknutie \verb|ng-click="functionExpression()"|.
+Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často môžu používať: \verb|{{ 1 + 2 }}, {{ a + b }}, {{ user.name }}, {{ items[index] }}|.\cite{angular-docs}
 
 %\textbf{Compiler}
 
@@ -476,125 +485,82 @@ Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často m�
 
 %\textbf{View}
 
+
 \subsubsection{Data Binding}
 Data binding v Angulare funguje ako automatická synchronizácia dát medzi modelom a view. Ak sa zmení model, tak zmena sa automaticky prejaví aj do view, alebo aj naopak.
-Na obrázkoch môžeme vidieť pre porovnanie aký je rozdiel medzi One-way a Two-way data binding.
+Na obrázkoch môžeme vidieť pre porovnanie aký je rozdiel medzi jednosmerným a obojsmerným data bindingom.
 
 \begin{figure}[H]
-\subfigure[One-way data binding]{\includegraphics[scale=0.55]{img/angular/One_Way_Data_Binding.png}\label{img-angular-onedb}}
-\subfigure[Two-way data binding]{\includegraphics[scale=0.55]{img/angular/Two_Way_Data_Binding.png}\label{img-angular-twodb}}
+\subfigure[Jednosmerný data binding]{\includegraphics[scale=0.53]{img/angular/One_Way_Data_Binding.png}\label{img-angular-onedb}}
+\subfigure[Obojsmerný data binding]{\includegraphics[scale=0.53]{img/angular/Two_Way_Data_Binding.png}\label{img-angular-twodb}}
 \caption{Data binding v Angular.js.}
 \end{figure}
 
-Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu šablónu a komponenty modelu do view. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií vo view sa neprejavujú automatický v zobrazení. Horšie je, že zmeny ktoré úžívateľ v zobrazení sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje view s modelom a model s view.
+Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu šablónu a komponenty modelu do view. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií vo view sa neprejavia automaticky vo view. Horšie je, že zmeny ktoré úžívateľ urobí vo view sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje view s modelom a model s view.
 
-Šablóny v Angulari fungujú inak. Šablóna (čo je neskompiloný HTML kód spolu s ďalšími značkami a directívami) je najprv kompilovaná v browseri. Tento krok produkuje živý view. Akékoľvek zmeny vo view sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do view. Vďaka tomuto spôsobu môžeme o view hovoriť ako o okamžitej projekcii modelu.
+Šablóny v Angulari fungujú inak. Šablóna (čo je neskompilovaný HTML kód spolu s ďalšími značkami a directívami) je najprv kompilovaná vo webovom prehliadači. Tento krok už produkuje živý view. Akékoľvek zmeny vo view sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do view. Vďaka tomuto spôsobu môžeme o view hovoriť ako o okamžitej projekcii modelu.
 
-Pretože view iba je projekcia modelu, tak controller je kompletne separovaný od view a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať controller izolovane od view.\cite{angular-docs}
+Pretože view iba je projekcia modelu, tak controller je kompletne separovaný od view a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať controller nezávisle od view.\cite{angular-docs}
 
 \subsubsection{Controller}
-V Angulare je controller definovaný funkciou konštruktoru JavaScriptu, ktorý je používaný pre rozšírenie Angular Scope.
-Keď je controller pripojený k DOM cez \textit{ng-controller} directívu, tak bude vytvorená inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter to konštruktorovej funkcie controlleru ako \textit{\$scope}.
-Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba business logiku potrebnú pre jednotlivý view. Najlepší spôsob ako zachovať controller čo najmenší, je zabalenie niektorej úlohy do service, ktorá tam nepatrí. Potom tieto úlohy zo services voláme v controlleri ako závislosť.\cite{angular-docs}\\
+V Angulare je controller definovaný funkciou konštruktoru v JavaScripte, ktorý je používaný pre rozšírenie Scope. Keď je controller pripojený k DOM cez \verb|ng-controller| directívu, tak sa vytvorí inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter do konštruktorovej funkcie controlleru ako \verb|$scope|.
 
-Controller je možné používať na:
+Obrázok \ref{img-angular-controller-def} ukazuje ako je potrebné definovať controller v javascript súbore a jeho následné volanie v HTML šablóne.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.7]{img/code/angular-controller-def.png}
+  \caption{Ukážka controlleru v Angular.js a jeho volanie na HTML elemente.}
+  \label{img-angular-controller-def}
+\end{figure}
+
+Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba business logiku potrebnú pre konkrétny view. Najlepší spôsob ako zachovať controller čo najmenší, je zabalenie niektorej úlohy do service, ktorá tam nepatrí. Potom tieto úlohy zo services voláme v controlleri ako závislosť.\cite{angular-docs}
+
+\noindent Controller je možné používať na:
 \begin{itemize}
-\item nastavenie počiatočného stavu v \textit{\$scope} objekte.
-\item pridanie vlastností a správania do \textit{\$scope} objektu.
+\item nastavenie počiatočného stavu v \verb|$scope| objekte.
+\item pridanie vlastností a správania do \verb|$scope| objektu.\\
 \end{itemize}
 
-Nepoužívať controller na:
+\noindent Nepoužívať controller na:
 \begin{itemize}
-\item manipuláciu s DOM, pretože controller by mal obsahovať iba business logiku. Vložením hociakej prezentačnej logiky do controlleru vo veľkej miere ovplyvňuje jeho testovanie. Na manipuláciu slúžia directívy v sekcii \ref{angular-directives}.
-\item formátovanie vstupu - použite angular from controls
-\item filtrovanie výstupu - použite angular filter
-\item zdielanie kódu alebo stavu naprieč controllermi - použite angular service
-\item spracovanie životného cyklu ostatných komponentov (napr vytváranie inštancíí service).
+\item manipuláciu s DOM, pretože controller by mal obsahovať iba business logiku. Vložením akéjkoľvek prezentačnej logiky do controlleru vo veľkej miere ovplyvňuje jeho testovanie. Na manipuláciu slúžia directívy.
+\item formátovanie vstupu - použiť angular form controls.
+\item filtrovanie výstupu - použiť angular filter.
+\item zdielanie kódu alebo stavu naprieč controllermi - použiť angular service.
+\item správa životného cyklu ostatných komponentov (napr vytváranie inštancií service).
 \end{itemize}
-
-\begin{algorithm}
-\lstset{
-   language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=none,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b
-}
-\begin{lstlisting}
-var myApp = angular.module('myApp',[]);
-
-myApp.controller('LabController', ['$scope', function($scope) {
-  $scope.name = 'StarkLab!';
-}]);
-
------------------------------------------------------------------------
-
-<div ng-controller="LabController">
-  {{ name }}
-</div>
-\end{lstlisting}
- \caption{Ukážka controlleru v Angular.js a jeho volanie na HTML elemente.}
- \label{angular-controller}
-\end{algorithm}
 
 %\textbf{Dependency Injection}
 
 \subsubsection{Module}
-Module môžeme uvažovať ako kontainer pre rozličné časti našej aplikácie - controller, service, filter, directivy... Každý modul môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poriadie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov.\cite{angular-docs}\\
-Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali existujúci v pamäti.
+Module môžeme brať do úvahy ako kontainer pre rozličné časti našej aplikácie - \textbf{controller}, \textbf{service}, \textbf{filter}, \textbf{directivy}... Každý module môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poriadie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov.\cite{angular-docs}
 
-\begin{algorithm}
-\lstset{
-   language=JavaScript,
-   backgroundcolor=\color{lightgray},
-   extendedchars=true,
-   basicstyle=\footnotesize\ttfamily,
-   showstringspaces=false,
-   showspaces=false,
-   numbers=none,
-   numberstyle=\footnotesize,
-   numbersep=9pt,
-   tabsize=2,
-   breaklines=true,
-   showtabs=false,
-   captionpos=b
-}
-\begin{lstlisting}
-var myModule = angular.module('myModule', []);
+Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali už existujúci v pamäti. Postup vytvorenia na obrázku \ref{img-angular-controller-def}.
 
-// pridanie directivy a sluzby do modulu
-myModule.service('myService', ...);
-myModule.directive('myDirective', ...);
-
-// toto volanie prepise uz vytvorene myService a myDirective vytvorenim noveho modulu
-var myModule = angular.module('myModule', []);
-
-// vyhodi chybu pretoze volame myOtherModule, ktory este nebol definovany
-var myModule = angular.module('myOtherModule');
-\end{lstlisting}
- \caption{Ukážka vytvorenia modulov a pridávania funkcionality do nich.}
- \label{angular-module}
-\end{algorithm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.8]{img/code/angular-module.png}
+  \caption{Vytvorenie modulov a pridanie ich funkcionality.}
+  \label{img-angular-controller-def}
+\end{figure}
 
 \subsubsection{Service}
-Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou dependency injection (DI). Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných services, ako napr. \textit{\$http}, ale väčšina aplikácií má potrebu si vytvoriť vlastné.\cite{angular-docs}
+Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou dependency injection. Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných services, ako napr. \verb|$http|, ale väčšina aplikácií má potrebu si vytvoriť vlastné.\cite{angular-docs}
 Poznáme dva typy services:
 \begin{itemize}
-\item lazily instantiated - angular vytvorí inštanciu service iba v prípade, že na nej závisí komponent/modul
-\item singleton - každý komponent závisiaci na na service získa referenciu na jedinú inštanciu generovanú z service factory.
+\item lazily instantiated - angular vytvorí inštanciu service iba v prípade, že na nej závisí komponent/modul,
+\item singleton - každý komponent závisiaci na service získa referenciu na jedinú inštanciu generovanú z service factory.
 \end{itemize}
 
+\subsubsection{Directives}
+V jednoduchosti directívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML compileru - \verb|$compile|, aby priradil špecifické správanie na daný DOM element (napr. pomocou \textbf{event listenerov}), alebo dokonca transformoval DOM element na svoje dieťa. V šablónach sa spájajú informácie z modelu a controlleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
+
+Angular je dodávaný so vstavanými directívami, od ktorých sa očakáva, že budú využívané často. Napr. \verb|ng-bind|, \verb|ng-model|, \verb|ng-class|.\cite{angular-docs}
+
 %\subsubsection{Scope}
-\subsubsection{Bootstrap aplikácie}
-mozno lepsie pred konceptom
+%\subsubsection{Bootstrap aplikácie}
+% mozno lepsie pred konceptom
 %\subsubsection{Two-way data binding}
 
 \section{Návrh a implementácia StarkLab}
