@@ -536,13 +536,13 @@ Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba bu
 \subsubsection{Module}
 Module môžeme brať do úvahy ako kontainer pre rozličné časti našej aplikácie - \textbf{controller}, \textbf{service}, \textbf{filter}, \textbf{directivy}... Každý module môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poriadie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov.\cite{angular-docs}
 
-Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali už existujúci v pamäti. Postup vytvorenia na obrázku \ref{img-angular-controller-def}.
+Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali už existujúci v pamäti. Postup vytvorenia na obrázku \ref{img-angular-module-def}.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.8]{img/code/angular-module.png}
   \caption{Vytvorenie modulov a pridanie ich funkcionality.}
-  \label{img-angular-controller-def}
+  \label{img-angular-module-def}
 \end{figure}
 
 \subsubsection{Service}
@@ -564,22 +564,23 @@ Angular je dodávaný so vstavanými directívami, od ktorých sa očakáva, že
 %\subsubsection{Two-way data binding}
 
 \section{Návrh a implementácia StarkLab}
-\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme predpokladaný návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. Ich presný popis a využitie si popíšeme viacej v sekcii č.\ref{used-technologies}. Teda máme dané, že budeme využívať Node.js technológiu ako server. To je náš centrálny server (ďalej len StarkLab), ktorý spracováva dáta z Matlab workspace. Do Matlab workspace sú dáta posielané intervalovo zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \textit{tos\_lib.mdl}, ktorá nám túto funkcionalitu poskytla aj pod MAC OS X.\\
-Na komunikáciu s workspace využívame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Keď si užívateľ spustí simuláciu cez klienta, tak sa údaje budú uchovávať v databáze mongoDB pre neskoršie spracovanie.
+\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. O ich využití a konkrétnejšom popise sme si popísali viacej v sekcii \ref{used-technologies}.
+
+V zadaní sme sa dohodli o využití Node.js platformy ako náš server. Teda centrálny server (ďalej len StarkLab), ktorý spracováva dáta z Matlab workspace. Do workspace Matlabu sa dáta získavajú v intervaloch zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \verb|tos_lib.mdl|, ktorá nám túto funkcionalitu umožňuje aj pod MAC OS X.
+
+Na komunikáciu s workspace používame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Keď si užívateľ spustí simuláciu cez klienta, tak dáta budú uchované aj v databáze MongoDB pre neskoršie spracovanie.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.4]{img/software-design.png}
-  \caption{Návrh komunikácie medzi jednotlivými komponentami.}
+  \includegraphics[scale=0.45]{img/StarkLab.png}
+  \caption{Návrh komunikácie medzi komponentami VL.}
   \label{img-software-designl}
 \end{figure}
 
 \subsection{Referenčný model simulácie v Matlabe}
-Systém síce bude mať možnosť spolupracovať s reálnymi zariadeniami, pre vývoj sme použili simuláciu dynamického systému šikmého vrhu. Pre spustenie simulácie je potrebné zavolať dva súbory. Účel prvého je inicializácia premenných potrebných pre výpočet súradníc polohy bodu v šikmom vrhu. Na obrázku č.\ref{img-matlab-function} si všimnime, že je potrebné zadať aj parametre pre spustenie a funkcia nič nevracia. Prvý z parametrov \textit{v0} nastavuje počiatočnú rýchlosť telesa v metroch za sekundu, akou bude vymrštené z bodu (0,0). Druhý parameter \textit{alfa\_deg} zase určuje pod akým uhlom bude teleso vymrštené v stupňoch. Posledný parameter \textit{runBy} nie je potrebný k samotnej simulácií, ale skôr k identifikácií, kto spustil simuláciu. Vďaka tomu je možné neskôr z databázy zistiť kto spustil simuláciu.
+Funkčné softwarové riešenie síce bude mať možnosť spolupracovať s reálnymi zariadeniami, no pre jeho vývoj sme použili simuláciu dynamického systému šikmého vrhu.
 
-Keď sú parametre funkcie správne zadané a spustí sa telo funkcie, tak sa nastavia a vypočítajú hodnoty ako \textit{alfa\_rad, td, d, h} ktorých popis vidíme na obrázku a sú potrebné ako vstupné parametre do simulácie.
-
-Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných do hlavného scope matlabu, čiže workspace. Keby toto neurobíme, tak všetky hodnoty po skončení funkcie zaniknú keďže sa berú ako lokálne. Síce by bolo možné sa tomuto vyhnúť, tak že by sme nevolali funkciu \textit{Sikmy\_vrh\_par(80, 70, 'xstark')} a volali len súbor, čo by vlastne zostali všetky hodnoty v hlavnom workspace. Lenže v tomto prípade by nebolo možné nastavovať inicializačné premenné z webovej aplikácie, ale by museli byť natvrdo nastavené v kóde matlabu.
+Pre načítanie simulácie je potrebné spustiť dva súbory. Účel prvého je inicializácia premenných potrebných pre výpočet súradníc polohy bodu v šikmom vrhu. Podľa kódu na obrázku \ref{img-matlab-function} vieme, že je potrebné zadať parametre parametre pre spustenie a jej návratová hodnota nie je žiadna. Prvý z parametrov \verb|v0| predstavuje počiatočnú rýchlosť telesa v metroch za sekundu, akou bude vymrštené z bodu \textbf{(0,0)}. Druhý parameter \verb|alfa_deg| zase určuje, pod akým uhlom v stupňoch, bude teleso vymrštené. Posledný parameter \verb|userFromWeb| nie je potrebný k samotnej simulácií, ale skôr pre identifikáciu užívateľa, ktorý spustil simuláciu. Vďaka tomu je možné mu priradiť výsledky simulácie pri neskoršom spracovaní z databázy.
 
 \begin{figure}[H]
   \centering
@@ -588,7 +589,11 @@ Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných 
   \label{img-matlab-function}
 \end{figure}
 
-Ako sme si už povedali, že hodnoty sa po spustení úspešne uložia do Matlab workspace a to vidieť aj na obrázku č. \ref{matlab-function-workspace}. Tieto hodnoty boli vygenerované po zavolaní funkcie zo špecifickými hodnotami parametrov \textit{Sikmy\_vrh\_par(80, 70, 'xstark')}.
+Keď sú parametre funkcie správne zadané a spustí sa telo funkcie, tak sa nastavia a vypočítajú hodnoty ako \verb|alfa_rad, td, d, h|, ktorých popis vidíme na obrázku a sú potrebné ako vstupné parametre do simulácie.
+
+Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných do hlavného scope matlabu, čiže workspace. Keby túto časť vynecháme, tak všetky hodnoty po skončení funkcie zaniknú pretože sú tam lokálne premenné. Bolo by možné sa tomuto vyhnúť, v prípade že by sme nevolali funkciu \verb|Sikmy_vrh_par(80, 70, 'xstark')|, ale volali priamo len súbor, vďaka čomu by zostali všetky hodnoty v hlavnom workspace. Lenže pri tomto spôsobe riešenia by nebolo možné nastavovať inicializačné hodnoty ako parametre funkcie z webovej aplikácie, ale by museli byť natvrdo nastavené v kóde Matlabu.
+
+Ako sme si už povedali, že hodnoty sa po spustení úspešne uložia do Matlab workspace a to vidieť aj na obrázku č. \ref{matlab-function-workspace}. Tieto hodnoty boli vygenerované po zavolaní funkcie zo špecifickými hodnotami parametrov \verb|Sikmy_vrh_par(80, 70, 'xstark')|.
 
 \begin{figure}[H]
   \centering
@@ -599,20 +604,24 @@ Ako sme si už povedali, že hodnoty sa po spustení úspešne uložia do Matlab
 
 Druhý súbor, ktorý potrebujeme spustiť po tomto je obslužný kód, vďaka ktorému vieme zaslať údaje do Node.js. Kvôli jeho dĺžke a vlastnej implementácii ho nie je možné zobraziť celý, tak si popíšeme len kľúčové vlastnosti.
 
-Pri inicializácií sa nastavi URL cesta pre Express.js API, na ktorú ma komunikovať. Prednačítavanie modelu sa vykoná pomocou funkcie \textit{load\_system('Sikmy\_vrh\_2');}. Táto funkcia vyhladá v aktuálnom priečinku súbor \textit{Sikmy\_vrh\_2.mdl} a nastaví ho ako bdroot čo je aktuálne top-level model. Po nastavení musíme simuláciu aj spustiť. Ovládanie simulácie sa robí pomocou príkazu \textit{set\_param(model, 'SimulationCommand', 'Start');}, kde posledný parameter znamená spustenie simulácie.
-Následne sa spustí nekonečný \textit{while} cyklus, vďaka ktorému je možné zbierať údaje zo simulácie až do stavu kým nie je ukončená. 
-Na začiatku cyklu sa volá \textit{set\_param(bdroot, 'SimulationCommand', 'WriteDataLogs');} čo vlastne pristúpi k aktuálne najvyššie spustenej simulácií a snaží sa zapísať do Matlab workspace aktuálne vypočítane hodnoty. Bez tohto príkazu by sa zapísali až po skončení simulácie.
+Pri inicializácií sa nastavi URL cesta pre Express.js API, na ktorú bude Matlab posielať dáta.
 
-Medzitým sa údaje upravujú na potrebný formát a pred odoslaním na REST API je vhodné ho zabaliť do JSON štruktúry. Tú vieme vytvoriť pomocou knižnice \textit{jsonlab} v aktuálnej verzií 1.2.
-Pomocou sekvencie týchto dvoch príkazov vytvoríme požadovaný JSON formát a odošleme ho na API. Vytvorenie JSON \textit{json = savejson('result', struct('user', runBy, 'status', 'running', 'sessionId', 'xxx72', 'data', struct('time', A, 'vy', B, 'y', C, 'x',D)));} a zaslanie do služby \textit{response = webwrite(url,json,options);}. Pomocou príkazu \textit{get\_param(model, 'SimulationStatus')} vieme získať aktuálny stav simulácie. V prípade, že simulácia stále beží tak získame výstup \textit{'running'} inak je ukočená a vráti reťazec \textit{'stopped'}. Hneď ako dostaneme status 'stopped' tak ukončíme cyklus pomocou \textit{break} a vieme že všetky dáta su prenesené do Node.js.
+Prednačítavanie modelu sa vykoná pomocou funkcie \verb|load_system('Sikmy_vrh_2')|. Táto funkcia vyhľadá v aktuálnom priečinku súbor \verb|Sikmy_vrh_2.mdl| a nastaví ho ako aktuálny top-level model. Po nastavení je potrebné ešte simuláciu aj spustiť. Ovládanie simulácie sa robí pomocou príkazu \verb|set_param(model, 'SimulationCommand', 'Start')|, kde posledný parameter znamená spustenie simulácie.
+Následne sa spustí \textbf{nekonečný while} cyklus, vďaka ktorému je možné zbierať údaje zo simulácie až do stavu kým nie je ukončená. 
+Na začiatku cyklu sa volá \verb|set_param(model, 'SimulationCommand',| \\ \verb|'WriteDataLogs')| čo vlastne pristúpi k aktuálne najvyššie spustenej simulácií a snaží sa realtime zapisovať vypočítané hodnoty do Matlab workspace. Bez tohto príkazu by sa zapísali až po skončení simulácie.
+
+Medzitým sa údaje upravujú na potrebný formát a pred odoslaním na REST API je vhodné ho zabaliť do JSON štruktúry. Tú vieme vytvoriť pomocou knižnice \verb|jsonlab| v aktuálnej verzií 1.2.
+Pomocou sekvencie týchto dvoch príkazov vytvoríme požadovaný JSON formát a odošleme ho na Express.js API. Vytvorenie JSON \verb|json = savejson('result',| \\ \verb|struct('user', userFromWeb, 'status', 'running', 'data', struct('time',| \\ \verb|timeFinal, 'vy', vyFinal, 'y', yFinal, 'x',xFinal)))| a jeho následné zaslanie do služby \verb|response = webwrite(url, json, options)|.
+
+Pomocou príkazu \verb|get_param(model, 'SimulationStatus')| vieme získať aktuálny stav simulácie. V prípade, že simulácia stále beží tak získame výstup \verb|"running"| inak je ukočená a vráti reťazec \verb|"stopped"|. Hneď ako dostaneme status "stopped" tak ukončíme cyklus pomocou \verb|break| a vieme že všetky dáta su prenesené do Node.js.
 
 \subsection{Diagramy}
-Pred tvorbou rôznych softwarových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe systému. Niektoré nám ukážu správanie len zo všeobecnosti čo by sa mohlo dať v systéme robiť ako napr. "Prípady použitia". Potom existuje aj "Diagram tried", ktorý hovorí o jednotlivých triedach, ktoré sa vytvoria v kóde a jeho vlastnostiach. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžme využiť sekvenčné diagramy, pretože tie nám hovoria o interakcií medzi jednotlivými modelmi, prípadne časťami kódu.
+Pred tvorbou rôznych softwarových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe software. Niektoré nám hovoria o správaní len zo všeobecnosti čo by sa mohlo dať v systéme robiť ako napr. \textbf{prípady použitia}. Potom existuje aj \textbf{diagram tried}, ktorý slúži na vizualizáciu jednotlivých tried, ktoré sa tvoria v objektovo orientovaných jazykoch. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžme využiť \textbf{sekvenčné diagramy}, pretože tie nám hovoria o interakcií medzi jednotlivými komponentami, prípadne časťami kódu.
 
 \subsubsection{Prípad použitia}
 Diagram prípadov použitia sa používa k popisu chovania systému z hľadiska užívateľa a zachytáva, ktoré typy užívateľov so systémom pracujú a aké činnosti v rámci systému vykonávajú.\cite{uml-usecase}
 
-Na obrázku č. \ref{img-use-case} vidíme možnosti používania systému na diagrame prípadov použitia. V systéme vystupuje len jeden typ používateľa a musí to byť člen STUBA LDAP. Bez prihlásenia sú jeho možnosti obmedzené a nemôže nič pozerať ani vykonávať. Po prihlásení môže vykonať dve úlohy. Zobrazenie už existujúcich simulácií alebo vybrať simuláciu, ktorú chce spustiť s počiatočnými parametrami ak sú potrebné.
+Na obrázku \ref{img-use-case} vidíme možnosti používania systému na diagrame prípadov použitia. V systéme vystupuje len jeden typ používateľa a musí to byť člen STUBA LDAP. Bez prihlásenia sú jeho možnosti obmedzené a nemôže nič pozerať ani vykonávať. Po prihlásení môže vykonať dve úlohy. Zobrazenie už existujúcich simulácií alebo vybrať simuláciu, ktorú chce spustiť s počiatočnými parametrami ak sú potrebné.
 
 \begin{figure}[H]
   \centering
@@ -622,7 +631,7 @@ Na obrázku č. \ref{img-use-case} vidíme možnosti používania systému na di
 \end{figure}
 
 \subsubsection{Diagram "tried" pre StarkLab}
-Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť pre JavaScript aplikáciu, ale našli sme knižnicu \textit{wavi} (https://www.npmjs.com/package/wavi), ktorá dokáže vygenerovať takýto diagram. Síce to nie je prehľadné ako pri klasickom diagrame, ale je vhodné ho vygenerovať už len pre to, aby mal programátor informáciu o základnej štruktúre aplikácie ako vidíme na obrázku č. \ref{img-class-diagram}.
+Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť pre JavaScript aplikáciu, ale našli sme knižnicu \verb|wavi| (https://www.npmjs.com/package/wavi), ktorá dokáže vygenerovať takýto diagram. Síce to nie je prehľadné ako pri klasickom diagrame, ale je vhodné ho vygenerovať už len pre to, aby mal programátor informáciu o základnej štruktúre aplikácie - obrázok \ref{img-class-diagram}.
 
 \begin{figure}[H]
   \centering
@@ -644,39 +653,43 @@ Sekvenčný diagram patrí medzi najviac používané diagramy pre zobrazenie in
   \label{img-sequence-ldap-login}
 \end{figure}
 
-Na obrázku č.\ref{img-sequence-ldap-login} si všimneme ako približne funguje prihlásenie pomocou mena a hesla do LDAP systému. Nižšie si popíšeme kód ako to máme implementované v JavaScripte. Toto je len časť kódu, ktorá sa určená pre prihlásenie do systému. Na začiatku súboru je volaná požadovaná knižnica pre prácu s LDAP ako \textit{var ldap = require("ldapjs");}
-Keď užívateľ príjde na stránku a vyplní prihlasovacie meno a heslo do stuba ldap, tak formulár ho presmeruje na \textit{/login}, kde už sa postaral o routovanie Express.js. Z \textit{request} parametra získame zadané username - \textit{req.body.username} a password - \textit{req.body.password}, ktoré sme vyplnili pred odosielaním formulára. Čiže ak sú oba vyplnené dostaneme sa do vnútra podmienky, kde sa vytvorí spojenie na linku \textit{ldap://ldap.stuba.sk}, vytvorí RDN reťazec v tvare \textit{"uid=xstark", ou=People, DC=stuba, DC=sk"}.
-V momente keď je zostavený reťazec a máme získané heslo užívateľa, tak zavoláme ldap funkciu \textit{bind} s parametrami RDN a heslom. V prípade ak nenastala žiadna chyba pri overovaní, tak sme úspešne overený a vytvoríme \textit{session} a \textit{cookie} pre užívateľa a presmerujeme ho na stránku, kde už môže vidieť možné simulácie.
+Na obrázku \ref{img-sequence-ldap-login} je spôsob prihlásenie pomocou mena a hesla do LDAP systému. Nižšie si popíšeme kód z obrázka \ref{img-sequence-ldap-login-js}, ktorým to bolo implementované v JavaScripte. Toto je len časť kódu, ktorá sa určená pre prihlásenie do systému. Na začiatku súboru je volaná požadovaná knižnica pre prácu s LDAP ako \verb|var ldap = require("ldapjs")|.
+
+Keď užívateľ príjde na stránku a vyplní prihlasovacie meno a heslo do stuba ldap, tak formulár ho presmeruje na \verb|/login|, kde už sa postaral o routovanie Express.js. Z \verb|request| parametra získame zadaný username - \verb|req.body.username| a password - \verb|req.body.password|, ktoré boli vyplnené pred odoslaním formulára. Čiže ak sú oba vyplnené dostaneme sa do vnútra podmienky, kde sa vytvorí spojenie na linku \verb|ldap://ldap.stuba.sk|, a zašle RDN reťazec v tvare \verb|"uid=xstark", ou=People, DC=stuba, DC=sk"|.
+
+V momente keď je zostavený reťazec a máme získané heslo užívateľa, tak zavoláme ldap funkciu \verb|bind| s parametrami RDN a heslom. V prípade ak overovanie prebehlo bez chyby, tak autorizácia prebehla úspešne. Potom vytvoríme \verb|session| a \verb|cookie| pre užívateľa a presmerujeme ho na stránku, kde už môže vidieť simulácie.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/code/ldap-login.png}
+  \caption{Prihlásenie do aplikácie pomocou LDAP v JavaScripte.}
+  \label{img-sequence-ldap-login-js}
 \end{figure}
 
 \noindent \textbf{Komunikácia komponentov v systéme}
 
-Medzi jednotlivými komponentami systému prebieha komunikácia. Síce v každej časti prebieha inak, ale ich spoločný menovateľ je komunikácia založená na HTTP protokole. Na obrázku č. \ref{img-sequence-realtime} vidíme, že komunikácia začína od webového klienta v prehliadači. Užívateľ zadá parametre simulácie a tie budú zaslané do StarkLab. Ten následne spustí Matlab na aktuálnom operačnom systéme s potrebnými súbormi simulácie a ich parametrami. Medzitým užívateľ čaká kým sa na pozadí spustí Matlab. Hneď na to začne vykonávať simuláciu a posielať údaje do StarkLab, ktorý ich pošle priamo webovému klientovi, kde bola spustená simulácia. Každé prijatie údajov sa prejaví zapísaním do grafu, animácie a tabuľky vo webovom rozhraní. Táto sekvencia sa opakuje pokiaľ platí podmienka, že je simulácia stále spustená. Po zastavení simulácie klient zašle požiadavku na zapísanie kompletných dát cez StarkLab priamo do dokumentovej databáze MongoDB.
+Medzi jednotlivými komponentami systému prebieha komunikácia. Síce v každej časti prebieha inak, ale ich spoločný menovateľ je komunikácia založená na HTTP protokole. Na obrázku \ref{img-sequence-realtime} vidíme, že komunikácia začína od webového klienta v prehliadači. Užívateľ zadá parametre simulácie a tie budú zaslané do StarkLab. Ten následne spustí Matlab na aktuálnom operačnom systéme s potrebnými súbormi simulácie a ich parametrami. Medzitým užívateľ čaká kým sa na pozadí spustí Matlab. Hneď po spustení začne vykonávať simuláciu a posielať údaje do StarkLab, ktorý ich pošle priamo webovému klientovi, odkiaľ bola spustená simulácia. Každé prijatie údajov sa prejaví zapísaním do grafu, animácie a tabuľky vo webovom rozhraní. Táto sekvencia sa opakuje pokiaľ platí podmienka, že je simulácia stále spustená. Po zastavení simulácie klient zašle požiadavku na zapísanie kompletných dát cez StarkLab priamo do dokumentovej databáze MongoDB.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.35]{img/diagrams/sequence-realtime-communication.png}
+  \includegraphics[scale=0.38]{img/diagrams/sequence-realtime-communication.png}
   \caption{Komunikácia medzi jednotlivými komponentami systému.}
   \label{img-sequence-realtime}
 \end{figure}
 
 \subsection{Databázový model MongoDB}
-V našom zadaní sme nepoužívali štandardnú SQL databázu, čiže nie je možné využiť bežné modelovanie cez ERD diagramy. Ako už vieme MongoDB neukladá dáta ako tabuľky, ale JSON dokumenty. Keďže sa jednalo o jednoduchý model šikmého vrhu, tak v tomto prípade nebude model extra zložitý. V tejto časti si ukážeme do akého objektu ho v JavaScripte ukladáme a potom konkrétny príklad z databázy.
+V našom zadaní sme nepoužívali štandardnú SQL databázu, čiže nie je možné využiť bežné modelovanie cez ERD diagramy. Ako už vieme MongoDB neukladá dáta ako tabuľky, ale JSON dokumenty. Keďže sa jednalo o jednoduchý model šikmého vrhu, tak v tomto prípade nebude model extra zložitý. V tejto časti si ukážeme do akého objektu ho v JavaScripte ukladáme a potom konkrétny príklad záznamu z databázy.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/code/javascript-projectile-model.png}
+  \includegraphics[scale=0.8]{img/code/javascript-projectile-model.png}
   \caption{Model objektu v JavaScripte, pre vytvorenie záznamu v MongoDB.}
   \label{img-js-projectile-model}
 \end{figure}
 
-Ako vidíme v JavaScripte sa nepoužívajú žiadne typy. Hodnoty \textit{user, experiment} budú vždy typu \textbf{\textit{String}}, \textit{executed} je typu \textbf{\textit{Date}} vo formáte ISO-8601 a jeho formát je YYYY-MM-DDTHH:mm:ss.sssZ. Zvyšok hodnôt \textit{time, x, y, vy} sú hodnoty závislé od simulácie a každá z nich je pole čísiel.
+Ako vidíme v JavaScripte nepotrebujeme špecifikovať nejaké štandardné typy. Hodnoty premenných \verb|user, experiment| budú vždy typu String, \verb|executed| je typu Date v štandardizovanom formáte ISO-8601, ktorého formát pre zobrazenie je YYYY-MM-DDTHH:mm:ss.sssZ. Hodnoty premenných \verb|time, x, y, vy| sú závislé od simulácie a každá z nich je pole čísiel.
 
-Na obrázku č.\ref{img-mongo-record} je záznam z MongoDB kde konkrétne hodnoty time, x, y, vy nie sú zobrazené, pretože simulácia vygenerovala až 788 hodnôt.
+Obrázok \ref{img-mongo-record} je záznam z MongoDB, kde konkrétne hodnoty time, x, y, vy nie sú zobrazené, pretože simulácia vygenerovala až 788 hodnôt.
 
 \begin{figure}[H]
   \centering
@@ -688,34 +701,32 @@ Na obrázku č.\ref{img-mongo-record} je záznam z MongoDB kde konkrétne hodnot
 %\section{Testovanie}
 
 \subsection{Node.js s frameworkom Express.js}
-Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Využívame ich posledné verzie Node.js verzie 6.0.0 a Express.js verzie 4.13.4. Je to vlastne len framework a umožnuje jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \textit{middleware}. Ako sme si už hovorili je to funkcia, ktorá má prístup do request objektu a response objektu. Použili sme \textit{body-parser}, vďaka ktorému bolo možné spracovávať telo POST požiadavky, ktorá sa zasielala z Matlabu. Potom ho je potrebné ešte aj aktivoať ako middleware v kóde \textit{app.use(bodyParser.json({limit: '2mb'}));}. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s príjmutím POST requestu, v prípade ak boli údaje v tele moc dlhé.
+Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Využívame ich posledné verzie Node.js verzie 6.1.0 a Express.js verzie 4.13.4. Je to vlastne len framework umožňujúci jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \verb|middleware|. Ako už bolo napísané je to funkcia, ktorá má prístup do request a response objektu. Použili sme \verb|body-parser|, ktorý nám umožnil spracovávať telo POST požiadavky, ktorá bola zasielaná z Matlabu. Každý middleware, ktorý chceme použiť je potrebné ešte aj aktivovať v kóde \verb|app.use(bodyParser.json({limit: '2mb'}))|. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s príjmutím POST requestu, keď boli dáta veľmi veľké.
 
 \subsubsection{Vlastný middleware prihlasovania}
-V aktuálnom softwarovom riešení nebolo potrebné vytvoriť prihlasovanie, pretože neskôr bude integrované do LMS Moodle, ktorý si takéto veci už rieši svojím spôsobom. Ale pre ukážku možností frameworku Express.js som implementoval middleware \textit{express-session}, vďaka ktorému môžme vytvoriť reláciu pre úspešne autorizovaného užívateľa. 
+V aktuálnom softwarovom riešení nebolo potrebné vytvoriť prihlasovanie, pretože neskôr bude integrované do \textbf{LMS Moodle}, ktorý prihlasovanie rieši vlastným spôsobom. Ale pre ukážku možností frameworku Express.js sme implementovali middleware \verb|express-session|, vďaka ktorému môžme vytvoriť reláciu pre úspešne autorizovaného užívateľa. 
 
-Pri implementácii prihlasovania cez nastavovania session som zistil, že v každom smerovaní (route), bolo potrebné kontrolovať na začiatku kódu, či je prihlásený používateľ alebo či je to požiadavka z Matlab služby. Pri väčšom projekte, prípadne viacerých route by to začalo byť neefektívne a neprehľadné. Vytvorili sme vlastný middleware na obrázku č. \ref{img-express-middleware}, ktorý nam overuje prihláseného človeka pri každom prístupe na hocijakú route.
+Pri implementácii prihlasovania cez session sme zistili, že v každom smerovaní, bolo potrebné kontrolovať na začiatku kódu, či tam pristupuje prihlásený používateľ alebo požiadavka z Matlab služby. Pri väčšom projekte, prípadne viacerých smerovaní by to začalo byť neefektívne a neprehľadné. 
+
+Vytvorili sme vlastný middleware na obrázku \ref{img-code-express-middleware}, ktorý slúži na overenie prihláseného užívateľa pri každom prístupe na akékoľvek smerovanie.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.6]{img/code/express-middleware.png}
   \caption{Middleware kód v Express.js na kontrolu prihlásenia.}
-  \label{img-express-middleware}
+  \label{img-code-express-middleware}
 \end{figure}
 
-Volanie \textit{app.use} nám zabezpečí, že sa táto funkcia zaregistruje ako middleware a bude volaná pri každom requeste. Prvá časť podmienky overuje, či prichádzame z webového prehliadača a je nastavená session. Kedže Matlabu nevieme nastaviť session, pretože tá sa ukladá len na webserveri tak sme to vyriešili iným spôsobom. V príchádzajúcom tele POST requestu od Matlabu je objekt \textit{result}, kde sú uložené vygenerované údaje. Priradili sme mu ďalšiu property \textit{user}, ktorá keď je nastavená, tak vieme, že požiadavka prichádza z Matlabu a vieme jej povoliť prístup. V prípade splnenej aspoň jednej podmienky sa zavolá callback \textit{next()}, čo vlastne vyvolá buď nejaký ďalší zaregistrovaný middleware, alebo route, na ktorú sme posielali požiadavku.
+Volanie \verb|app.use| nám zabezpečí, že sa táto funkcia zaregistruje ako middleware a bude volaná pri každom requeste. Prvá časť podmienky overuje, či prichádzame z webového prehliadača a je nastavená session. Kedže Matlabu nevieme nastaviť session, pretože tá sa ukladá len na webserveri tak sme to vyriešili iným spôsobom. V príchádzajúcom tele POST requestu od Matlabu je objekt \verb|result|, kde sú uložené simulované dáta. Priradili sme mu ďalšiu vlastnosť \verb|user|, ktorá keď je nastavená, tak vieme, že požiadavka prichádza z Matlabu a vieme jej povoliť prístup. V prípade splnenej aspoň jednej podmienky sa zavolá callback \verb|next()|, čo teda vyvolá ďalší zaregistrovaný middleware, alebo už smerovanie, na ktoré sme posielali požiadavku.
 Ak nie je splnená ani jedna z dvoch podmienok, tak nás server presmeruje na hlavnú stránku, kde sa od nás požaduje znovu prihlásenie.
 
 
 \subsubsection{Spustenie Matlabu z príkazového riadku}
-Nebolo isté ako budeme spúšťať simuláciu, pretože nebolo isté či Node.js umožuje vykonávať príkazy nad operačným systémom, resp. spúšťať programy. Spočiatku sme riešili komunikáciu takým spôsobom, že Matlab sa spustil ručne a v ňom potrebné inicializačné súbory a následne samotná simulácia. Takéto riešenie nie je postačujúce z hladiska automatizácie a samostatnosti.
+Zo začiatku nebolo isté ako budeme spúšťať simuláciu, pretože sme nevedeli či Node.js umožuje vykonávať príkazy nad operačným systémom, resp. spúšťať programy. Vtedy sme komunikáciu riešili takým spôsobom, že Matlab sa otvoril ručne a v ňom sme spustili potrebné inicializačné súbory a následne samotnú simulácia. Takéto riešenie nie je postačujúce z hladiska automatizácie a samostatnosti.
 
-Potom sme zistili, že Node.js má možnosti na spustenie hocijakého software, ktorý je možné spustiť cez terminál. Pre zjednodušenie práce som využil modul \textit{shelljs}, ktorý túto funkcionalitu poskytuje. Na obrázku č. \ref{img-express-shelljs} je funkcionalita, ktorá sa vykoná po prístupe na route /matlab/run. Táto časť sa volá po odoslaní formuláru s parametrami počiatočnej rýchlosti a uhlu z webového prehliadača.
+Potom sme zistili, že Node.js má možnosti na spustenie hocijakého software, ktorý je možné spustiť cez terminál. Pre zjednodušenie práce bol využitý modul \verb|shelljs|, ktorý takúto možnost poskytuje.
 
-Ako vidíme vstupný reťazec, ktorý chceme vykonať, bolo potrebné zadať cestu k Matlabu kde sa nachádza na súborom systéme. Ďalej je vidieť, že sa spúšta aj s istými parametrami. Všetky potrebné možnosti som našiel v online dokumentácii Matlabu. \cite{matlab-macos}
-
-Keďže sa spúšta z terminálu a nie je potrebné, aby nám ukazoval výsledky aj v okne, tak jeho spúštanie vieme urýchliť použitím parametrov, ktoré vidíme na obrázku. Pomocou parametra \textit{-r} vieme vykonávat príkazy v príkazovom riadku Matlabu, napr. špecifikovať cestu, kde sa nachádza naša simulácia a potrebné súbory. Následne zavoláme funkciu \textit{Sikmy\_vrh\_par()} kam sa pošlú parametre počiatočnej rýchlosti a uhla a zároveň prihlásený používateľ. Hneď ako sa skončí vykonávanie tejto funkcie, spustí sa súbor \textit{projectile\_sim} čo je už konkrétna simulácia. Po skončení už môžeme zatvoriť aj Matlab cez príkaz \textit{exit;}.
-
-Po zostrojení tohto reťazca ako parametra funkcie \textit{exec} a jeho spustení sa čaká na vykonávanie Matlabu. Medzitým nás server presmeruje na stránku /dashboard kde sa čaká na údaje zo simulácie. Hneď ako sa načíta simulácia zo vstupými parametrami a začne vykonávať v momente sa údaje zobrazia aj vo webovom prehliadači realtime.
+Na obrázku \ref{img-express-shelljs} je funkcionalita, ktorá sa vykoná po prístupe na route /matlab/run. Táto časť sa volá po odoslaní formuláru s parametrami počiatočnej rýchlosti a uhlu z webového prehliadača.
 
 \begin{figure}[H]
   \centering
@@ -724,21 +735,29 @@ Po zostrojení tohto reťazca ako parametra funkcie \textit{exec} a jeho spusten
   \label{img-express-shelljs}
 \end{figure}
 
+Vstupný príkaz vo forme reťazca, ktorý chceme vykonať, musí mať správne zadanú cestu k Matlabu na súborom systéme. Matlab spúštame v termináli s parametrami, ktoré umožnujú spustenie bez nepotrebných častí.\cite{matlab-macos} Ako napr. nepotrebujeme vidieť výsledky v okne, alebo animáciu Matlabu pri spustení. Pomocou parametra \verb|-r| vieme volať príkazy v príkazovom riadku Matlabu, napr. špecifikovať cestu, kde sa nachádza naša simulácia a potrebné súbory. Následne zavoláme funkciu \verb|Sikmy_vrh_par()|, s ktorou sa pošlú parametre počiatočnej rýchlosti, uhla a zároveň meno prihláseného používateľa. Po vykonaní tejto funkcie sa spustí súbor simulácie \verb|projectile_sim|. Po jej skončení zatvoríme Matlab pomocou príkazu \verb|exit|.
+
+Po zostrojení tohto reťazca ako parametra funkcie \verb|exec()| a jeho spustení sa čaká na vykonávanie Matlabu. Medzitým nás server presmeruje na stránku /dashboard kde sa čaká na údaje zo simulácie. V momente keď sa načíta simulácia a začne jej vykonávanie so vstupnými parametrami, tak sa dáta zobrazia realtime vo webovom prehliadači.
+
 \subsubsection{Práca s dátami simulácie}
-Keď je simulácia spustená a Matlab pripravený zasielať výsledky na route, ktorú vidíme na obrázku č. \ref{img-express-socketio}. Výsledky z Matlabu máme uložené v tele každého requestu, ktorý prijde. Následne môžeme k nim prístupiť pomocou \textit{req.body}. Pôvodne socket.io odosielal údaje len na adresu "message". V tom prípade by sme ale nevedeli identifikovať, ku ktorému uživateľovi sa majú posielať údaje. Po implementácii session sme zvážili, že by ich bolo lepšie posielať priamo na adresu "message:xstark",teda s menom prihláseného užívateľa. Vždy po prijatí je potrebné odoslať status kód 200, čo v HTTP znamená OK pre prijatie dát.
+Keď je simulácia spustená, Matlab je pripravený zasielať výsledky na smerovanie, ktoré vidíme na obrázku \ref{img-express-socketio}. 
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/code/express-socketio.png}
-  \caption{Prijímanie dát a zasielanie pomocou socket.io do prehliadača.}
+  \caption{Prijímanie a zasielanie dát pomocou Socket.io do prehliadača.}
   \label{img-express-socketio}
 \end{figure}
 
-\subsubsection{Zápis dát do MongoDB}
-Po prijímaní a zobrazovaní údajov nasleduje ich spracovanie. Ich spracovanie sa vykonáva na úrovni Express.js za pomoci MongoDB ovládača.\\
-Na začiatku je potrebné najprv zavolať modul a následne jeho klientskú časť cez \textit{var MongoClient = require('mongodb').MongoClient;}. Potom nasleduje definovanie URL, na ktorej máme spustenú databázu \textit{mongodb://localhost:27017/test}.
+Výsledky z Matlabu máme uložené v tele každého requestu, ktorý prijde. Následne môžeme k nim prístupiť pomocou \verb|req.body|. Pôvodne \textbf{Socket.io} odosielal údaje len na adresu "message". V takom prípade by sme ale nevedeli identifikovať, ku ktorému uživateľovi sa majú posielať údaje. Po implementácii session sme zvážili, že by ich bolo lepšie posielať priamo na adresu "message:xstark", teda s menom prihláseného užívateľa. Vždy po prijatí je potrebné odoslať status kód 200, čo v HTTP znamená OK po úspešnom prijatí dát.
 
-Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich použitie. Prvá z nich je vloženie dokumentu do databázy na obrázku č. \ref{img-express-mongo-insert}. Táto funkcia na vytvorenie jedného záznamu, sa pokúsi vložiť \textit{obj} do kolekcie projectile čo je vlastne náš kompletný záznam zo simulácie. Po úspešnom vložení zatvorí konekciu na databázu a vráti HTTP status 200.
+
+\subsubsection{Zápis dát do MongoDB}
+Po prijatí a zobrazovaní dát nasleduje spracovanie. Ich spracovanie sa vykonáva na úrovni Express.js za pomoci MongoDB ovládača.
+
+Na začiatku je potrebné najprv zavolať modul a následne jeho klientskú časť cez \verb|var MongoClient = require('mongodb').MongoClient|. Potom nasleduje definovanie URL, na ktorej máme spustenú databázu \verb|mongodb://localhost:27017/test|.
+
+Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich použitie. Prvá z nich je vloženie dokumentu do databázy na obrázku \ref{img-express-mongo-insert}. Táto funkcia slúžiaca na vytvorenie jedného záznamu, sa pokúsi vložiť \verb|obj| do kolekcie \textbf{projectile}, kde sú vlastne naše kompletné záznamy zo simulácií. Po úspešnom vložení zatvorí prihlásenie na databázu a vráti HTTP status kód 200.
 
 \begin{figure}[H]
   \centering
@@ -747,16 +766,18 @@ Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich pou
   \label{img-express-mongo-insert}
 \end{figure}
 
-Druhú funkciu, ktorú využívame na prácu s databázou je na obrázku č. \ref{img-express-mongodb-find}. Slúži na vyhladanie záznamu v závislosti od parametrov. Jednu funkciu vieme využiť na viacero účelov. V prípade ak zadáme parameter funkcie \textit{sim}, tak v podmienke sa skontroluje, či je dostupná vlastnosť id. Ak áno, tak vyhľadanie v databáze, prebehne na základe parametrov užívateľského mena a konkretného id, čiže nám vyhľadá iba jeden záznam. V opačnom prípade vyhľadá všetky záznamy simulácií pre daného užívateľa. Táto funkcionalita sa využíva pri zobrazení všetkých záznamov u klienta.
+Druhú funkciu, ktorú využívame na prácu s databázou je na obrázku \ref{img-express-mongodb-find}. 
+Slúži na vyhladanie záznamu v závislosti od parametrov. Jednu funkciu vieme využiť na viacero účelov. V prípade ak zadáme parameter funkcie \verb|sim|, tak v podmienke sa skontroluje, či je dostupná vlastnosť \verb|id|. Ak áno, tak vyhľadanie v databáze prebehne na základe parametrov užívateľského mena a konkretného id simulácie, čo nám vyhľadá iba jeden záznam ak existuje. V opačnom prípade vyhľadá všetky záznamy simulácií pre daného užívateľa. Táto funkcionalita sa využíva pri zobrazení všetkých záznamov u klienta.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/code/express-mongodb-find.png}
+  \includegraphics[scale=0.65]{img/code/express-mongodb-find.png}
   \caption{Vyhľadanie záznamu v MongoDB pomocou JavaScriptu.}
   \label{img-express-mongodb-find}
 \end{figure}
 
-Po ukážke implementácií funkcií, ktoré vykonávajú zápis/čítanie si ukážeme ich volanie. Na obrázku č. \ref{img-express-mongodb-insert2} je vloženie záznamu po prístupe na route /mongo/insert/one. Pre vykonanie nejakej operácie nad databázou musíme vytvoriť spojenie medzi klientom a MongoDB. Slúži na to funkcia \textit{connect(url, callback)}, ktorej prvej parameter je URL kde sa nachádza DB a druhý je callback, kde sa vracajú údaje.
+Po ukážke implementácií funkcií, ktoré vykonávajú zápis/čítanie si ukážeme ich volanie. Na obrázku \ref{img-express-mongodb-insert2} je vloženie záznamu po prístupe na smerovanie /mongo/insert/one.
+Pre vykonanie nejakej operácie nad databázou musíme vytvoriť spojenie medzi klientom a MongoDB. Slúži na to funkcia \verb|connect(url, callback)|, ktorej prvý parameter je URL kde sa nachádza DB a druhý je callback, kde sa vracajú údaje.
 
 \begin{figure}[H]
   \centering
@@ -765,41 +786,45 @@ Po ukážke implementácií funkcií, ktoré vykonávajú zápis/čítanie si uk
   \label{img-express-mongodb-insert2}
 \end{figure}
 
-Pre vyhľadanie záznamu na obrázku č. \ref{img-express-mongodb-insert2} sa s pripojením nič nemení. Rozdiel vidíme vo využití volania route. Dvojbodka pred názvom \textit{:user} znamená, že tento parameter môže byť v URL meniteľný, ak je tam ešte otáznik ako pri \textit{:id?} znamená to, že tento parameter nie je povinný, a URL može byť volaná aj bez neho. Ak sa v URl nachádzaju parametre, pristupujeme k nim pomocou poľa \textit{req.params}.
+Pre vyhľadanie záznamu na obrázku \ref{img-express-mongodb-find2} sa s pripojením nič nemení.
+Rozdiel je iba vo využití volania smerovania. Dvojbodka pred názvom \verb|:user| znamená, že tento parameter môže byť v URL dynamický. Otáznik pri parametri ako pri \verb|:id?| znamená, že tento nie je povinný, a URL može byť volaná aj bez neho. Ak sa teda v URl nachádzaju parametre, pristupujeme k nim pomocou poľa \verb|req.params|.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/code/express-mongodb-find2.png}
   \caption{Volanie vyhľadania záznamu v MongoDB.}
-  \label{img-express-mongodb-find}
+  \label{img-express-mongodb-find2}
 \end{figure}
  
 \subsection{Webový klient s frameworkom Angular.js}\label{section-angular-web}
-Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý generujé údaje. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
+Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý posiela simulované dáta. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/code/angular-login.png}
+  \includegraphics[scale=0.45]{img/code/angular-login.png}
   \caption{Prihlásenie do LDAP pomocou STUBA údajov.}
   \label{img-angular-login}
 \end{figure}
 
 Ako to funguje na pozadí už sme si popísali v sekcií \ref{diagram-sequence-section}, kde sa pojednávajú sekvenčné diagramy, konkrétne prihlásenie do LDAP.
-Po prihlásení sa zobrazí stránka vyhradená pre zadanie parametrov šikmého vrhu, počiatočnú rýchlosť v0 a uhol vystrelenia alfa\_deg. Pri zadaní rýchlosti v0=40 a alfa\_deg=60 sme presmerovaní na stránku /matlab.
+Po prihlásení sa zobrazí stránka vyhradená pre zadanie parametrov šikmého vrhu, počiatočnú rýchlosť v0 a uhol vystrelenia alfa\_deg. Rovnako sú tu popísané aj základné informácie o simulácii a jeho vzorcov.
+
+Po zadaní rýchlosti \textbf{v0=40} a \textbf{alfa\_deg=60} sme presmerovaní na stránku /matlab.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/code/angular-simulation-param.png}
+  \includegraphics[scale=0.42]{img/code/angular-simulation-param.png}
   \caption{Parametre simulácie - počiatočná rýchlosť a uhol v stupňoch.}
   \label{img-angular-params}
 \end{figure}
 
-
 \subsubsection{Grafy s Chart.js}
-Pre vizualiáziu prichádzajúcich dát používame knižnicu na grafy \textit{Chart.js}, ktorá je vytvorená pomocou HTML canvas. Využívame poslednú verziu jednotkovej rady 1.1.1. Použiť ju môžeme ako skript v HTML stránke \textit{<script src="/node\_modules/chart.js/Chart.min.js"></script>}. Ako si môžeme všimnúť tak nie je závisla od žiadnej online CDN služby, ale jej inštalácia prebehla lokálne pomocou NPM.
+Pre vizualiáziu prichádzajúcich dát používame knižnicu na grafy \verb|Chart.js|, ktorá je vytvorená pomocou HTML canvas. Využívame poslednú verziu jednotkovej rady 1.1.1. Používame ju ako skript v HTML stránke \verb|<script src="/node_modules/chart.js/Chart.min.js"></script>|. Ako si môžeme všimnúť tak nie je závislá od žiadnej online CDN služby, ale jej inštalácia prebehla lokálne pomocou NPM.
 
-Použije sa tak, že v HTML stránke sa zavolá ako canvas, ktorému priradíme id \textit{<canvas id="updating-chart" width="1200" height="300"></canvas>}. Na obrázku č. \ref{img-angular-chartjs-canvas} vidíme vytvorenie grafu a nastavenie hodnôt. Na začiatku je potrebné získať element v HTML DOM, pre ktorý sme si predtým vytvorili ID, získať kontext canvasu a vytvoriť objekt \textit{startingData} s nastaveniami pre inicializačné dáta. 
-Následne je potrebné vytvoriť inštanciu grafu v prehliadači, kde ako parameter grafu smeruje kontext canvasu, a vola sa funcia čiarového grafu, ktorý tam potrebujeme. Tá zase vyžaduje ako vstupný parameter inicializačné dáta.
+Vyvorili sme Angular.js directívu uiGraph, ktorá slúži pre vytvorenie grafu na potrebnom mieste. Ako template má v obsahuje \verb|<canvas id="updating-chart" width="600"| \\ \verb|height="300"></canvas>|. Na obrázku \ref{img-angular-chartjs-canvas} vidíme vytvorenie grafu a nastavenie hodnôt. Táto časť kódu sa nachádza v postLink funkcii directívy.
+
+Na začiatku je potrebné získať element z DOM, získať kontext canvasu a vytvoriť objekt \verb|startingData| s nastaveniami pre inicializačné dáta. 
+Následne je potrebné vytvoriť inštanciu grafu, kde ako parameter grafu použije kontext canvasu, a volá sa funcia čiarového grafu, ktorý tam potrebujeme. Tá zase vyžaduje ako vstupný parameter inicializačné dáta. Túto directívu zavoláme v HTML ako \verb|<ui-graph></ui-graph>| element.\\
 
 Ak by sme chceli rozšíriť graf, resp. ak by bolo rozumné súčasne vykreslovať viacero závislých veličín, tak je možné zadefinovať ďalší dataset.
 
@@ -810,7 +835,7 @@ Ak by sme chceli rozšíriť graf, resp. ak by bolo rozumné súčasne vykreslov
   \label{img-angular-chartjs-canvas}
 \end{figure}
 
-V sekcií \ref{section-angular-web} sme si hovorili o tom, čo musíme spraviť, aby nám generovalo údaje. Po presmerovaní na stránku /matlab treba počkať kým sa spustí Matlab zo simuláciou a následne sa začnú generovať údaje realtime do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku č. \ref{img-angular-chartjs} je využitá knižnica Chart.js pre tvorbu grafov.
+V sekcií \ref{section-angular-web} sme si hovorili o tom, čo musíme spraviť, aby nám generovalo údaje. Po presmerovaní na stránku /matlab treba počkať kým sa spustí Matlab zo simuláciou a následne sa začnú generovať realtime dáta do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku \ref{img-angular-chartjs} je využitá knižnica Chart.js pre zobrazenie grafov.
 
 \begin{figure}[H]
   \centering
@@ -820,8 +845,7 @@ V sekcií \ref{section-angular-web} sme si hovorili o tom, čo musíme spraviť,
 \end{figure}
 
 \subsubsection{Animácia pomocou html canvas}\label{section-canvas}
-
-Na ďalšom obrázku č. \ref{img-angular-canvas} sa vykreslujú rovnaké údaje ako na grafe, len je to spôsobom animácie guličky. Táto animácia bola vytvorená pomocou html canvas technológie. Viac o canvas v sekcii \ref{section-canvas}.
+Vykreslené dáta na obrázku \ref{img-angular-canvas} sú zhodné s dátami na grafe, len je to spôsobom animácie guličky. Táto animácia bola vytvorená pomocou html canvas technológie.
 
 \begin{figure}[H]
   \centering
@@ -831,19 +855,18 @@ Na ďalšom obrázku č. \ref{img-angular-canvas} sa vykreslujú rovnaké údaje
 \end{figure}
 
 \subsubsection{Tabuľka dát}
-
-Ako posledná časť sledovania dát je tabulka, ktorej údaje sa generujú rovnako realtime ako aj pri grafe a animácii pred ním.
+Ako posledná časť sledovania dát je tabulka, ktorej údaje sa vkladajú do zoznamu rovnako realtime ako aj pri grafe a animácii pred ním.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.5]{img/code/angular-table.png}
+  \includegraphics[scale=0.6]{img/code/angular-table.png}
   \caption{Tabuľka dát času, x, y a smer rýchlosti vy.}
   \label{img-angular-table}
 \end{figure}
 
 
 \subsubsection{Zobrazenie existujúcich simulácií}
-V tomto systéme nejde len o real-time vykreslenie dát, ale aj o ich neskoršie zobrazenie, spracovanie. Po prejdení na stránku /results, vidíme všetky spustené simulácie pre aktuálne prihlaseného užívateľa.
+V tomto systéme nejde len o real-time vykreslenie dát, ale aj o neskoršie zobrazenie a spracovanie. Po prejdení na stránku zo simuláciami, vidíme všetky záznamy simulácií pre aktuálne prihlaseného užívateľa - obrázok \ref{img-angular-results-projectile}.
 
 \begin{figure}[H]
   \centering
@@ -854,12 +877,19 @@ V tomto systéme nejde len o real-time vykreslenie dát, ale aj o ich neskoršie
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.5]{img/code/angular-fulldata.png}
-  \caption{Graf a animácia pre vybranú vzorku dát.}
-  \label{img-angular-fulldata}
+  \includegraphics[scale=0.5]{img/code/angular-fulldata-graph.png}
+  \caption{Graf pre vybranú vzorku dát.}
+  \label{img-angular-fulldata-graph}
 \end{figure}
 
-Na webovej stránke sa ešte nachádza pod animáciou sa nachádza rovnaká tabuľka ako v obrázku č. \ref{img-angular-table} s rozdielom, že v tejto tabuľke sú kompletné údaje.
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{img/code/angular-fulldata-animation.png}
+  \caption{Animácia pre vybranú vzorku dát.}
+  \label{img-angular-fulldata-graph}
+\end{figure}
+
+Na webovej stránke sa ešte nachádza pod animáciou sa nachádza rovnaká tabuľka ako v obrázku č. \ref{img-angular-table} s rozdielom, že v tejto tabuľke sú kompletné údaje a je možné ich exportovať do \verb|CSV| formátu.
 
 
 %\section{Inštalácia vytvoreného riešenia}
