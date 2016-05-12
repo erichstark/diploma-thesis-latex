@@ -20,15 +20,15 @@
 \section{Cieľ práce}
 Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a možností Node.js pre vytvorenie nového.
 
-Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude Node.js, klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez websockety, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
+Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude Node.js, klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez RESTful služby, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
 
 
 \section{Virtuálne laboratória}
-\indent V dobe keď internet ešte nebol rozšírený, experimenty sa robili vo fyzických laboratóriach. Bolo dôležité dodržiavať rôzne bezpečnostné predpisy, kvôli možnému úrazu osoby prípadne poškodeniu prístrojov.
+\indent V dobe, keď internet ešte nebol rozšírený, sa experimenty robili vo fyzických laboratóriach. Bolo dôležité dodržiavať rôzne bezpečnostné predpisy, kvôli možnému úrazu osoby prípadne poškodeniu prístrojov.
 
-Vzdialenosť ale aj nedostatok finančných zdrojov nám sťažuje podmienky pri vykonávaní experimentov, hlavne v prípadoch ked je potrebné mať pokrokové sofistikované nástroje. Ďalší problém, s ktorým sa stretávame, je nedostatok kvalitných lektorov. Síce v súčasnosti už existujú online kurzy, ktoré poskytujú aj video ukážky, ale to tento problém rieši len čiastočne. Vždy bolo výzvou vykonávanie spoločných experimentov viacerými inštitúciami súčasne a zároveň aj zdielanie nákladov na prostriedky. So súčasnými možnosťami internetu a počítačových technológií už tieto obmedzenia nemusia trápiť študentov ani výskumníkov. Internet umožnil to, že experimenty môžu byť štruktorované tak, aby boli ovládané a vizualizované na ďiaľku. Práve to by mohlo pomôcť v učení základných ale aj pokročilých konceptov prostredníctvom vzdialeného experimentovania. V súčasnosti veľa vybavenia už poskytuje rozhranie pre pripojenie počítača a spracovanie dát z neho. Preto je možné navrhnúť experimenty, ktoré pomôžu študentom pri učení. Experimentovanie cez internet umožňuje využívanie zdrojov, znalostí, software a dát z internetu narozdiel od fyzických experimentov, ktoré by vznikali súčasne na rôznych miestach \cite{vlabphylosopfy}.
+Vzdialenosť ale aj nedostatok finančných zdrojov nám sťažuje podmienky pri vykonávaní experimentov, hlavne v prípadoch keď je potrebné mať pokrokové sofistikované nástroje. Ďalší problém, s ktorým sa stretávame, je nedostatok kvalitných lektorov. Síce v súčasnosti už existujú online kurzy, ktoré poskytujú aj video ukážky, ale to tento problém rieši len čiastočne. Vždy bolo výzvou vykonávanie spoločných experimentov viacerými inštitúciami súčasne a zároveň aj zdielanie nákladov na prostriedky. So súčasnými možnosťami internetu a počítačových technológií už tieto obmedzenia nemusia trápiť študentov ani výskumníkov. Internet umožnil to, že experimenty môžu byť štruktorované tak, aby boli ovládané a vizualizované na ďiaľku. Práve to by mohlo pomôcť v učení základných ale aj pokročilých konceptov prostredníctvom vzdialeného experimentovania. V súčasnosti veľa vybavenia už poskytuje rozhranie pre pripojenie počítača a spracovanie dát z neho. Preto je možné navrhnúť experimenty, ktoré pomôžu študentom pri učení. Experimentovanie cez internet umožňuje využívanie zdrojov, znalostí, softvéru a dát z internetu na rozdiel od fyzických experimentov, ktoré by vznikali súčasne na rôznych miestach \cite{vlabphylosopfy}.
 
-V tejto práci sa budeme zaoberať tvorbou virtuálneho laboratória (ďalej len VL). Predtým ako si popíšeme detailné fungovanie technológií pre vytvorenie VL, si musíme vysvetliť čo považujeme za VL, pochopiť aké hodnoty nám môže priniesť, ale samozrejme aj tie ktoré nemôže. Vo všeobecnosti môžme povedať, že VL je počítačový program, kde študenti sú v interakcii s experimentom prostredníctvom počítača ako na obrázku \ref{img-real-vs-remote}. 
+V tejto práci sa budeme zaoberať tvorbou virtuálneho laboratória (ďalej len VL). Predtým, ako si popíšeme detailné fungovanie technológií pre vytvorenie VL, si musíme vysvetliť, čo považujeme za VL, pochopiť aké hodnoty nám môže priniesť, ale samozrejme aj tie, ktoré nemôže. Vo všeobecnosti môžme povedať, že VL je počítačový program, kde študenti sú v interakcii s experimentom prostredníctvom počítača ako na obrázku \ref{img-real-vs-remote}. 
 
 \begin{figure}[H]
   \centering
@@ -38,9 +38,9 @@ V tejto práci sa budeme zaoberať tvorbou virtuálneho laboratória (ďalej len
 \end{figure}
 
 Typický príklad je simulácia experimentu, kedy je študent v interakcii s naprogramovaným rozhraním. Ďalšia možnosť je diaľkovo ovládaný experiment, kde študent je v interakcii s reálnym zariadením cez počítačové rozhranie, napriek tomu že sa nenachádza pri ňom. 
-Keď vylúčime druhú variantu tak si môžme utvoriť definíciu nasledovne: \textit{"Virtuálnym laboratóriom voláme to, keď je študent študent v interakcií s experimentom, ktorý je od neho fyzicky vzdialený alebo nemá na pozadí žiadnu fyzickú realitu"} \cite{hatherly}.\\
+Keď vylúčime druhú variantu, tak si môžme utvoriť definíciu nasledovne: \textit{"Virtuálnym laboratóriom voláme to, keď je študent v interakcii s experimentom, ktorý je od neho fyzicky vzdialený alebo nemá na pozadí žiadnu fyzickú realitu"} \cite{hatherly}.\\
 
-Po vysvetlení čo je VL sa pozrieme na výhody, ktoré nám môže priniesť. Sú popísané v bodoch v tabuľke \ref{table-real-remote-virtual-laboratory}.
+Po vysvetlení, čo je VL sa pozrieme na výhody, ktoré nám môže priniesť. Sú popísané v bodoch v tabuľke \ref{table-real-remote-virtual-laboratory}.
 Človek často počíta medzi výhody to, že môže nahradiť fyzické laboratórium. Lenže to medzi výhody nepatrí. Nie je možné nahradiť skúsenosti z fyzickej práce so zariadením VL aj keď je to lepšie ako žiadna skúsenosť. VL by nemalo byť vnímané tak, že poskytuje maximálnu možnú skúsenosť.\\
 
 \begin{table}[H]
@@ -113,7 +113,7 @@ Následne som preskúmal možnosti existujúcich riešení a vložil do tabuľky
 \end{table}
 
 \subsubsection{Nevýhody existujúcich riešení}
-Pri tvorbe softwarového systému, či už všeobecne, alebo v našom prípade virtuálneho laboratória je vhodné preskúmať zo začiatku možnosti existujúcich riešení. Robí sa to z dôvodu vyvarovania rôznym chybám, ktoré môžu nastať pri návrhu, prípadne overenie technológií, ktoré boli použité a časom zastarali. V súčasnosti je vývoj nových technológií neskutočne rýchly. Takúto analýzu existujúch riešení sme urobili v predchádzajúcej sekcii.
+Pri tvorbe softwarového systému, či už všeobecne, alebo v našom prípade virtuálneho laboratória je vhodné preskúmať zo začiatku možnosti existujúcich riešení. Robí sa to z dôvodu vyvarovania rôznym chybám, ktoré môžu nastať pri návrhu, prípadne overenie technológií, ktoré boli použité a časom už zastarali. V súčasnosti je vývoj nových technológií neskutočne rýchly. Takúto analýzu existujúch riešení sme urobili v predchádzajúcej sekcii.
 Naša téma je zameraná na vytvorenie multiplatformového riešenia, kde nie je možné využiť WCF ani COM technológie ako v predchádzajúcich riešeniach. JMI je zase vhodné len pre riešenie, kde sa využíva Java. Pre server nie je možné využiť technológie LabVIEW, .NET (momentálne je už vo vývoji multiplatformová verzia). Čo sa týka klienských riešení tak Flash, ActiveX, Java applets už nie sú podporované v prehliadačoch, taktiež ich nie je vhodné použiť.
 
 \subsection{Komponenty virtuálneho laboratória}
@@ -130,14 +130,14 @@ Počet existujúcich laboratórií je veľký, ale väčšinou nie je možné za
   \item klientský software, pripojiteľné k experimentu.\\
 \end{itemize}
 
-Dôležité je uvedomiť si, ktoré z týchto komponentov chceme využiť, pretože na vytvorenie laboratória nie vždy potrebujeme všetky. Prípadne môžme využiť aj iné, ktoré sa nám dokonale hodia na danú úlohu. Niekedy sa používa napr. aj databázový server ak chceme experimenty ukladať a spracovávať neskôr. Tak isto je potrebné uvedomiť si, aký typ VL chceme vytvoriť. Určite budú rozdiely pri návrhu jednoužívateľského VL narozdiel od viacužívateľského dokonca s viacerými experimentami súčasne. Treba myslieť na to, ako vhodne vyriešiť škálovateľnosť, možné problémy s bezpečnosťou, viacužívateľský prístup, ostatné problémy prístupnosti a podobne.
+Dôležité je uvedomiť si, ktoré z týchto komponentov chceme využiť, pretože na vytvorenie laboratória nie vždy potrebujeme všetky. Prípadne môžme využiť aj iné, ktoré sa nám dokonale hodia na danú úlohu. Niekedy sa používa napr. aj databázový server ak chceme experimenty ukladať a spracovávať neskôr. Tak isto je potrebné uvedomiť si, aký typ VL chceme vytvoriť. Určite budú rozdiely pri návrhu jednoužívateľského VL na rozdiel od viacužívateľského dokonca s viacerými experimentami súčasne. Treba myslieť na to, ako vhodne vyriešiť škálovateľnosť, možné problémy s bezpečnosťou, viacužívateľský prístup, ostatné problémy prístupnosti a podobne.
 
 
 \section{Použíté technológie}\label{used-technologies}
 V predchádzajúcich kapitolách sme popísali cieľe, ktoré chceme vlastne dosiahnuť. Ďalej sme analyzovali možnosti virtuálnych laboratórií a porovnali už s existujúcimi riešeniami. V tejto sekcii budú v krátkosti rozpísané použité technológie. Je samozrejmé, že nie je možné ku každej popísať všetky jej možnosti, ale budeme sa venovať hlavne tým, ktoré plánujeme využiť aj v implementácií.
 
 \subsection{MATLAB R2015b}
-Milióny inžinierov a vedcov na celom svete používajú MATLAB na analýzu a návrh systémov a produktov ktore menia náš svet. MATLAB sa používa v automobilových systémoch, vesmírnych staniciach, smart siete, mobilých sieťach LTE alebo aj v škole na štúdium. Ďalej sa používa pre strojové učenie, spracovanie signálu, spracovanie obrazu, počítačové videnie, komunikácie, finančníctvo, riadenie, robotika a mnoho ďalšich využití.
+Milióny inžinierov a vedcov na celom svete používajú MATLAB na analýzu a návrh systémov a produktov, ktoré menia náš svet. MATLAB sa používa v automobilových systémoch, vesmírnych staniciach, smart siete, mobilých sieťach LTE alebo aj v škole na štúdium. Ďalej sa používa pre strojové učenie, spracovanie signálu, spracovanie obrazu, počítačové videnie, komunikácie, finančníctvo, riadenie, robotika a mnoho ďalšich využití.
 Celá platforma MATLAB je optimalizovaná pre riešenie inžinierskych a vedeckých problémov. Jazyk MATLABu je založený na práci s maticami. Je považovaný za najprirodzenejší spôsob ako počítať matematické úlohy. Pomocou integrovanej grafickej knižnici je možné vizualizovať a získať výsledky z dát. MATLAB integruje aj množstvo toolboxov, ktoré pomáhajú priamo začať s algoritmami, ktoré potrebujeme pre našu doménu \cite{matlab-mathworks}.
 
 \subsubsection{Simulink}
@@ -198,14 +198,14 @@ A zase na obrázku \ref{get-http} v prípade GET requestu vidíme, že server vr
   \label{get-http}
 \end{figure}
 
-Teraz keď sme si vysvetlili v stručnosti ako fungujú RESTful služby, tak sa dostávame k tomu ako ich je možné využiť v Matlabe. Matlab poskytuje viacero funkcií na prácu s REST ako \verb|weboptions, webread, webwrite.|
+Teraz, keď sme si vysvetlili v stručnosti ako fungujú RESTful služby, tak sa dostávame k tomu, ako ich je možné využiť v Matlabe. Matlab poskytuje viacero funkcií na prácu s REST ako \verb|weboptions, webread, webwrite.|
 
 Objekt \verb|weboptions| slúži na špecifikáciu parametrov pre RESTful službu. V Matlabe sa volá príkazom \verb|options = weboptions| alebo \verb|options = weboptions(Name,Value)| pričom \verb|Name| je názov parametra, ktorý chceme nastaviť a \verb|Value| jeho hodnota. Je možné nastaviť tieto parametre: \verb|CharacterEncoding, UserAgent, Timeout, Username,| \\ \verb|Password, KeyName, KeyValue, ContentType, ContentReader, MediaType,| \\ \verb|RequestMethod, ArrayFormat|. Ak chceme zobraziť heslo v objekte weboptions, tak na pozícií hesla síce budú hviezdičky, každopádne objekt ukladá heslo ako čistý text. V prípade keď zavoláme túto vlastnosť v Matlabe cez \verb|options.Password| tak heslo bude viditeľné \cite{matlab-weboptions}.
 
-Objekt \verb|webread| číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \verb|data = webread(url)| kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \verb|data = webread(url, QueryName1, QueryValue1,| \\ \verb|..., QueryNameN, QueryValueN)| kde vložené parametre pridá do url volania. Posledná možnosť je \verb|data = webread(___, options)|, kde môžeme špecifikovať aj \hyphenation{weboptions} objekt \cite{matlab-webread}.
+Objekt \verb|webread| číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \verb|data = webread(url)| kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \verb|data = webread(url, QueryName1, QueryValue1,| \\ \verb|..., QueryNameN, QueryValueN)| kde vložené parametre pridá do url volania. Posledná možnosť je \verb|data = webread(___, options)|, kde je môžné špecifikovať posledný objekt ako \verb|weboptions| \cite{matlab-webread}.
 
-A posledný objekt \verb|webwrite|. Ako aj v predchádzajúcom prípade obsahuje rovnaké metódy s parametrami. \verb|response = webwrite(url, PostName1, PostValue1, ...,| \\ \verb|PostNameN, PostValueN)| zapíše obsah na špecifikovanú url a vráti response.\\ \verb|response = webwrite(url, data)| zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole.\\
-\verb|response = webwrite(___, options)| zapíše obsah na špecifikovanú url a vráti response.
+A posledný objekt \verb|webwrite|. Tak ako v predchádzajúcom prípade obsahuje zhodné metódy s parametrami, len využitie funkcie je iné. \verb|response = webwrite(url, PostName1, PostValue1, ...,| \\ \verb|PostNameN, PostValueN)| zapíše obsah na špecifikovanú url a vráti response.\\ \verb|response = webwrite(url, data)| zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole.\\
+\verb|response = webwrite(___, options)| nastaví \verb|weboptions| objekt, zapíše obsah na špecifikovanú url a vráti response.
 
 \subsection{Node.js}
 Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych a škálovateľných sieťových aplikácií. Node.js používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.
@@ -257,7 +257,7 @@ Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a 
 \item hodiny s presným časovaním (hight resolution clock).
 \end{itemize}
 
-\textbf{c-ares} je C knižnica pre asynchronné DNS žiadosti vrátane prekladanie názvov. Je určená pre aplikácie, ktoré potrebujú vykonávať dotazy na DNS bez blokovania, alebo ak potrebujú vykonať niekoľko dotazov paralerne.
+\textbf{c-ares} je C knižnica pre asynchronné DNS žiadosti vrátane prekladania názvov. Je určená pre aplikácie, ktoré potrebujú vykonávať dotazy na DNS bez blokovania, alebo ak potrebujú vykonať niekoľko dotazov paralerne.
 
 \textbf{http\_parser} je parser pre požiadavky a odpovede HTTP napísaný v C. Nerobí žiadne systémové volania ani alokácie, neukladá dáta do vyrovnávacej pamäte a môže byť zrušený okamžite. Jeho hlavné vlastnosti sú:
 \begin{itemize}
@@ -273,7 +273,7 @@ Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a 
 
 
 \subsubsection{Event loop}
-Udalostná slučka dáva Node.js možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná tak sa zavolá callback funkcia. Na obrázku \ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci Node.js.
+Udalostná slučka dáva Node.js možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka, ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná, tak sa zavolá callback funkcia. Na obrázku \ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci Node.js.
 
 \begin{figure}[H]
   \centering
@@ -285,7 +285,7 @@ Udalostná slučka dáva Node.js možnosť zvládnuť veľké množstvo súčasn
 Udalostná slučka jednoducho prechádza cez frontu čo je vlastne zoznam udalostí a callbackov vykonaných operácií. Všetky I/O operácie sú vykonané asynchrónne vláknami vo "vláknovom stacku" (thread pool). Tu zohráva dôležitú rolu libuv. Ak nejaká položka vyžaduje I/O operáciu, tak udalostná slučka jednoducho prenechá operáciu do vláknového stacku. Udalostná slučka pokračuje vo vykonávaní položiek v udalostnej fronte. Keď je I/O operácia hotová, tak callback je zaradený na spracovanie. Udalostná slučka vykoná callback a poskytne požadované výstupy. A takto sa celý proces opakuje \cite{nodejs-event-loop}.
 
 \subsubsection{Možnosti a využitie}
-Na základe popísaných základných častí Node.js v predchádzajúcich sekcií si ukážeme možnosti využitia, resp. výhody a nevýhody \cite{nodejs-arch}.\\
+Na základe popísaných základných častí Node.js v predchádzajúcich sekciách si ukážeme možnosti využitia, resp. výhody a nevýhody \cite{nodejs-arch}.\\
 
 \noindent \textbf{Výhody}
 \begin{itemize}
@@ -337,10 +337,10 @@ Vo všeobecnosti existujú tri možnosti ako použiť moduly, ktoré sú už pub
 \end{figure}
 
 \subsubsection{Vstavané moduly}
-Node.js je považovaný za technológiu, pomocou ktorej môžeme programovať backend aplikácie. Často potrebujeme robiť rôzne úlohy. V Node.js existujú veľmi nápomocné moduly, ktoré môžeme využiť \cite{nodejs-by-example}.
+Node.js je považovaný za technológiu, pomocou ktorej môžeme programovať serverové aplikácie. Často potrebujeme robiť rôzne úlohy. V Node.js existujú veľmi nápomocné moduly, ktoré môžeme využiť \cite{nodejs-by-example}.
 
 \subsubsection{Vytvorenie web servera pomocou HTTP modulu}
-Modul \verb|http| patrí asi medzi najviac používané, pretože vďaka nemu spustíme web server na konkrétnom porte.
+Modul \verb|http| patrí asi medzi najviac používané, pretože vďaka nemu spustíme web server na konkrétnom porte - obrázok \ref{img-npm-http}.
 
 \begin{figure}[H]
   \centering
@@ -349,7 +349,7 @@ Modul \verb|http| patrí asi medzi najviac používané, pretože vďaka nemu sp
   \label{img-npm-http}
 \end{figure}
 
-Máme dostupnú metódu \verb|createServer()|, ktorá vracia nový web server objekt. Často hneď za tým voláme aj \verb|listen()| metódu pre nastavenie portu. Ak je potrebné tak pomocou funkcie \verb|close()| zastavíme prímanie nových požiadaviek. Telo callback funkcie, ktorú používame má vždy \verb|request| a \verb|response| objekty. Prvý objekt sa používa na získanie informácií o prichádzajúcich požiadavkách ako napr. parametre z \verb|GET| a \verb|POST| \cite{nodejs-by-example}.
+Máme dostupnú metódu \verb|createServer()|, ktorá vracia nový web server objekt. Často hneď za tým voláme aj \verb|listen()| metódu pre nastavenie portu. Ak je potrebné tak pomocou funkcie \verb|close()| zastavíme prijímanie nových požiadaviek. Telo callback funkcie, ktorú používame, má vždy \verb|request| a \verb|response| objekty. Prvý objekt sa používa na získanie informácií o prichádzajúcich požiadavkách ako napr. parametre z \verb|GET| a \verb|POST| \cite{nodejs-by-example}.
 
 
 \subsection{Express.js}
@@ -437,7 +437,7 @@ Obrázku \ref{mongodb-example} je príklad dokumentu, ktorý sa ukladá do Mongo
 \subsection{Angular.js}
 Angular.js, bežne označovaný aj ako Angular je open source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA, teda takých webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC alebo MVVM architektúre.
 
-Framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané z statických (väčšinou uložených na súborovom systéme), dynamických (získaných z RESTful služby) JSON súborov.
+Framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané zo statických (väčšinou uložených na súborovom systéme), dynamických (získaných z RESTful služby) JSON súborov.
 
 Slúži ako front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpress.js web server framework, \textbf{A}ngular.js  a \textbf{N}ode.js ako aplikačný web server \cite{angular-wiki}\cite{angular-docs}.
 
@@ -451,6 +451,10 @@ Angular ako framework sa skladá z viacerých časti, z ktorých každá má svo
   \label{img-angular-concept}
 \end{figure}
 
+\subsubsection{Directives}
+V jednoduchosti direktívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML kompilátoru - \verb|$compile|, aby priradil špecifické správanie na daný DOM element (napr. pomocou \textbf{event listenerov}), alebo dokonca transformoval DOM element na svoje dieťa. V šablónach sa spájajú informácie z modelu a kontroleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
+
+Angular je dodávaný so vstavanými direktívami, od ktorých sa očakáva, že budú využívané často. Napr. \verb|ng-bind|, \verb|ng-model|, \verb|ng-class| \cite{angular-docs}.
 
 \subsubsection{Scope}
 Scope je objekt, ktorý odkazuje na model aplikácie. V tomto kontexte sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou \verb|$watch| a vykonávať udalosti s \verb|$apply| cez celý systém do view. Slúži na previazanie aplikačného controlleru a viewu. Rovnako ako controller aj directivy majú prístup k scope, ale nie navzájom medzi sebou. Vďaka tomu je controller izolovaný od directivy a tak isto aj od DOM.
@@ -552,11 +556,6 @@ Poznáme dva typy services:
 \item lazily instantiated - angular vytvorí inštanciu service iba v prípade, že na nej závisí komponent/modul,
 \item singleton - každý komponent závisiaci na service získa referenciu na jedinú inštanciu generovanú z service factory.
 \end{itemize}
-
-\subsubsection{Directives}
-V jednoduchosti directívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML compileru - \verb|$compile|, aby priradil špecifické správanie na daný DOM element (napr. pomocou \textbf{event listenerov}), alebo dokonca transformoval DOM element na svoje dieťa. V šablónach sa spájajú informácie z modelu a controlleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
-
-Angular je dodávaný so vstavanými directívami, od ktorých sa očakáva, že budú využívané často. Napr. \verb|ng-bind|, \verb|ng-model|, \verb|ng-class| \cite{angular-docs}.
 
 %\subsubsection{Scope}
 %\subsubsection{Bootstrap aplikácie}
