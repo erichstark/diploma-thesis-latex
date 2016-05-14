@@ -451,13 +451,13 @@ Angular ako framework sa skladá z viacerých časti, z ktorých každá má svo
   \label{img-angular-concept}
 \end{figure}
 
-\subsubsection{Directives}
+\subsubsection{Direktívy}
 V jednoduchosti direktívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML kompilátoru - \verb|$compile|, aby priradil špecifické správanie na daný DOM element (napr. pomocou \textbf{event listenerov}), alebo dokonca transformoval DOM element na svoje dieťa. V šablónach sa spájajú informácie z modelu a kontroleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
 
 Angular je dodávaný so vstavanými direktívami, od ktorých sa očakáva, že budú využívané často. Napr. \verb|ng-bind|, \verb|ng-model|, \verb|ng-class| \cite{angular-docs}.
 
 \subsubsection{Scope}
-Scope je objekt, ktorý odkazuje na model aplikácie. V tomto kontexte sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou \verb|$watch| a vykonávať udalosti s \verb|$apply| cez celý systém do view. Slúži na previazanie aplikačného controlleru a viewu. Rovnako ako controller aj directivy majú prístup k scope, ale nie navzájom medzi sebou. Vďaka tomu je controller izolovaný od directivy a tak isto aj od DOM.
+Scope je objekt, ktorý odkazuje na model aplikácie. V tomto kontexte sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou \verb|$watch| a vykonávať udalosti s \verb|$apply| cez celý systém do zobrazenia. Slúži na previazanie aplikačného kontroleru a zobrazenia. Rovnako ako kontroler aj direktívy majú prístup k scope, ale nie navzájom medzi sebou. Vďaka tomu je kontroler izolovaný od direktívy a tak isto aj od DOM.
 
 Každá aplikácia ma práve jeden \verb|$rootScope|, ale môže mať viacero detských \verb|$scope|. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako detský k rodičovskému scope. Tento systém vytvára stromovú štruktúru paralernú k DOM, v ktorej sú vytvorené \cite{angular-docs}.
 
@@ -472,14 +472,14 @@ Každá aplikácia ma práve jeden \verb|$rootScope|, ale môže mať viacero de
 
 \noindent Líšia sa v spôsobe sledovania zmeny a výkonostnými rozdielmi:
 \begin{itemize}
-  \item \textbf{podľa referencie:} \verb|$scope.$watch(watchExpression, listener)| - detekcia zmeny, keď sa na sledovanú hodnotu nastaví nová. Ak sa zmení vnorený objekt alebo pole objektu ktorý sledujeme, zmeny vnútri nie su detekované. Toto je najúčinnejšia stratégia.
-  \item \textbf{na celej kolekcii:} \verb|$scope.$watchCollection(watchExpression, listener)| - detekcia zmien, ku ktorým dochádza vo vnútri poľa alebo objektu. Napr. keď sú položky pridané, odstránené alebo sa v nich zmenilo poriadie. Detekcia je plytká, čiže nesleduje vnorené polia. Sledovanie celého obsahu kolekcie je výkonovo náročnejsie ako sledovanie na referenciu, pretože treba uchovávať kópiu obsahu. Avšak, táto stratégia sa snaží minimalizovať množstvo potrebných kopírovaní.
-  \item \textbf{všetky položky objektu:} \verb|$scope.$watch(watchExpression, listener, true)| - detekcia akéjkoľvek zmeny v ľubovolnej vnorenej štruktúry. Táto stratégia má najväčšie možnosti detekcie zmien, ale za to aj výkonovo a pamäťovo najnáročnejšia. Je potrebné uchovávať kópiu celej vnorenej štruktúry a pri každej zmene, sa musí skopírovať do pamäte.
+  \item \textbf{podľa referencie:} \verb|$scope.$watch(watchExpression, listener)| - detekcia zmeny, keď sa na sledovanú hodnotu nastaví nová. Ak sa zmení vnorený objekt alebo pole objektu ktorý sledujeme, zmeny vnútri nie su detekované. Toto je najrýchlejšia stratégia.
+  \item \textbf{na celej kolekcii:} \verb|$scope.$watchCollection(watchExpression, listener)| - detekcia zmien, ku ktorým dochádza vo vnútri poľa alebo objektu. Napr. keď sú položky pridané, odstránené alebo sa v nich zmenilo poradie. Detekcia je plytká, čiže nesleduje vnorené polia. Sledovanie celého obsahu kolekcie je výkonovo náročnejsie ako sledovanie na referenciu, pretože treba uchovávať kópiu obsahu. Avšak, táto stratégia sa snaží minimalizovať množstvo potrebných kopírovaní.
+  \item \textbf{všetky položky objektu:} \verb|$scope.$watch(watchExpression, listener, true)| - detekcia akéjkoľvek zmeny v ľubovolnej vnorenej štruktúre. Táto stratégia má najväčšie možnosti detekcie zmien, ale za to je výkonovo aj pamäťovo najnáročnejšia. Je potrebné uchovávať kópiu celej vnorenej štruktúry a pri každej zmene, sa musí skopírovať do pamäte.
 \end{itemize}
 
 
-\subsubsection{Expressions}
-Angular výrazy sú kúsky kódu v JavaScripte, ktoré sú umiestnené medzi dvojitými kučeravými zátvorkami.\\
+\subsubsection{Výrazy}
+Angular Expressions, sú výrazy, ktoré môžme využívať ako kúsky kódu v JavaScripte umiestnením medzi dvojité zložené zátvorky.\\
 Príklad: \verb|<span title="{{ attrBinding }}">{{ textBinding }}</span>|. Vyhodnotenie môže rovnako prebehnúť aj vo funkcii na kliknutie \verb|ng-click="functionExpression()"|.
 Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často môžu používať: \verb|{{ 1 + 2 }}, {{ a + b }}, {{ user.name }}, {{ items[index] }}| \cite{angular-docs}.
 
@@ -490,9 +490,9 @@ Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často m�
 %\textbf{View}
 
 
-\subsubsection{Data Binding}
-Data binding v Angulare funguje ako automatická synchronizácia dát medzi modelom a view. Ak sa zmení model, tak zmena sa automaticky prejaví aj do view, alebo aj naopak.
-Na obrázkoch môžeme vidieť pre porovnanie aký je rozdiel medzi jednosmerným a obojsmerným data bindingom.
+\subsubsection{Previazanie dát}
+Data binding v Angulare funguje ako automatická synchronizácia dát medzi modelom a zobrazením. Ak sa zmení model, tak zmena sa automaticky prejaví aj do zobrazenia a naopak.
+Na obrázkoch \ref{img-angular-onedb} a \ref{img-angular-twodb} môžeme vidieť rozdiel medzi jednosmerným a obojsmerným data bindingom.
 
 \begin{figure}[H]
 \subfigure[Jednosmerný data binding]{\includegraphics[scale=0.53]{img/angular/One_Way_Data_Binding.png}\label{img-angular-onedb}}
@@ -500,25 +500,25 @@ Na obrázkoch môžeme vidieť pre porovnanie aký je rozdiel medzi jednosmerný
 \caption{Data binding v Angular.js.}
 \end{figure}
 
-Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu šablónu a komponenty modelu do view. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií vo view sa neprejavia automaticky vo view. Horšie je, že zmeny ktoré úžívateľ urobí vo view sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje view s modelom a model s view.
+Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu šablónu a komponenty modelu do zobrazenia. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií v zobrazení sa neprejavia automaticky. Horšie je, že zmeny ktoré úžívateľ urobí v zobrazení sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje zobrazenie s modelom a naopak.
 
-Šablóny v Angulari fungujú inak. Šablóna (čo je neskompilovaný HTML kód spolu s ďalšími značkami a directívami) je najprv kompilovaná vo webovom prehliadači. Tento krok už produkuje živý view. Akékoľvek zmeny vo view sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do view. Vďaka tomuto spôsobu môžeme o view hovoriť ako o okamžitej projekcii modelu.
+Šablóny v Angulari fungujú inak. Šablóna (čo je neskompilovaný HTML kód spolu s ďalšími značkami a direktívami) je najprv kompilovaná vo webovom prehliadači. Tento krok už produkuje živý view. Akékoľvek zmeny v zobrazení sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do zobrazenia. Vďaka tomuto spôsobu môžeme o zobrazení hovoriť ako o okamžitej projekcii modelu.
 
-Pretože view iba je projekcia modelu, tak controller je kompletne separovaný od view a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať controller nezávisle od view \cite{angular-docs}.
+Pretože zobrazenie je iba projekcia modelu, tak kontroler je kompletne separovaný od zobrazenia a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať kontroler nezávisle od zobrazenia \cite{angular-docs}.
 
-\subsubsection{Controller}
-V Angulare je controller definovaný funkciou konštruktoru v JavaScripte, ktorý je používaný pre rozšírenie Scope. Keď je controller pripojený k DOM cez \verb|ng-controller| directívu, tak sa vytvorí inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter do konštruktorovej funkcie controlleru ako \verb|$scope|.
+\subsubsection{Kontroler}
+V Angulare je kontrolér definovaný funkciou konštruktoru v JavaScripte, ktorý je používaný pre rozšírenie Scope. Keď je kontrolér pripojený k DOM cez \verb|ng-controller| direktívu, tak sa vytvorí inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter do funkcie konštruktora kontroléru ako \verb|$scope|.
 
-Obrázok \ref{img-angular-controller-def} ukazuje ako je potrebné definovať controller v javascript súbore a jeho následné volanie v HTML šablóne.
+Obrázok \ref{img-angular-controller-def} ukazuje spôsob definície kontroleru v JavaScript súbore a jeho následné volanie v HTML šablóne.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/code/angular-controller-def.png}
-  \caption{Ukážka controlleru v Angular.js a jeho volanie na HTML elemente.}
+  \caption{Kontroler v Angular.js a jeho volanie na HTML elemente.}
   \label{img-angular-controller-def}
 \end{figure}
 
-Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba business logiku potrebnú pre konkrétny view. Najlepší spôsob ako zachovať controller čo najmenší, je zabalenie niektorej úlohy do service, ktorá tam nepatrí. Potom tieto úlohy zo services voláme v controlleri ako závislosť \cite{angular-docs}.
+Vo všeobecnosti by kontroler nemal toho robiť veľa. Mal by obsahovať iba biznis logiku potrebnú pre konkrétne zobrazenie. Najlepší spôsob ako zachovať kontroler čo najmenší, je zabalenie niektorej úlohy do Service, ktorá tam nepatrí. Potom tieto úlohy zo Services voláme v kontroleri ako závislosť \cite{angular-docs}.
 
 \noindent Controller je možné používať na:
 \begin{itemize}
@@ -537,8 +537,8 @@ Vo všeobecnosti by controller nemal toho robiť veľa. Mal by obsahovať iba bu
 
 %\textbf{Dependency Injection}
 
-\subsubsection{Module}
-Module môžeme brať do úvahy ako kontainer pre rozličné časti našej aplikácie - \textbf{controller}, \textbf{service}, \textbf{filter}, \textbf{directivy}... Každý module môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poriadie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov \cite{angular-docs}.
+\subsubsection{Moduly}
+Moduly môžeme rozumieť ako kontainer pre rozličné časti našej aplikácie - \textbf{controller}, \textbf{service}, \textbf{filter}, \textbf{directive}... Každý module môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poradie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov \cite{angular-docs}.
 
 Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali už existujúci v pamäti. Postup vytvorenia na obrázku \ref{img-angular-module-def}.
 
@@ -549,12 +549,12 @@ Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali u
   \label{img-angular-module-def}
 \end{figure}
 
-\subsubsection{Service}
-Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou dependency injection. Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných services, ako napr. \verb|$http|, ale väčšina aplikácií má potrebu si vytvoriť vlastné \cite{angular-docs}.
+\subsubsection{Služby}
+Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou systému závislostí. Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných služieb, ako napr. \verb|$http|, ale väčšina aplikácií má potrebu si vytvoriť vlastné \cite{angular-docs}.
 Poznáme dva typy services:
 \begin{itemize}
 \item lazily instantiated - angular vytvorí inštanciu service iba v prípade, že na nej závisí komponent/modul,
-\item singleton - každý komponent závisiaci na service získa referenciu na jedinú inštanciu generovanú z service factory.
+\item singleton - každý komponent závisiaci na service získa referenciu na jedinú inštanciu generovanú zo service factory.
 \end{itemize}
 
 %\subsubsection{Scope}
@@ -563,21 +563,23 @@ Poznáme dva typy services:
 %\subsubsection{Two-way data binding}
 
 \section{Návrh a implementácia StarkLab}
-\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. O ich využití a konkrétnejšom popise sme si popísali viacej v sekcii \ref{used-technologies}.
+\indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. O ich využití a konkrétnejšom popise sme si popísali viac v sekcii \ref{used-technologies}.
 
-V zadaní sme sa dohodli o využití Node.js platformy ako náš server. Teda centrálny server (ďalej len StarkLab), ktorý spracováva dáta z Matlab workspace. Do workspace Matlabu sa dáta získavajú v intervaloch zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \verb|tos_lib.mdl|, ktorá nám túto funkcionalitu umožňuje aj pod MAC OS X.
-
-Na komunikáciu s workspace používame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Keď si užívateľ spustí simuláciu cez klienta, tak dáta budú uchované aj v databáze MongoDB pre neskoršie spracovanie.
+V zadaní sme sa dohodli o využití Node.js platformy ako náš server. Teda centrálny server (ďalej len StarkLab) - obrázok \ref{img-software-design}, ktorý spracováva dáta z Matlab workspace. 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.45]{img/StarkLab.png}
+  \includegraphics[scale=0.55]{img/StarkLab.png}
   \caption{Návrh komunikácie medzi komponentami VL.}
-  \label{img-software-designl}
+  \label{img-software-design}
 \end{figure}
 
+Do workspace Matlabu sa dáta získavajú v intervaloch zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \verb|tos_lib.mdl|, ktorá nám túto funkcionalitu umožňuje aj pod MAC OS X. Táto knižnica poskytuje množstvo blokových schém, z ktorej sme využili len blokovú schému real-time pacer. Tá slúži na spomalenie simulácie do soft real-time.
+
+Na komunikáciu s workspace používame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Po spustení simulácie cez webového klienta užívateľom sa dáta začnú prenásať cez \verb|Socket.io| kanál. Tieto dáta budú zobrazené v grafoch vo webovom prehliadači a bude možné ich uchovať aj v databáze MongoDB pre neskoršie spracovanie.
+
 \subsection{Referenčný model simulácie v Matlabe}
-Funkčné softwarové riešenie síce bude mať možnosť spolupracovať s reálnymi zariadeniami, no pre jeho vývoj sme použili simuláciu dynamického systému šikmého vrhu.
+Funkčné softwarové riešenie síce bude mať možnosť spolupracovať s reálnymi zariadeniami, no pre jeho vývoj sme použili simuláciu dynamického systému šikmého vrhu, ktorá sa spúšta cez webové rozhranie a vykonáva v Simulinku.
 
 Pre načítanie simulácie je potrebné spustiť dva súbory. Účel prvého je inicializácia premenných potrebných pre výpočet súradníc polohy bodu v šikmom vrhu. Podľa kódu na obrázku \ref{img-matlab-function} vieme, že je potrebné zadať parametre parametre pre spustenie a jej návratová hodnota nie je žiadna. Prvý z parametrov \verb|v0| predstavuje počiatočnú rýchlosť telesa v metroch za sekundu, akou bude vymrštené z bodu \textbf{(0,0)}. Druhý parameter \verb|alfa_deg| zase určuje, pod akým uhlom v stupňoch, bude teleso vymrštené. Posledný parameter \verb|userFromWeb| nie je potrebný k samotnej simulácií, ale skôr pre identifikáciu užívateľa, ktorý spustil simuláciu. Vďaka tomu je možné mu priradiť výsledky simulácie pri neskoršom spracovaní z databázy.
 
@@ -590,9 +592,9 @@ Pre načítanie simulácie je potrebné spustiť dva súbory. Účel prvého je 
 
 Keď sú parametre funkcie správne zadané a spustí sa telo funkcie, tak sa nastavia a vypočítajú hodnoty ako \verb|alfa_rad, td, d, h|, ktorých popis vidíme na obrázku a sú potrebné ako vstupné parametre do simulácie.
 
-Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných do hlavného scope matlabu, čiže workspace. Keby túto časť vynecháme, tak všetky hodnoty po skončení funkcie zaniknú pretože sú tam lokálne premenné. Bolo by možné sa tomuto vyhnúť, v prípade že by sme nevolali funkciu \verb|Sikmy_vrh_par(80, 70, 'xstark')|, ale volali priamo len súbor, vďaka čomu by zostali všetky hodnoty v hlavnom workspace. Lenže pri tomto spôsobe riešenia by nebolo možné nastavovať inicializačné hodnoty ako parametre funkcie z webovej aplikácie, ale by museli byť natvrdo nastavené v kóde Matlabu.
+Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných do hlavného scope Matlabu, čiže workspace. Ak túto časť vynecháme, tak všetky hodnoty po skončení funkcie zaniknú, pretože sú tam lokálne premenné. Bolo by možné sa tomuto vyhnúť, v prípade že by sme nevolali funkciu \verb|Sikmy_vrh_par(80, 70, 'xstark')|, ale volali priamo len súbor, vďaka čomu by zostali všetky hodnoty v hlavnom workspace. Lenže pri tomto spôsobe riešenia by nebolo možné nastavovať inicializačné hodnoty ako parametre funkcie z webovej aplikácie, ale by museli byť natvrdo nastavené v kóde Matlabu.
 
-Ako sme si už povedali, že hodnoty sa po spustení úspešne uložia do Matlab workspace a to vidieť aj na obrázku č. \ref{matlab-function-workspace}. Tieto hodnoty boli vygenerované po zavolaní funkcie zo špecifickými hodnotami parametrov \verb|Sikmy_vrh_par(80, 70, 'xstark')|.
+Ako sme si už povedali, hodnoty sa po spustení úspešne uložia do Matlab workspace a to vidieť aj na obrázku č. \ref{matlab-function-workspace}. Tieto hodnoty boli vygenerované po zavolaní funkcie zo špecifickými hodnotami parametrov \verb|Sikmy_vrh_par(80, 70, 'xstark')|.
 
 \begin{figure}[H]
   \centering
@@ -609,13 +611,13 @@ Prednačítavanie modelu sa vykoná pomocou funkcie \verb|load_system('Sikmy_vrh
 Následne sa spustí \textbf{nekonečný while} cyklus, vďaka ktorému je možné zbierať údaje zo simulácie až do stavu kým nie je ukončená. 
 Na začiatku cyklu sa volá \verb|set_param(model, 'SimulationCommand',| \\ \verb|'WriteDataLogs')| čo vlastne pristúpi k aktuálne najvyššie spustenej simulácií a snaží sa realtime zapisovať vypočítané hodnoty do Matlab workspace. Bez tohto príkazu by sa zapísali až po skončení simulácie.
 
-Medzitým sa údaje upravujú na potrebný formát a pred odoslaním na REST API je vhodné ho zabaliť do JSON štruktúry. Tú vieme vytvoriť pomocou knižnice \verb|jsonlab| v aktuálnej verzií 1.2.
+Medzitým sa údaje upravujú na potrebný formát a pred odoslaním na REST API je vhodné ho zabaliť do JSON štruktúry. Tú vieme vytvoriť pomocou knižnice \verb|jsonlab| v aktuálnej verzii 1.2.
 Pomocou sekvencie týchto dvoch príkazov vytvoríme požadovaný JSON formát a odošleme ho na Express.js API. Vytvorenie JSON \verb|json = savejson('result',| \\ \verb|struct('user', userFromWeb, 'status', 'running', 'data', struct('time',| \\ \verb|timeFinal, 'vy', vyFinal, 'y', yFinal, 'x',xFinal)))| a jeho následné zaslanie do služby \verb|response = webwrite(url, json, options)|.
 
 Pomocou príkazu \verb|get_param(model, 'SimulationStatus')| vieme získať aktuálny stav simulácie. V prípade, že simulácia stále beží tak získame výstup \verb|"running"| inak je ukočená a vráti reťazec \verb|"stopped"|. Hneď ako dostaneme status "stopped" tak ukončíme cyklus pomocou \verb|break| a vieme že všetky dáta su prenesené do Node.js.
 
 \subsection{Diagramy}
-Pred tvorbou rôznych softwarových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe software. Niektoré nám hovoria o správaní len zo všeobecnosti čo by sa mohlo dať v systéme robiť ako napr. \textbf{prípady použitia}. Potom existuje aj \textbf{diagram tried}, ktorý slúži na vizualizáciu jednotlivých tried, ktoré sa tvoria v objektovo orientovaných jazykoch. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžme využiť \textbf{sekvenčné diagramy}, pretože tie nám hovoria o interakcií medzi jednotlivými komponentami, prípadne časťami kódu.
+Pred tvorbou rôznych softwarových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe software. Niektoré nám hovoria o správaní len vo všeobecnosti, čo by sa mohlo dať v systéme robiť, ako napr. \textbf{prípady použitia}. Potom existuje aj \textbf{diagram tried}, ktorý slúži na vizualizáciu jednotlivých tried, ktoré sa tvoria v objektovo orientovaných jazykoch. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžeme využiť \textbf{sekvenčné diagramy}, pretože tie nám hovoria o interakcií medzi jednotlivými komponentami, prípadne časťami kódu.
 
 \subsubsection{Prípad použitia}
 Diagram prípadov použitia sa používa k popisu chovania systému z hľadiska užívateľa a zachytáva, ktoré typy užívateľov so systémom pracujú a aké činnosti v rámci systému vykonávajú \cite{uml-usecase}.
@@ -634,7 +636,7 @@ Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť p
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.40]{img/diagrams/class.png}
+  \includegraphics[scale=0.34]{img/diagrams/class.png}
   \caption{Diagram "tried" pre náš systém.}
   \label{img-class-diagram}
 \end{figure}
@@ -700,7 +702,7 @@ Obrázok \ref{img-mongo-record} je záznam z MongoDB, kde konkrétne hodnoty tim
 %\section{Testovanie}
 
 \subsection{Node.js s frameworkom Express.js}
-Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Využívame ich posledné verzie Node.js verzie 6.1.0 a Express.js verzie 4.13.4. Je to vlastne len framework umožňujúci jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \verb|middleware|. Ako už bolo napísané je to funkcia, ktorá má prístup do request a response objektu. Použili sme \verb|body-parser|, ktorý nám umožnil spracovávať telo POST požiadavky, ktorá bola zasielaná z Matlabu. Každý middleware, ktorý chceme použiť je potrebné ešte aj aktivovať v kóde \verb|app.use(bodyParser.json({limit: '2mb'}))|. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s príjmutím POST requestu, keď boli dáta veľmi veľké.
+Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Využívame ich posledné verzie Node.js verzie 6.1.0 a Express.js verzie 4.13.4. Je to vlastne len framework umožňujúci jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \verb|middleware|. Ako už bolo napísané je to funkcia, ktorá má prístup do request a response objektu. Použili sme \verb|body-parser|, ktorý nám umožnil spracovávať telo POST požiadavky, ktorá bola zasielaná z Matlabu. Každý middleware, ktorý chceme použiť je potrebné ešte aj aktivovať v kóde \verb|app.use(bodyParser.json({limit: '2mb'}))|. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s prijatím POST requestu, keď boli dáta veľmi veľké.
 
 \subsubsection{Vlastný middleware prihlasovania}
 V aktuálnom softwarovom riešení nebolo potrebné vytvoriť prihlasovanie, pretože neskôr bude integrované do \textbf{LMS Moodle}, ktorý prihlasovanie rieši vlastným spôsobom. Ale pre ukážku možností frameworku Express.js sme implementovali middleware \verb|express-session|, vďaka ktorému môžme vytvoriť reláciu pre úspešne autorizovaného užívateľa. 
@@ -716,12 +718,12 @@ Vytvorili sme vlastný middleware na obrázku \ref{img-code-express-middleware},
   \label{img-code-express-middleware}
 \end{figure}
 
-Volanie \verb|app.use| nám zabezpečí, že sa táto funkcia zaregistruje ako middleware a bude volaná pri každom requeste. Prvá časť podmienky overuje, či prichádzame z webového prehliadača a je nastavená session. Kedže Matlabu nevieme nastaviť session, pretože tá sa ukladá len na webserveri tak sme to vyriešili iným spôsobom. V príchádzajúcom tele POST requestu od Matlabu je objekt \verb|result|, kde sú uložené simulované dáta. Priradili sme mu ďalšiu vlastnosť \verb|user|, ktorá keď je nastavená, tak vieme, že požiadavka prichádza z Matlabu a vieme jej povoliť prístup. V prípade splnenej aspoň jednej podmienky sa zavolá callback \verb|next()|, čo teda vyvolá ďalší zaregistrovaný middleware, alebo už smerovanie, na ktoré sme posielali požiadavku.
+Volanie \verb|app.use| nám zabezpečí, že sa táto funkcia zaregistruje ako middleware a bude volaná pri každom requeste. Prvá časť podmienky overuje, či prichádzame z webového prehliadača a je nastavená session. Kedže Matlabu nevieme nastaviť session, pretože tá sa ukladá len na webserveri, tak sme to vyriešili iným spôsobom. V prichádzajúcom tele POST requestu od Matlabu je objekt \verb|result|, kde sú uložené simulované dáta. Priradili sme mu ďalšiu vlastnosť \verb|user|, ktorá keď je nastavená, tak vieme, že požiadavka prichádza z Matlabu a vieme jej povoliť prístup. V prípade splnenej aspoň jednej podmienky sa zavolá callback \verb|next()|, čo teda vyvolá ďalší zaregistrovaný middleware, alebo už smerovanie, na ktoré sme posielali požiadavku.
 Ak nie je splnená ani jedna z dvoch podmienok, tak nás server presmeruje na hlavnú stránku, kde sa od nás požaduje znovu prihlásenie.
 
 
 \subsubsection{Spustenie Matlabu z príkazového riadku}
-Zo začiatku nebolo isté ako budeme spúšťať simuláciu, pretože sme nevedeli či Node.js umožuje vykonávať príkazy nad operačným systémom, resp. spúšťať programy. Vtedy sme komunikáciu riešili takým spôsobom, že Matlab sa otvoril ručne a v ňom sme spustili potrebné inicializačné súbory a následne samotnú simulácia. Takéto riešenie nie je postačujúce z hladiska automatizácie a samostatnosti.
+Zo začiatku nebolo isté ako budeme spúšťať simuláciu, pretože sme nevedeli, či Node.js umožuje vykonávať príkazy nad operačným systémom, resp. spúšťať programy. Vtedy sme komunikáciu riešili takým spôsobom, že Matlab sa otvoril ručne a v ňom sme spustili potrebné inicializačné súbory a následne samotnú simulácia. Takéto riešenie nie je postačujúce z hladiska automatizácie a samostatnosti.
 
 Potom sme zistili, že Node.js má možnosti na spustenie hocijakého software, ktorý je možné spustiť cez terminál. Pre zjednodušenie práce bol využitý modul \verb|shelljs|, ktorý takúto možnost poskytuje.
 
@@ -734,12 +736,12 @@ Na obrázku \ref{img-express-shelljs} je funkcionalita, ktorá sa vykoná po pr�
   \label{img-express-shelljs}
 \end{figure}
 
-Vstupný príkaz vo forme reťazca, ktorý chceme vykonať, musí mať správne zadanú cestu k Matlabu na súborom systéme. Matlab spúštame v termináli s parametrami, ktoré umožnujú spustenie bez nepotrebných častí \cite{matlab-macos}. Ako napr. nepotrebujeme vidieť výsledky v okne, alebo animáciu Matlabu pri spustení. Pomocou parametra \verb|-r| vieme volať príkazy v príkazovom riadku Matlabu, napr. špecifikovať cestu, kde sa nachádza naša simulácia a potrebné súbory. Následne zavoláme funkciu \verb|Sikmy_vrh_par()|, s ktorou sa pošlú parametre počiatočnej rýchlosti, uhla a zároveň meno prihláseného používateľa. Po vykonaní tejto funkcie sa spustí súbor simulácie \verb|projectile_sim|. Po jej skončení zatvoríme Matlab pomocou príkazu \verb|exit|.
+Vstupný príkaz vo forme reťazca, ktorý chceme vykonať, musí mať správne zadanú cestu k Matlabu na súborovom systéme. Matlab spúštame v termináli s parametrami, ktoré umožnujú spustenie bez nepotrebných častí \cite{matlab-macos}. Ako napr. nepotrebujeme vidieť výsledky v okne, alebo animáciu Matlabu pri spustení. Pomocou parametra \verb|-r| vieme volať príkazy v príkazovom riadku Matlabu, napr. špecifikovať cestu, kde sa nachádza naša simulácia a potrebné súbory. Následne zavoláme funkciu \verb|Sikmy_vrh_par()|, s ktorou sa pošlú parametre počiatočnej rýchlosti, uhla a zároveň meno prihláseného používateľa. Po vykonaní tejto funkcie sa spustí súbor simulácie \verb|projectile_sim|. Po jej skončení zatvoríme Matlab pomocou príkazu \verb|exit|.
 
-Po zostrojení tohto reťazca ako parametra funkcie \verb|exec()| a jeho spustení sa čaká na vykonávanie Matlabu. Medzitým nás server presmeruje na stránku /dashboard kde sa čaká na údaje zo simulácie. V momente keď sa načíta simulácia a začne jej vykonávanie so vstupnými parametrami, tak sa dáta zobrazia realtime vo webovom prehliadači.
+Po zostrojení tohto reťazca ako parametra funkcie \verb|exec()| a jeho spustení sa čaká na vykonávanie Matlabu. Medzitým nás server presmeruje na stránku /dashboard kde sa čaká na údaje zo simulácie. V momente načítania simulácie so vstupnými parametrami sa dáta zobrazia realtime vo webovom prehliadači.
 
 \subsubsection{Práca s dátami simulácie}
-Keď je simulácia spustená, Matlab je pripravený zasielať výsledky na smerovanie, ktoré vidíme na obrázku \ref{img-express-socketio}. 
+Po načítaní simulácie je Matlab pripravený zasielať výsledky na smerovanie, ktoré vidíme na obrázku \ref{img-express-socketio}. 
 
 \begin{figure}[H]
   \centering
@@ -756,7 +758,7 @@ Po prijatí a zobrazovaní dát nasleduje spracovanie. Ich spracovanie sa vykon�
 
 Na začiatku je potrebné najprv zavolať modul a následne jeho klientskú časť cez \verb|var MongoClient = require('mongodb').MongoClient|. Potom nasleduje definovanie URL, na ktorej máme spustenú databázu \verb|mongodb://localhost:27017/test|.
 
-Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich použitie. Prvá z nich je vloženie dokumentu do databázy na obrázku \ref{img-express-mongo-insert}. Táto funkcia slúžiaca na vytvorenie jedného záznamu, sa pokúsi vložiť \verb|obj| do kolekcie \textbf{projectile}, kde sú vlastne naše kompletné záznamy zo simulácií. Po úspešnom vložení zatvorí prihlásenie na databázu a vráti HTTP status kód 200.
+Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich použitie. Prvá z nich je vloženie dokumentu do databázy na obrázku \ref{img-express-mongo-insert}. Táto funkcia slúžiaca na vytvorenie jedného záznamu sa pokúsi vložiť \verb|obj| do kolekcie \textbf{projectile}, kde sú vlastne naše kompletné záznamy zo simulácií. Po úspešnom vložení zatvorí prihlásenie na databázu a vráti HTTP status kód 200.
 
 \begin{figure}[H]
   \centering
@@ -765,7 +767,7 @@ Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich pou
   \label{img-express-mongo-insert}
 \end{figure}
 
-Druhú funkciu, ktorú využívame na prácu s databázou je na obrázku \ref{img-express-mongodb-find}. 
+Druhá funkcia, ktorú využívame na prácu s databázou je na obrázku \ref{img-express-mongodb-find}. 
 Slúži na vyhladanie záznamu v závislosti od parametrov. Jednu funkciu vieme využiť na viacero účelov. V prípade ak zadáme parameter funkcie \verb|sim|, tak v podmienke sa skontroluje, či je dostupná vlastnosť \verb|id|. Ak áno, tak vyhľadanie v databáze prebehne na základe parametrov užívateľského mena a konkretného id simulácie, čo nám vyhľadá iba jeden záznam ak existuje. V opačnom prípade vyhľadá všetky záznamy simulácií pre daného užívateľa. Táto funkcionalita sa využíva pri zobrazení všetkých záznamov u klienta.
 
 \begin{figure}[H]
@@ -776,7 +778,7 @@ Slúži na vyhladanie záznamu v závislosti od parametrov. Jednu funkciu vieme 
 \end{figure}
 
 Po ukážke implementácií funkcií, ktoré vykonávajú zápis/čítanie si ukážeme ich volanie. Na obrázku \ref{img-express-mongodb-insert2} je vloženie záznamu po prístupe na smerovanie /mongo/insert/one.
-Pre vykonanie nejakej operácie nad databázou musíme vytvoriť spojenie medzi klientom a MongoDB. Slúži na to funkcia \verb|connect(url, callback)|, ktorej prvý parameter je URL kde sa nachádza DB a druhý je callback, kde sa vracajú údaje.
+Pre vykonanie nejakej operácie nad databázou musíme vytvoriť spojenie medzi klientom a MongoDB. Slúži na to funkcia \verb|connect(url, callback)|, ktorej prvý parameter je URL, kde sa nachádza DB a druhý je callback, kde sa vracajú údaje.
 
 \begin{figure}[H]
   \centering
@@ -795,8 +797,8 @@ Rozdiel je iba vo využití volania smerovania. Dvojbodka pred názvom \verb|:us
   \label{img-express-mongodb-find2}
 \end{figure}
  
-\subsection{Webový klient s frameworkom Angular.js}\label{section-angular-web}
-Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úloha webového klienta, bolo overiť funkčnosť vytvoreného prostredia, ktorý posiela simulované dáta. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
+\subsection{Webový klient s frameworkom Angular.js}
+Na klientskú časť práce sme využili JavaScriptový framework Angular.js v poslednej stabilnej verzii 1.5.5. Úlohou webového klienta bolo overiť funkčnosť vytvoreného prostredia, ktorý posiela simulované dáta. Funkčnosť sme overili a popíšeme si konkrétne obrazovky.
 
 \begin{figure}[H]
   \centering
@@ -805,8 +807,8 @@ Na klientskú časť práce sme využili JavaScriptový framework Angular.js v p
   \label{img-angular-login}
 \end{figure}
 
-Ako to funguje na pozadí už sme si popísali v sekcií \ref{diagram-sequence-section}, kde sa pojednávajú sekvenčné diagramy, konkrétne prihlásenie do LDAP.
-Po prihlásení sa zobrazí stránka vyhradená pre zadanie parametrov šikmého vrhu, počiatočnú rýchlosť v0 a uhol vystrelenia alfa\_deg. Rovnako sú tu popísané aj základné informácie o simulácii a jeho vzorcov.
+Ako to funguje na pozadí sme si popísali v sekcii \ref{diagram-sequence-section}, kde sa pojednávajú sekvenčné diagramy, konkrétne prihlásenie do LDAP.
+Po prihlásení sa zobrazí stránka vyhradená pre zadanie parametrov šikmého vrhu: počiatočnej rýchlosti v0 a uhlu vystrelenia alfa\_deg. Rovnako sú tu popísané aj základné informácie o simulácii a jeho vzorcov.
 
 Po zadaní rýchlosti \textbf{v0=40} a \textbf{alfa\_deg=60} sme presmerovaní na stránku /matlab.
 
@@ -818,12 +820,12 @@ Po zadaní rýchlosti \textbf{v0=40} a \textbf{alfa\_deg=60} sme presmerovaní n
 \end{figure}
 
 \subsubsection{Grafy s Chart.js}
-Pre vizualiáziu prichádzajúcich dát používame knižnicu na grafy \verb|Chart.js|, ktorá je vytvorená pomocou HTML canvas. Využívame poslednú verziu jednotkovej rady 1.1.1. Používame ju ako skript v HTML stránke \verb|<script src="/node_modules/chart.js/Chart.min.js"></script>|. Ako si môžeme všimnúť tak nie je závislá od žiadnej online CDN služby, ale jej inštalácia prebehla lokálne pomocou NPM.
+Pre vizualiáziu prichádzajúcich dát používame knižnicu na grafy \verb|Chart.js|, ktorá je vytvorená pomocou HTML canvas. Využívame poslednú verziu jednotkovej rady 1.1.1. \verb|<script src="/node_modules/chart.js/Chart.min.js"></script>| je zápis volania v HTML hlavičke. Ako si môžeme všimnúť, tak nie je závislá od žiadnej online CDN služby, ale jej inštalácia prebehla lokálne pomocou NPM.
 
 Vyvorili sme Angular.js directívu uiGraph, ktorá slúži pre vytvorenie grafu na potrebnom mieste. Ako template má v obsahuje \verb|<canvas id="updating-chart" width="600"| \\ \verb|height="300"></canvas>|. Na obrázku \ref{img-angular-chartjs-canvas} vidíme vytvorenie grafu a nastavenie hodnôt. Táto časť kódu sa nachádza v postLink funkcii directívy.
 
 Na začiatku je potrebné získať element z DOM, získať kontext canvasu a vytvoriť objekt \verb|startingData| s nastaveniami pre inicializačné dáta. 
-Následne je potrebné vytvoriť inštanciu grafu, kde ako parameter grafu použije kontext canvasu, a volá sa funcia čiarového grafu, ktorý tam potrebujeme. Tá zase vyžaduje ako vstupný parameter inicializačné dáta. Túto directívu zavoláme v HTML ako \verb|<ui-graph></ui-graph>| element.\\
+Následne je potrebné vytvoriť inštanciu grafu, kde sa ako parameter grafu použije kontext canvasu. Potom sa volá funcia čiarového grafu, ktorý tam chceme využiť. Tá zase vyžaduje ako vstupný parameter inicializačné dáta. Túto directívu zavoláme v HTML ako \verb|<ui-graph></ui-graph>| element.\\
 
 Ak by sme chceli rozšíriť graf, resp. ak by bolo rozumné súčasne vykreslovať viacero závislých veličín, tak je možné zadefinovať ďalší dataset.
 
