@@ -562,6 +562,37 @@ Poznáme dva typy services:
 % mozno lepsie pred konceptom
 %\subsubsection{Two-way data binding}
 
+\section{Porovnanie platforiem}
+
+V predchádzajúcej sekcii sme si popísali technológie, ktoré plánujeme využiť. Keď si to všetko spojíme dohromady, tak dostaneme základný obraz, ako by mohlo vyzerať naše riešenie na platforme Node.js - obrázok \ref{img-plat-node}. Na následujúcich obrázkoch sme porovnali našu vybranú platformu s inými možnými riešeniami.
+
+Základná časť, na ktorej to celé je stojí je operačný systém. Ten v tomto prípade môže byť ľubovolný. Nad ním je už spomínaný Node.js, ktorý má v sebe \verb|http| modul. Ten umožnuje vytvorenie jednoduchého a rýchleho webservera. Tento modul je štandardnou súčasťou Node.js. Je možné ho vymeniť za iný, ale väčšinou nie je dôvod. Ďalej nám umožnuje pripojenie na ľubovolnú databázu pomocou dostupných modulov. Komunikácia medzi Node.js a Matlabom prebieha cez RESTful služby. Posledná časť nášho riešenia je Express.js framework pre uľahčenie práce s Node.js API. Výhoda tohoto riešenia je hlavne použitie jazyka JavaScript pre programovanie na serverovej aj klientskej časti.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{img/platf/node-platform.png}
+  \caption{Platforma Node.js.}
+  \label{img-plat-node}
+\end{figure}
+
+Pre porovnanie tu máme aj WAMP riešenie - obrázok \ref{img-plat-php}, ktorý vyzerá podobne ako Node.js platforma vyššie. Rozdiel je v tom, že PHP je len modul do webového servera Apache httpd. V tomto prípade by bola možnosť vybrať aj iný http server napr Nginx.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{img/platf/php-platform.png}
+  \caption{Platforma PHP.}
+  \label{img-plat-php}
+\end{figure}
+
+Posledné riešenie pre porovnanie by mohlo byť na platforme Java, viď obrázok \ref{img-plat-java}. Operačný systém môže byť ľubovolný, pretože Java je multiplatformový jazyk, ktorý beži nad JVM. Pre ukážku webového servera bol vybraný Apache Tomcat, ktorý by mohol byť rovnako zmenený za iné riešenie, ako napr. GlassFish alebo Wildfly.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.6]{img/platf/java-platform.png}
+  \caption{Platforma Java.}
+  \label{img-plat-java}
+\end{figure}
+
 \section{Návrh a implementácia StarkLab}
 \indent Témou práce je navrhnúť a implementovať virtuálne laboratórium s využiťím JavaScriptu na strane servera. V tejto kapitole si ukážeme návrh celého virtuálneho laboratória s využitím technológií na jednotlivých komponentoch. O ich využití a konkrétnejšom popise sme si popísali viac v sekcii \ref{used-technologies}.
 
@@ -836,7 +867,7 @@ Ak by sme chceli rozšíriť graf, resp. ak by bolo rozumné súčasne vykreslov
   \label{img-angular-chartjs-canvas}
 \end{figure}
 
-V sekcií \ref{section-angular-web} sme si hovorili o tom, čo musíme spraviť, aby nám generovalo údaje. Po presmerovaní na stránku /matlab treba počkať kým sa spustí Matlab zo simuláciou a následne sa začnú generovať realtime dáta do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku \ref{img-angular-chartjs} je využitá knižnica Chart.js pre zobrazenie grafov.
+V sekcií \ref{section-angular-web} sme si hovorili o tom, čo musíme spraviť, aby sa generovali údaje. Po presmerovaní na stránku /matlab treba počkať, kým sa spustí Matlab so simuláciou a následne sa začnú generovať realtime dáta do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku \ref{img-angular-chartjs} je využitá knižnica Chart.js pre zobrazenie grafov.
 
 \begin{figure}[H]
   \centering
@@ -890,7 +921,7 @@ V tomto systéme nejde len o real-time vykreslenie dát, ale aj o neskoršie zob
   \label{img-angular-fulldata-graph}
 \end{figure}
 
-Na webovej stránke sa ešte nachádza pod animáciou sa nachádza rovnaká tabuľka ako v obrázku č. \ref{img-angular-table} s rozdielom, že v tejto tabuľke sú kompletné údaje a je možné ich exportovať do \verb|CSV| formátu.
+Na webovej stránke sa ešte pod animáciou nachádza rovnaká tabuľka ako v obrázku \ref{img-angular-table} s rozdielom, že v tejto tabuľke sú kompletné údaje a je možné ich exportovať do \verb|CSV| formátu.
 
 
 %\section{Inštalácia vytvoreného riešenia}
