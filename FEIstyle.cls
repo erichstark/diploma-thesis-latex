@@ -116,11 +116,13 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{lmodern}
-\usepackage[slovak,english]{babel}
+\usepackage[slovak]{babel}
 \usepackage[T1]{fontenc} 
 \usepackage{changepage}
 \usepackage{scrextend}
 \usepackage{xstring}
+
+%\hyphenation
 
 \IfEqCase*{\FEIcoding}{
    		 {0}{

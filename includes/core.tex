@@ -18,15 +18,15 @@
 }
 
 \section{Cieľ práce}
-Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a možností Node.js pre vytvorenie nového.
+Všeobecným cieľom diplomovej práce je analyzovať existujúce riešenia virtuálnych laboratoratórií a zistiť možnosti Node.js pre vytvorenie nového.
 
-Na základe zistených možností je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude Node.js, klienti matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupna aj z internetu. Klient aj server bude vytvorený v dynamicky typovom jazyku JavaScript. Údaje z experimentu sa budú zasielať z Matlabu na server cez RESTful služby, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
+Na základe zistených poznatkov je potrebné vytvoriť virtuálne laboratórium ako klient-server architektúru, kde server bude Node.js, klienti Matlab a webová aplikácia v prehliadači. Experiment vrámci virtualného laboratória prebieha ako simulácia v Matlabe cez rozšírenie Simulink. Táto aplikácia nebude obmedzená len na lokálnu sieť, ale bude prístupná aj z internetu. Klient aj server bude vytvorený v dynamicky typovanom jazyku JavaScript. Údaje z experimentu budú zasielané z Matlabu na server cez RESTful služby, kde môžu byť následne spracované a uložené do databázy, alebo zaslané klientovi do prehliadača.
 
 
 \section{Virtuálne laboratória}
-\indent V dobe, keď internet ešte nebol rozšírený, sa experimenty robili vo fyzických laboratóriach. Bolo dôležité dodržiavať rôzne bezpečnostné predpisy, kvôli možnému úrazu osoby prípadne poškodeniu prístrojov.
+\indent V dobe, keď internet ešte nebol rozšírený, sa experimenty robili vo fyzických laboratóriach. Dôležité bolo dodržiavať rôzne bezpečnostné predpisy, kvôli možnému úrazu osoby prípadne poškodeniu prístrojov.
 
-Vzdialenosť ale aj nedostatok finančných zdrojov nám sťažuje podmienky pri vykonávaní experimentov, hlavne v prípadoch keď je potrebné mať pokrokové sofistikované nástroje. Ďalší problém, s ktorým sa stretávame, je nedostatok kvalitných lektorov. Síce v súčasnosti už existujú online kurzy, ktoré poskytujú aj video ukážky, ale to tento problém rieši len čiastočne. Vždy bolo výzvou vykonávanie spoločných experimentov viacerými inštitúciami súčasne a zároveň aj zdielanie nákladov na prostriedky. So súčasnými možnosťami internetu a počítačových technológií už tieto obmedzenia nemusia trápiť študentov ani výskumníkov. Internet umožnil to, že experimenty môžu byť štruktorované tak, aby boli ovládané a vizualizované na ďiaľku. Práve to by mohlo pomôcť v učení základných ale aj pokročilých konceptov prostredníctvom vzdialeného experimentovania. V súčasnosti veľa vybavenia už poskytuje rozhranie pre pripojenie počítača a spracovanie dát z neho. Preto je možné navrhnúť experimenty, ktoré pomôžu študentom pri učení. Experimentovanie cez internet umožňuje využívanie zdrojov, znalostí, softvéru a dát z internetu na rozdiel od fyzických experimentov, ktoré by vznikali súčasne na rôznych miestach \cite{vlabphylosopfy}.
+Vzdialenosť ale aj nedostatok finančných zdrojov nám sťažuje podmienky pri vykonávaní experimentov, hlavne v prípadoch keď je potrebné mať pokrokové a sofistikované nástroje. Ďalší problém, s ktorým sa stretávame, je nedostatok kvalitných lektorov. Síce v súčasnosti už existujú online kurzy, ktoré poskytujú aj inštruktážne videá, no tento problém to rieši len čiastočne. Vždy bolo výzvou vykonávanie spoločných experimentov viacerými inštitúciami súčasne a zároveň aj zdielanie nákladov na prostriedky. So súčasnými možnosťami internetu a počítačových technológií už tieto obmedzenia nemusia trápiť študentov ani výskumníkov. Internet umožnil to, že experimenty môžu byť štrukturované tak, aby boli ovládané a vizualizované na ďiaľku. Práve to by mohlo pomôcť v učení základných, ale aj pokročilých konceptov prostredníctvom vzdialeného experimentovania. V súčasnosti veľa vybavenia už poskytuje rozhranie pre pripojenie počítača a spracovanie dát z neho. Preto je možné navrhnúť experimenty, ktoré pomôžu študentom pri učení. Experimentovanie cez internet umožňuje využívanie zdrojov, znalostí, softvéru a dát z internetu na rozdiel od fyzických experimentov, ktoré by vznikali súčasne na rôznych miestach \cite{vlabphylosopfy}.
 
 V tejto práci sa budeme zaoberať tvorbou virtuálneho laboratória (ďalej len VL). Predtým, ako si popíšeme detailné fungovanie technológií pre vytvorenie VL, si musíme vysvetliť, čo považujeme za VL, pochopiť aké hodnoty nám môže priniesť, ale samozrejme aj tie, ktoré nemôže. Vo všeobecnosti môžme povedať, že VL je počítačový program, kde študenti sú v interakcii s experimentom prostredníctvom počítača ako na obrázku \ref{img-real-vs-remote}. 
 
@@ -37,7 +37,7 @@ V tejto práci sa budeme zaoberať tvorbou virtuálneho laboratória (ďalej len
   \label{img-real-vs-remote}
 \end{figure}
 
-Typický príklad je simulácia experimentu, kedy je študent v interakcii s naprogramovaným rozhraním. Ďalšia možnosť je diaľkovo ovládaný experiment, kde študent je v interakcii s reálnym zariadením cez počítačové rozhranie, napriek tomu že sa nenachádza pri ňom. 
+Typický príklad je simulácia experimentu, kde je študent v interakcii s naprogramovaným rozhraním. Ďalšia možnosť je diaľkovo ovládaný experiment, kde študent je v interakcii s reálnym zariadením cez počítačové rozhranie, napriek tomu že sa nenachádza pri ňom. 
 Keď vylúčime druhú variantu, tak si môžme utvoriť definíciu nasledovne: \textit{"Virtuálnym laboratóriom voláme to, keď je študent v interakcii s experimentom, ktorý je od neho fyzicky vzdialený alebo nemá na pozadí žiadnu fyzickú realitu"} \cite{hatherly}.\\
 
 Po vysvetlení, čo je VL sa pozrieme na výhody, ktoré nám môže priniesť. Sú popísané v bodoch v tabuľke \ref{table-real-remote-virtual-laboratory}.
@@ -67,7 +67,7 @@ Po vysvetlení, čo je VL sa pozrieme na výhody, ktoré nám môže priniesť. 
 \end{table}
 
 \subsection{Prehľad existujúcich virtuálnych laboratórií}
-V čase písania tohto dokumentu existuje množstvo rôznych virtuálnych/vzdialených laboratórií, ktoré sú používané zahraničnými školami pre výučbu alebo výskum. V práci \cite{vlabtablecomparison} je zoznam veľmi často používaných laboratórií, ktoré sú prístupne cez internet. Porovnanie funkcionality a využitých technológií je možné vidieť v tabuľke \ref{table-vlab-comparison}.
+V čase písania tohto dokumentu existuje množstvo rôznych virtuálnych/vzdialených laboratórií, ktoré sú používané zahraničnými školami pre výučbu alebo výskum. V práci je zoznam veľmi často používaných laboratórií, ktoré sú prístupne cez internet. Porovnanie funkcionality a využitých technológií je možné vidieť v tabuľke \ref{table-vlab-comparison} \cite{vlabtablecomparison}.
 
 \begin{table}[H]
 \scriptsize
@@ -113,55 +113,56 @@ Následne som preskúmal možnosti existujúcich riešení a vložil do tabuľky
 \end{table}
 
 \subsubsection{Nevýhody existujúcich riešení}
-Pri tvorbe softwarového systému, či už všeobecne, alebo v našom prípade virtuálneho laboratória je vhodné preskúmať zo začiatku možnosti existujúcich riešení. Robí sa to z dôvodu vyvarovania rôznym chybám, ktoré môžu nastať pri návrhu, prípadne overenie technológií, ktoré boli použité a časom už zastarali. V súčasnosti je vývoj nových technológií neskutočne rýchly. Takúto analýzu existujúch riešení sme urobili v predchádzajúcej sekcii.
+Pri tvorbe softwarového systému, či už všeobecne, alebo v našom prípade virtuálneho laboratória je vhodné preskúmať na začiatku možnosti existujúcich riešení. Robí sa to z dôvodu vyvarovania rôznym chybám, ktoré môžu nastať pri návrhu, prípadne overenie technológií, ktoré boli použité a časom už zastarali. V súčasnosti je vývoj nových technológií neskutočne rýchly. Takúto analýzu existujúch riešení sme urobili v predchádzajúcej sekcii.
 Naša téma je zameraná na vytvorenie multiplatformového riešenia, kde nie je možné využiť WCF ani COM technológie ako v predchádzajúcich riešeniach. JMI je zase vhodné len pre riešenie, kde sa využíva Java. Pre server nie je možné využiť technológie LabVIEW, .NET (momentálne je už vo vývoji multiplatformová verzia). Čo sa týka klienských riešení tak Flash, ActiveX, Java applets už nie sú podporované v prehliadačoch, taktiež ich nie je vhodné použiť.
 
 \subsection{Komponenty virtuálneho laboratória}
-Počet existujúcich laboratórií je veľký, ale väčšinou nie je možné zaručiť kompatibilitu, pretože tu neexistuje žiadny štandard. Každopádne vždy je možné identifikovať základné komponenty, ktoré tieto VL využívajú. Niektoré z nich môžu byť dokonca využité viac krát \cite{article-components-vl}.\\
+Počet existujúcich laboratórií je veľký, ale väčšinou nie je možné zaručiť kompatibilitu, pretože tu neexistuje žiadny štandard. Každopádne vždy je možné identifikovať základné komponenty, ktoré VL využívajú. Niektoré z nich môžu byť dokonca využité viac krát \cite{article-components-vl}.\\
 
 \noindent Komponenty:
 \begin{itemize}
   \item samotný experiment,
-  \item zariadenie umožnujúce kontrolu experimentu a získavanie hodnôt z neho,
+  \item zariadenie umožnujúce kontrolu experimentu a získavanie hodnôt,
   \item laboratórny server, ktorý zabezpečí kontrolu, monitorovanie a spracovanie dát z experimentu,
-  \item server, ktorý zabezpečí prepojenie medzi vzdialenými uživateľmi a laboratórneho servera, zvyčajne prostredníctvom internetu,
+  \item server, ktorý zabezpečí prepojenie medzi vzdialenými užívateľmi a laboratórneho servera, zvyčajne prostredníctvom internetu,
   \item webová kamera pripojená k serveru, ktorá môže byť použitá pre vzdialeného používateľa ako vizuálna a zvuková spätná väzba o stave experimentu,
-  \item nástroje umožňujúce viacužívateľské audio, video a chat komunikáciu.
-  \item klientský software, pripojiteľné k experimentu.\\
+  \item nástroje umožňujúce viacužívateľské audio, video a chat komunikáciu,
+  \item klientský software, pripojiteľný k experimentu.\\
 \end{itemize}
 
-Dôležité je uvedomiť si, ktoré z týchto komponentov chceme využiť, pretože na vytvorenie laboratória nie vždy potrebujeme všetky. Prípadne môžme využiť aj iné, ktoré sa nám dokonale hodia na danú úlohu. Niekedy sa používa napr. aj databázový server ak chceme experimenty ukladať a spracovávať neskôr. Tak isto je potrebné uvedomiť si, aký typ VL chceme vytvoriť. Určite budú rozdiely pri návrhu jednoužívateľského VL na rozdiel od viacužívateľského dokonca s viacerými experimentami súčasne. Treba myslieť na to, ako vhodne vyriešiť škálovateľnosť, možné problémy s bezpečnosťou, viacužívateľský prístup, ostatné problémy prístupnosti a podobne.
+Dôležité je uvedomiť si, ktoré z týchto komponentov chceme využiť, pretože na vytvorenie laboratória nie vždy potrebujeme všetky. Prípadne môžeme využiť aj iné, ktoré sa nám dokonale hodia na určitú úlohu. Niekedy sa používa napr. aj databázový server ak chceme experimenty ukladať a spracovávať neskôr. Tak isto je potrebné uvedomiť si, aký typ VL chceme vytvoriť. Určite budú rozdiely pri návrhu jednoužívateľského VL na rozdiel od viacužívateľského, dokonca s viacerými experimentami súčasne. Treba myslieť na to, ako vhodne vyriešiť škálovateľnosť, možné problémy s bezpečnosťou, viacužívateľský prístup, ostatné problémy prístupnosti a podobne.
 
 
 \section{Použíté technológie}\label{used-technologies}
-V predchádzajúcich kapitolách sme popísali cieľe, ktoré chceme vlastne dosiahnuť. Ďalej sme analyzovali možnosti virtuálnych laboratórií a porovnali už s existujúcimi riešeniami. V tejto sekcii budú v krátkosti rozpísané použité technológie. Je samozrejmé, že nie je možné ku každej popísať všetky jej možnosti, ale budeme sa venovať hlavne tým, ktoré plánujeme využiť aj v implementácií.
+V predchádzajúcich kapitolách sme popísali ciele, ktoré chceme dosiahnuť. Ďalej sme analyzovali možnosti virtuálnych laboratórií a porovnali ich s už existujúcimi riešeniami. V tejto sekcii budú rozpísané použité technológie. Je samozrejmé, že nie je možné ku každej popísať všetky jej možnosti, ale budeme sa venovať hlavne tým, ktoré plánujeme využiť aj v implementácií.
 
 \subsection{MATLAB R2015b}
-Milióny inžinierov a vedcov na celom svete používajú MATLAB na analýzu a návrh systémov a produktov, ktoré menia náš svet. MATLAB sa používa v automobilových systémoch, vesmírnych staniciach, smart siete, mobilých sieťach LTE alebo aj v škole na štúdium. Ďalej sa používa pre strojové učenie, spracovanie signálu, spracovanie obrazu, počítačové videnie, komunikácie, finančníctvo, riadenie, robotika a mnoho ďalšich využití.
-Celá platforma MATLAB je optimalizovaná pre riešenie inžinierskych a vedeckých problémov. Jazyk MATLABu je založený na práci s maticami. Je považovaný za najprirodzenejší spôsob ako počítať matematické úlohy. Pomocou integrovanej grafickej knižnici je možné vizualizovať a získať výsledky z dát. MATLAB integruje aj množstvo toolboxov, ktoré pomáhajú priamo začať s algoritmami, ktoré potrebujeme pre našu doménu \cite{matlab-mathworks}.
+Milióny inžinierov a vedcov na celom svete používajú MATLAB na analýzu a návrh systémov a produktov, ktoré menia náš svet. Matlab sa používa v automobilových systémoch, vesmírnych staniciach, smart sieťach, mobilých sieťach LTE alebo aj v škole pri štúdiu. Ďalej sa používa v strojovom učení, spracovaní signálu, spracovaní obrazu, počítačovom videní, komunikácii, finančníctve, riadenií, robotike a existuje množstvo ďalších využití.
+
+Celá platforma Matlab je optimalizovaná pre riešenie inžinierskych a vedeckých problémov. Jazyk Matlab je založený na práci s maticami. Je považovaný za najprirodzenejší spôsob ako počítať matematické úlohy. Pomocou integrovanej grafickej knižnici je možné vizualizovať získáné výsledky z dát. Matlab integruje aj množstvo toolboxov, ktoré pomáhajú priamo začať s algoritmami, ktoré potrebujeme pre našu doménu \cite{matlab-mathworks}.
 
 \subsubsection{Simulink}
-Matlab obsahuje viacero integrovaných nástrojov a jeden z nich je aj Simulink. Je to grafické rozhranie, v ktorom je možné modelovať, simulovať a potom aj analyzovať dynamické systémy. Jeho hlavné rozhranie je grafické plátno, kde možme spájať jednotlivé bloky do diagramu. Simulink vie úzko spolupracovať s matlabom, dokonca môže byť odtiaľ aj skriptovaný, resp. počiatočná inicializácia hodnôt. Matlab a Simulink sú vlastne dve prostredia integrované do jedného software. Čiže je možné simulovať a analyzovať náš model v každom kroku simulácie v oboch prostrediach. Simulink väčšinou spúštame priamo z Matlabu.
+Matlab obsahuje viacero integrovaných nástrojov a jeden z nich je aj Simulink. Je to grafické rozhranie, v ktorom je možné modelovať, simulovať a potom aj analyzovať dynamické systémy. Jeho hlavné rozhranie je grafické plátno, spájame jednotlivé bloky do diagramu. Simulink vie úzko spolupracovať s Matlabom, dokonca môže byť z neho skriptovaný, resp. počiatočná inicializácia hodnôt. Matlab a Simulink sú vlastne dve prostredia integrované do jedného softvéru. Čiže je možné simulovať a analyzovať náš model v každom kroku simulácie v oboch prostrediach. Simulink väčšinou spúštame priamo z Matlabu.
 
 \subsubsection{Komunikácia medzi Matlabom a Node.js}
 Simulácia dynamickej sústavy, ktorá sa spustí v Simulinku môže odosielať výsledné dáta do Matlab workspace. Odtiaľ ich budeme chciet posielať do Node.js na ďalšie spracovanie. V Matlabe existuje viacero možností získania dát z workspace.\\
 
-\textbf{COM} je prvá z technologických možností. COM bolo vytvorené spoločnosťou Microsoft, teda problémom tohto riešenia je obmedzené len na Windows platformu. Používajú sa na prepojenie rôznych aplikácií podporujúcich túto technológiu. Tieto objekty môžu byť vytvorené pomocou rôznych programovacích jazykov ako napr. C++ alebo Java \cite{matlab-microsoft-com}.
+\textbf{COM} je prvá z technologických možností. COM bolo vytvorené spoločnosťou Microsoft, teda problémom tohto riešenia je obmedzenie iba na Windows platformu. Používajú sa na prepojenie viacerých aplikácií podporujúcich túto technológiu. Tieto objekty môžu byť vytvorené pomocou rôznych programovacích jazykov, ako napr. C++ alebo Java \cite{matlab-microsoft-com}.
 Kým idea COM je celkom jasná, terminológia až toľko nie je.
 
 \verb|COM object| je softwarový komponent, ktorý zodpovedá Component Object Model. COM vnucuje zapuzdrenie objektu a tým predchádza pred priamym prístupom do dát a implementácie. COM objekt poskytne rozhranie, ktoré obsahuje premenné, metódy a udalosti.
 
-\verb|COM client| je program, ktorý používa COM objekty. COM objekty, ktoré poskytujú funkcionalitu pre použitie sú volané COM server.
+\verb|COM client| je program, ktorý používa COM objekty. COM objekty poskytujúce funkcionalitu pre použitie sú volané COM server.
 
-\verb|COM server| môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. Microsoft ActiveX control je typ in-process COM servera, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model sú tiež príklady control kontajnerov. Matlab može byť použitý aj ako COM klient aj ako COM automation server \cite{matlab-com}.\\
+\verb|COM server| môže byť in-process alebo out-of-process. Príklad out-of-process servera je napríklad Microsoft Excel. Microsoft ActiveX control je typu in-process, ktorý vyžaduje kontainer. ActiveX zvyčajne poskytuje užívateľské rozhranie. Príkladom môže byť Microsoft Calendar control. Control container je aplikácia schopná poskytovať ActiveX prvky. Matlab figure okno alebo Simulink model sú tiež príklady control kontajnerov. Matlab može byť použitý ako COM klient aj ako COM automation server \cite{matlab-com}.\\
 
-\textbf{WebSockets} je protokol poskytujúci obojsmernú komunikáciu cez jediné TCP spojenie. WebSocket bol vytvorený a použitý pre webové prehliadače a serveri, ale môže byť použitý akýmkoľvek klientom alebo serverom. Špecifikácia protokolu definuje \verb|ws| a \verb|wss| ako dve nové URI schémy, ktoré sú použité pre nešifrované a šifrované spojenia.
+\textbf{WebSockets} je protokol poskytujúci obojsmernú komunikáciu cez jediné TCP spojenie. WebSoket bol vytvorený a použitý pre webové prehliadače a servery, ale môže byť použitý akýmkoľvek klientom alebo serverom. Špecifikácia protokolu definuje \verb|ws| a \verb|wss| ako nové URI schémy, ktoré sú použité pre nešifrované a šifrované spojenie.
 
-Nevýhodou tohto riešenia pre náš systém je ten, že nie je priamo implementovaný v Matlabe. Keďže pod Matlabom beží JVM, tak je možné implementovať WebSockety pomocou programovacieho jazyku Java a spraviť z toho knižnicu pre Matlab.
+Nevýhodou tohto riešenia pre náš systém je ten, že nie je priamo implementovaný v Matlabe. Keďže pod Matlabom beží JVM, tak je možné implementovať WebSokety pomocou programovacieho jazyku Java a spraviť z toho knižnicu pre Matlab.
 
 Narazili sme na jednu knižnicu vytvorenú týmto spôsobom na odkaze\\ \textit{https://bitbucket.org/kvasnica/wsclient/wiki/Home}. Jej nevýhodou je, že by bolo potrebné inštalovať externé závislosti, ktoré by sa mohli stať nekompatibilné pri zmene Matlabu na vyššiu verziu. Najprv je potrebný \verb|tbxmanager|, ako manažér balíkov a následne pomocou neho inštalácia už konkrétnych balíkov \verb|wsclient, matwebsocks, eventcollector|.\\
 
-\textbf{RESTful web service} patrí medzi modernejšie možnosti komunikácie Matlabu s vonkajším svetom rovnako ako WebSockets. REST je softwarový architektonický štýl, pomocou ktorého vieme posielať a získavať dáta zo serveru. REST komunikuje pomocou HTTP/HTTPS protokolu a zväčša sa používa na CRUD aplikácie, čiže tam kde chceme robiť CREATE, READ, UPDATE, DELETE operácie. Dáta je možné vymieňať medzi klientom a serverom cez \verb|JSON| alebo \verb|XML| správ. Pre jednoduchšie projekty sa používajú skôr JSON, hlavne ak sa maju spracovávať JavaScriptom. Výhodou RESTful v tomto riešení je to, že je priamo implementované v Matlabe a nie je potrebné inštalovať ďalšie knižnice a toolboxy.
+\textbf{RESTful web service} patrí medzi modernejšie možnosti komunikácie Matlabu s vonkajším svetom rovnako ako WebSockets. REST je softwarový architektonický štýl, pomocou ktorého vieme posielať a získavať dáta zo serveru. REST komunikuje pomocou HTTP/HTTPS protokolu a zväčša sa používa na CRUD aplikácie, čiže tam kde chceme robiť CREATE, READ, UPDATE, DELETE operácie. Dáta je možné vymieňať medzi klientom a serverom cez \verb|JSON| alebo \verb|XML| správ. Pre jednoduchšie projekty sa používajú viac JSON, hlavne ak sa majú spracovávať JavaScriptom. Výhodou RESTful v tomto riešení je to, že je priamo implementovaný v Matlabe a nie je potrebné inštalovať ďalšie knižnice a toolboxy.
 
 \begin{figure}[H]
   \centering
@@ -172,11 +173,11 @@ Narazili sme na jednu knižnicu vytvorenú týmto spôsobom na odkaze\\ \textit{
 
 Na obrázku \ref{rest-http} je štruktúra HTTP requestu. V položke \verb|<VERB>| sa nachádza jedna z HTTP metód GET, PUT, POST, DELETE, OPTIONS, ...
 
-\verb|<URI>| slúži na učenie zdroju, nad ktorým sa bude vykonávať operácia a je tam uložený jeho odkaz.
+\verb|<URI>| slúži na určenie zdroju, nad ktorým sa bude vykonávať operácia a je tam uložený jeho odkaz.
 
-\verb|<HTTP version>| je verzia HTTP, vo všeobecnosti to bude "HTTP v1.1" ale môže byť aj "HTTP v2.0" v novších systémoch.
+\verb|<HTTP version>| je verzia HTTP, vo všeobecnosti to bude "HTTP v1.1", ale v novších systémoch môže byť aj "HTTP v2.0".
 
-\verb|<Request Header>| obsahuje metadáta ako kolekciu párov "key" : "value" v hlavičke. Tieto nastavenia obsahujú informáciu o správe a jej odosielateľovi ako typ klienta, aký formát podporuje klient, formát správy tela, nastavenia cache pre odpoveď a mnohé ďalšie informácie.
+\verb|<Request Header>| obsahuje metadáta v hlavičke ako kolekciu párov  "key":"value". Tieto nastavenia obsahujú informáciu o správe a jej odosielateľovi ako typ klienta, aký formát podporuje klient, formát správy tela, nastavenia vyrovnávacej pamäte pre odpoveď a mnohé ďalšie informácie.
 
 \verb|<Request Body>| je aktuálny obsah správy. V RESTful službách je toto miesto, kde sa nachádza obsah správy, ktorý sa vymieňa medzi klientom a serverom. V tejto časti nie sú žiadne tagy ani značky pre učenie začiatku alebo konca správy \cite{rest-vaqqas}.
 
@@ -189,7 +190,7 @@ V ukážke POST requestu na obrázku \ref{post-http} zasielame serveru JSON s je
   \label{post-http}
 \end{figure}
 
-A zase na obrázku \ref{get-http} v prípade GET requestu vidíme, že server vráti zdroje, ktoré server vracia, alebo v našom prípade celý obsah HTML stránky na ktorú bola požiadavka vytvorená.
+A zase na obrázku \ref{get-http} v prípade GET requestu vidíme, že získa zdroje, ktoré vracia server, alebo v našom prípade celý obsah HTML stránky, na ktorú bola požiadavka vytvorená.
 
 \begin{figure}[H]
   \centering
@@ -200,28 +201,28 @@ A zase na obrázku \ref{get-http} v prípade GET requestu vidíme, že server vr
 
 Teraz, keď sme si vysvetlili v stručnosti ako fungujú RESTful služby, tak sa dostávame k tomu, ako ich je možné využiť v Matlabe. Matlab poskytuje viacero funkcií na prácu s REST ako \verb|weboptions, webread, webwrite.|
 
-Objekt \verb|weboptions| slúži na špecifikáciu parametrov pre RESTful službu. V Matlabe sa volá príkazom \verb|options = weboptions| alebo \verb|options = weboptions(Name,Value)| pričom \verb|Name| je názov parametra, ktorý chceme nastaviť a \verb|Value| jeho hodnota. Je možné nastaviť tieto parametre: \verb|CharacterEncoding, UserAgent, Timeout, Username,| \\ \verb|Password, KeyName, KeyValue, ContentType, ContentReader, MediaType,| \\ \verb|RequestMethod, ArrayFormat|. Ak chceme zobraziť heslo v objekte weboptions, tak na pozícií hesla síce budú hviezdičky, každopádne objekt ukladá heslo ako čistý text. V prípade keď zavoláme túto vlastnosť v Matlabe cez \verb|options.Password| tak heslo bude viditeľné \cite{matlab-weboptions}.
+Objekt \verb|weboptions| slúži na špecifikáciu parametrov pre RESTful službu. V Matlabe sa volá príkazom \verb|options = weboptions| alebo \verb|options = weboptions(Name,Value)| pričom \verb|Name| je názov parametra, ktorý chceme nastaviť a \verb|Value| jeho hodnota. Je možné nastaviť tieto parametre: \verb|CharacterEncoding, UserAgent, Timeout, Username,| \\ \verb|Password, KeyName, KeyValue, ContentType, ContentReader, MediaType,| \\ \verb|RequestMethod, ArrayFormat|. Ak chceme zobraziť heslo v objekte weboptions, tak na pozícii hesla síce budú hviezdičky, každopádne objekt ukladá heslo ako čistý text. V prípade, keď zavoláme túto vlastnosť v Matlabe cez \verb|options.Password| tak heslo bude viditeľné \cite{matlab-weboptions}.
 
-Objekt \verb|webread| číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \verb|data = webread(url)| kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \verb|data = webread(url, QueryName1, QueryValue1,| \\ \verb|..., QueryNameN, QueryValueN)| kde vložené parametre pridá do url volania. Posledná možnosť je \verb|data = webread(___, options)|, kde je môžné špecifikovať posledný objekt ako \verb|weboptions| \cite{matlab-webread}.
+Objekt \verb|webread| číta obsah z REST služby, na ktorú sme mu poskytli URL cestu a vráti obsah ako štruktúru do požadovanej premennej. Existujú tri najpoužívanejšie možnosti použitia. \verb|data = webread(url)|, kde parameter url je reťazec, v ktorom sa nachádza odkaz na REST službu. \verb|data = webread(url, QueryName1, QueryValue1,| \\ \verb|..., QueryNameN, QueryValueN)|, kde vložené parametre pridá do url volania. Posledná možnosť je \verb|data = webread(___, options)|, kde je môžné špecifikovať posledný objekt ako \verb|weboptions| \cite{matlab-webread}.
 
-A posledný objekt \verb|webwrite|. Tak ako v predchádzajúcom prípade obsahuje zhodné metódy s parametrami, len využitie funkcie je iné. \verb|response = webwrite(url, PostName1, PostValue1, ...,| \\ \verb|PostNameN, PostValueN)| zapíše obsah na špecifikovanú url a vráti response.\\ \verb|response = webwrite(url, data)| zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole.\\
+A posledný objekt \verb|webwrite|. Tak ako v predchádzajúcom prípade obsahuje zhodné metódy s parametrami, len využitie funkcie je iné. \verb|response = webwrite(url,|\\ \verb|PostName1, PostValue1, ..., PostNameN, PostValueN)| zapíše obsah na špecifikovanú url a vráti response. \verb|response = webwrite(url, data)| zapíše obsah na špecifikovanú url a vráti response. Vstupný parameter data špecifikuje obsah, ktorý je uložený ako pole.\\
 \verb|response = webwrite(___, options)| nastaví \verb|weboptions| objekt, zapíše obsah na špecifikovanú url a vráti response.
 
 \subsection{Node.js}
-Na stránke platformy \textit{(http://www.nodejs.org)} je definovaný Node ako "platforma založená na JavaScript runtime, ktorý je v Chrome pre jednoduchú tvorbu rýchlych a škálovateľných sieťových aplikácií. Node.js používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.
+Na stránke platformy \textit{(http://www.nodejs.org)} je Node definovaný ako "platforma založená na JavaScript runtime, ktorý sa nachádza v Chrome pre jednoduchú tvorbu rýchlych a škálovateľných sieťových aplikácií. Node.js používa udalosťami riadený, neblokujúci I/O model, ktorý ho robí nenáročný a efektívny, perfektný pre real-time aplikácie." V súčasnosti patrí medzi najpopulárnejšie JavaScript technológie.
 
-Vďaka jeho súčasnej stabilite ho používa v produkcií mnoho svetových firiem, napríklad eBay, GoDaddy, Microsoft, PayPal, Uber, Yahoo...
+Vďaka jeho súčasnej stabilite ho používa v produkcii mnoho svetových firiem, napríklad eBay, GoDaddy, Microsoft, PayPal, Uber, Yahoo...
 
 
 \subsubsection{História}
-Vytvoril ho Ryan Dahl v roku 2009 a bol dostupný iba pre Linux. Vývoj a údržba bola vedená jeho zakladateľom a neskôr sponzorovaná firmou Joyent. Node.js sa skladá z JavaScriptového engine V8 od Google, event loop a nízkoúrovňového I/O API. V roku 2011 bol vytvorený správca balíkov pre Node.js zvaný NPM. Umožnuje programátorom publikovať, zdielať zdrojový kód modulov a bol navrhnutý tak, aby zjednodušoval inštaláciu, aktualizáciu alebo odinštalovanie modulov. Neskôr v júni 2011, Microsoft a Joyent spolupracovali na implementáci natívnej verzii Node.js pre Windows. V roku 2014 vznikli nezhody pri vývoji, tak programátor Fedor Indutny spravil fork Node.js a vytvoril io.js. Na rozdiel od Node.js autorov, chcel udržiavať io.js aktuálny súčasne s poslednou verziou V8 JavaScript enginu.
+Vytvoril ho Ryan Dahl v roku 2009 a bol dostupný iba pre Linux. Vývoj a údržba bola vedená jeho zakladateľom a neskôr sponzorovaná firmou Joyent. Node.js sa skladá z JavaScriptového engine V8 od Google, udalostnej slučky a nízkoúrovňového I/O API. V roku 2011 bol vytvorený správca balíkov pre Node.js zvaný NPM. Umožnuje programátorom publikovať a zdielať zdrojový kód modulov. Bol navrhnutý tak, aby zjednodušil inštaláciu, aktualizáciu a odinštaláciu modulov. Neskôr v júni 2011, Microsoft a Joyent spolupracovali na implementáci natívnej verzii Node.js pre Windows. V roku 2014 vznikli nezhody pri vývoji, tak programátor Fedor Indutny spravil fork Node.js a vytvoril io.js. Na rozdiel od Node.js autorov, chcel udržiavať io.js aktuálny súčasne s poslednou verziou V8 JavaScript enginu.
 
-Po dohode bola vytvorená Node.js Foundation, ktorá zastrešila vývoj, a spojila Node.js v0.12 a ioJS v3.3 do Node.js 4.0, aby znovu spojila roztrieštenú komunitu. Táto verzia priniesla ES6 novinky z V8 do Node.js a súčasne bola vytvorená aj LTS verzia vhodná pre produkčné nasadenie, ktorá ma dlhší vývojový cyklus a príjma len opravy chýb \cite{nodejs-wiki}.
+Po dohode bola vytvorená Node.js Foundation, ktorá zastrešila vývoj, a spojila Node.js v0.12 a io.js v3.3 do Node.js 4.0, aby znovu spojila roztrieštenú komunitu. Táto verzia priniesla ES6 novinky z V8 do Node.js a súčasne bola vytvorená aj LTS verzia vhodná pre produkčné nasadenie, ktorá ma dlhší vývojový cyklus a príjma len opravy chýb \cite{nodejs-wiki}.
 
 \subsubsection{Architektúra}
-Tak ako pri iných platformách aj Node.js má svoju architektúru a v tejto sekcií si popišeme jeho kľúčové vlastnosti. Síce ich nebudeme priamo používať, ale je dobré o nich vedieť.
+Tak ako pri iných platformách aj Node.js má svoju architektúru a v tejto sekcii si popišeme jeho kľúčové vlastnosti. Síce ich nebudeme priamo používať, ale je dobré o nich vedieť.
 
-Má \textbf{asynchronné a udalosťami riadené} API, čo znamená, že neblokuje vykonávanie nasledujúcich volaní. V podstate ide o to, že server založený na Node.js nikdy nečaká, kým volaná služba/funkcia vráti dáta. Server sa presunie na ďalšie volanie a pomocou notifikačného mechanizmu udalostí získa odpoveď z prechádzajúceho volania, keď bude ukončené a vyzdvihne jeho výsledok.
+Má \textbf{asynchrónne a udalosťami riadené} API, čo znamená, že neblokuje vykonávanie nasledujúcich volaní. V podstate ide o to, že server založený na Node.js nikdy nečaká, kým volaná služba/funkcia vráti dáta. Server sa presunie na ďalšie volanie a pomocou notifikačného mechanizmu udalostí získa odpoveď z prechádzajúceho volania, keď bude ukončené a vyzdvihne jeho výsledok.
 
 Vďaka udalostnej slučke je \textbf{jednovláknový a vysoko škálovateľný}. Udalostný mechanizmus pomôže serveru vrátiť odpoveď tak, aby nebol blokovaný a tak robí server vysoko škálovateľný oproti tradičným serverovým riešeniam, ktoré vytvárajú limitovaný počet vlákien na spracovávanie požiadaviek. Node.js spustí jednovláknový program, ktorý môže poskytnúť službu omnoho väčšiemu počtu požiadaviek ako tradičný server Apache httpd. 
 
@@ -236,28 +237,28 @@ Ako sme už spomenuli, tak platforma Node.js sa skladá z viacerých častí. Bo
   \label{img-node-arch}
 \end{figure}
 
-Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a je priamo dostupné programátorom, pre využitie v ich aplikáciach. Pod týmto základným API je knižnica, ktorá viažš C/C++ s JavaScriptom. Node.js tiež poskytuje doplnky (addons), čo sú dynamicky linkované zdielané objekty. Tie sa viažu na C/C++ knižnice. To znamená, že môžeme využiť skoro akúkoľvek C/C++ knižnicu a vytvoriť z nej doplnok, ktorý použijeme v Node.js.\\
+Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a je priamo dostupné programátorom, pre využitie v ich aplikáciach. Pod týmto základným API je knižnica, ktorá viaže C/C++ s JavaScriptom. Node.js tiež poskytuje doplnky (addons), čo sú dynamicky linkované zdielané objekty. Tie sa viažu na C/C++ knižnice. To znamená, že môžeme využiť skoro akúkoľvek C/C++ knižnicu a vytvoriť z nej doplnok, ktorý je použiteľný v Node.js.\\
 
 \noindent Pod týmto všetkým máme už len natívne knižnice vytvorené v C/C++:
 
 \textbf{V8} je open source JavaScript engine, ktorý bol vytvorený pre internetový prehliadač Google Chrome. Je napísaný v C++ a je možné ho spustiť samostatne alebo v ktorejkoľvek C++ aplikácií. V podstate kompiluje JavaScript kód do natívneho strojového kódu, namiesto toho, aby bol interpretovaný.
 
-\textbf{Libuv} je multiplatformová podporná knižnica so zameraním na asynchónne I/O operácie. Zo začiatku Node.js začal používať \verb|libuv| ako abstrakčnú vrstvu pre \verb|libev| a \verb|libio|, ale neskôr sa libuv stala robustnejšou a nahradila túto funkcionalitu, aby sa mohla stať multiplatformovou. Keď V8 spravuje vykonávanie JavaScriptu, tak libuv spravuje udalostnú slučku (event loop) a asynchrónne I/O operácie. V tomto zozname sú všetky možnosti \verb|libuv|:
+\textbf{Libuv} je multiplatformová podporná knižnica so zameraním na asynchónne I/O operácie. Zo začiatku Node.js začal používať \verb|libuv| ako abstrakčnú vrstvu pre \verb|libev| a \verb|libio|, ale neskôr sa libuv stala robustnejšia a nahradila túto funkcionalitu, aby sa mohla stať multiplatformovou. Keď V8 spravuje vykonávanie JavaScriptu, tak libuv spravuje udalostnú slučku (event loop) a asynchrónne I/O operácie. V tomto zozname sú všetky možnosti \verb|libuv|:
 \begin{itemize}
 \item plnohodnotná údalostná slučka, ktorú tvorí epoll, kqueue, IOCP a udalostné porty,
-\item asynchronné TCP a UDP sockety,
-\item asynchronné DNS,
-\item asynchronné operácie nad súbormi a súborovým systémom,
+\item asynchrónne TCP a UDP sokety,
+\item asynchrónne DNS,
+\item asynchrónne operácie nad súbormi a súborovým systémom,
 \item udalosti nad súborovým systémom,
 \item preklad ANSI kódov kontrolovaných cez TTY,
-\item IPC so zdielaním socketu s využitím Unix socketov alebo pomenované kanály (vo Windows),
+\item IPC so zdielaním soketu s využitím Unix soketov alebo pomenované kanály (vo Windows),
 \item detské procesy,
 \item vlákna a synchronizácia,
 \item riadenie signálov,
 \item hodiny s presným časovaním (hight resolution clock).
 \end{itemize}
 
-\textbf{c-ares} je C knižnica pre asynchronné DNS žiadosti vrátane prekladania názvov. Je určená pre aplikácie, ktoré potrebujú vykonávať dotazy na DNS bez blokovania, alebo ak potrebujú vykonať niekoľko dotazov paralerne.
+\textbf{c-ares} je C knižnica pre asynchrónne DNS žiadosti vrátane prekladania názvov. Je určená pre aplikácie, ktoré potrebujú vykonávať dotazy na DNS bez blokovania, alebo ak potrebujú vykonať niekoľko dotazov paralerne.
 
 \textbf{http\_parser} je parser pre požiadavky a odpovede HTTP napísaný v C. Nerobí žiadne systémové volania ani alokácie, neukladá dáta do vyrovnávacej pamäte a môže byť zrušený okamžite. Jeho hlavné vlastnosti sú:
 \begin{itemize}
@@ -273,16 +274,16 @@ Na vrchole obrázku máme základné Node.js API. Je napísané v JavaScripte a 
 
 
 \subsubsection{Event loop}
-Udalostná slučka dáva Node.js možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka, ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná, tak sa zavolá callback funkcia. Na obrázku \ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci Node.js.
+Udalostná slučka (event loop) dáva Node.js možnosť zvládnuť veľké množstvo súčasných požiadaviek aj keď je spustený v "jednom vlákne". V každej udalostne riadenej aplikácií je vo všeobecnosti hlavná slučka, ktorá počúva a čaká na udalosti a keď udalosť je zaregistrovaná, tak sa zavolá callback funkcia. Na obrázku \ref{img-node-event-loop} je zjednodušený pohľad na to, ako to funguje vrámci Node.js.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.6]{img/node/nodejs-event-loop.png}
+  \includegraphics[scale=0.58]{img/node/nodejs-event-loop.png}
   \caption{Udalostná slučka v Node.js.}
   \label{img-node-event-loop}
 \end{figure}
 
-Udalostná slučka jednoducho prechádza cez frontu čo je vlastne zoznam udalostí a callbackov vykonaných operácií. Všetky I/O operácie sú vykonané asynchrónne vláknami vo "vláknovom stacku" (thread pool). Tu zohráva dôležitú rolu libuv. Ak nejaká položka vyžaduje I/O operáciu, tak udalostná slučka jednoducho prenechá operáciu do vláknového stacku. Udalostná slučka pokračuje vo vykonávaní položiek v udalostnej fronte. Keď je I/O operácia hotová, tak callback je zaradený na spracovanie. Udalostná slučka vykoná callback a poskytne požadované výstupy. A takto sa celý proces opakuje \cite{nodejs-event-loop}.
+Udalostná slučka jednoducho prechádza cez frontu, čo je vlastne zoznam udalostí a callbackov vykonaných operácií. Všetky I/O operácie sú vykonané asynchrónne vláknami vo "vláknovom stacku" (thread pool). Tu zohráva dôležitú úlohu libuv. Ak nejaká položka vyžaduje I/O operáciu, tak udalostná slučka jednoducho prenechá operáciu vláknovému stacku. Udalostná slučka pokračuje vo vykonávaní položiek v udalostnej fronte. Keď je I/O operácia hotová, tak callback je zaradený na spracovanie. Udalostná slučka vykoná callback a poskytne požadované výstupy. A takto sa celý proces opakuje \cite{nodejs-event-loop}.
 
 \subsubsection{Možnosti a využitie}
 Na základe popísaných základných častí Node.js v predchádzajúcich sekciách si ukážeme možnosti využitia, resp. výhody a nevýhody \cite{nodejs-arch}.\\
@@ -304,10 +305,10 @@ Na základe popísaných základných častí Node.js v predchádzajúcich sekci
 \item neexistuje toľko štandardných knižníc ako pri Java, .NET platforme ako sú napr. XML parsery, alebo zložitejšie dátové štruktúry.
 \end{itemize}
 
-Ako teda vidíme, Node.js nie je vhodný na všetky úlohy, ale vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time získavanie údajov, single page aplikácie, websockety tak je na takéto úlohy veľmi vhodný. Vo všeobecnosti všade kde sa používajú I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení \cite{nodejs-introduction}.
+Ako teda vidíme, Node.js nie je vhodný na všetky úlohy, ale vždy záleží od konkrétnej potreby. Čiže ak potrebujeme streaming alebo rýchly upload súborov, real-time získavanie údajov, single page aplikácie, websokety, tak je na takéto úlohy veľmi vhodný. Vo všeobecnosti všade kde sa používajú I/O operácie, tak vie zvládnuť veľké množstvo súčasných spojení \cite{nodejs-introduction}.
 
 \subsection{Node Package Manager}
-Node.js po nainštalovaní obsahuje aj \verb|NPM|. NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára\\ \textit{https://www.npmjs.org}. Rovnako je možné aj vytvoriť vlastný modul a uložiť ho do repozitára.
+Node.js po nainštalovaní obsahuje aj \verb|NPM|. NPM je program, ktorý sa spúšta z príkazového riadku, pomocou ktorého vieme sťahovať moduly z centrálneho repozitára\\ \textit{https://www.npmjs.org}. Rovnako je možné vytvoriť aj vlastný modul a uložiť ho do repozitára.
 
 Každý modul by mal mať vlastný adresár, ktorý tiež obsahuje súbor s metadátami volaný \verb|package.json|. V tomto súbore musia byť nastavené vlastnosti a ich hodnoty ako na obrázku \ref{img-npm-packagejson}, čiže: \verb|name| a \verb|version| \cite{nodejs-by-example}.
 
@@ -324,7 +325,7 @@ Každý modul by mal mať vlastný adresár, ktorý tiež obsahuje súbor s meta
 Vo všeobecnosti existujú tri možnosti ako použiť moduly, ktoré sú už publikované na npmjs.org. Všetky tri možnosti si vyžadujú použitie Node manažéra na prácu s balíkmi: \cite{nodejs-by-example}
 
 \begin{itemize}
-\item môžme nainštalovať špecifický modul manuálne tak, že sa presunieme do požadovaného priečinka a zavoláme v termináli \verb|npm install nazov-modulu|. Správca balíkov automaticky nainštaluje poslednú verziu modulu a vloží ju do priečinka \verb|node_modules|. V prípade použitia, nevoláme celú cestu, ale len \verb|require(nazov-modulu)|.
+\item môžme nainštalovať špecifický modul manuálne tak, že sa presunieme do požadovaného priečinka a zavoláme v termináli \verb|npm install nazov-modulu|. Správca balíkov nainštaluje poslednú verziu modulu a vloží ju do priečinka \verb|node_modules|. V prípade použitia, nevoláme celú cestu, ale len \verb|require(nazov-modulu)|.
 \item inštalácia modulu globálne pre celý systém s použitím \verb|-g| prepínača v príkaze. \verb|npm install nazov-modulu -g|. Toto použitie slúži skôr na inštaláciu vývojových nástrojov, ktorých verzia sa tak často nemení a nie na bežné moduly.
 \item posledná možnosť je príkaz \verb|npm install| v priečinku, kde sa nachádza už spomínaný súbor \verb|package.json| a má v sebe vlastnosť \verb|dependencies| ako na obrázku \ref{img-npm-dependencies}.
 \end{itemize}
@@ -345,7 +346,7 @@ Modul \verb|http| patrí asi medzi najviac používané, pretože vďaka nemu sp
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.7]{img/npm/npm-http-module.png}
-  \caption{Dependencies vlastnosť v package.json.}
+  \caption{Volanie HTTP modulu v Node.js a spustenie servera.}
   \label{img-npm-http}
 \end{figure}
 
@@ -374,10 +375,10 @@ Následujúca ukážka na obrázku \ref{img-express-base} je základná kostra E
   \label{img-express-base}
 \end{figure}
 
-Na spustenie tohto kódu je potrebné ho vložiť do súboru s koncovkou app\textbf{.js} a následne spustiť \verb|node app.js| čoho výsledkom bude výstup v termináli \textbf{Example app listening at http://0.0.0.0:8081}.
+Na spustenie je potrebné vložiť tento kód do súboru s koncovkou app\textbf{.js} a následne spustiť \verb|node app.js|, čoho výsledkom bude výstup v termináli \textbf{Example app listening at http://0.0.0.0:8081}.
 
-\subsubsection{Request a Response objekty}
-Ak webová aplikácia používa smerovanie tak obsahuje objekty request a reponse z Node.js, ktoré sú dostupné v callback funkcii. Na obrázku \ref{express-res-req} je smerovanie na hlavnú stránku \cite{express-tutorial}.
+\subsubsection{Request a response objekty}
+Ak webová aplikácia používa smerovanie, tak obsahuje objekty request a reponse z Node.js, ktoré sú dostupné v callback funkcii. Na obrázku \ref{express-res-req} je smerovanie na hlavnú stránku \cite{express-tutorial}.
 
 \begin{figure}[H]
   \centering
@@ -386,13 +387,13 @@ Ak webová aplikácia používa smerovanie tak obsahuje objekty request a repons
   \label{express-res-req}
 \end{figure}
 
-\textbf{Request} objekt reprezentuje HTTP request a obsahuje isté vlastnosti a funkcie. Ich zoznam je celkom dlhý a nebudeme ich potrebovať všetky. Ale niektoré stoja za zmienku ako \verb|req.body|, obsahujúci páry \verb|"kľúč": "hodnota"|, ktoré boli vytvorené ako telo správy. \verb|req.cookies| umožňuje získať cookies z klienta na server. \verb|req.params| slúži na získanie parametrov z URL, ked používame dynamické volania ako napr. \textbf{/user/:id} tak \textbf{id} je parameter dostupný v \verb|req.params.id|. Čo sa týka funkcií request objektu, tak tie zvyčajne nie sú používané \cite{nodejs-exp-request}.
+\textbf{Request} objekt reprezentuje HTTP request a obsahuje isté vlastnosti a funkcie. Ich zoznam je celkom dlhý a nebudeme ich potrebovať všetky. Ale niektoré stoja za zmienku ako \verb|req.body|, obsahujúci páry \verb|"kľúč": "hodnota"|, ktoré sú vytvorené pre telo správy. \verb|req.cookies| umožňuje získať cookies z klienta na server. \verb|req.params| slúži na získanie parametrov z URL, keď používame dynamické volania ako napr. \textbf{/user/:id} tak \textbf{id} je parameter dostupný v \verb|req.params.id|. Čo sa týka funkcií request objektu, tak tie zvyčajne nie sú používané \cite{nodejs-exp-request}.
 
-\textbf{Response} objekt predstavuje HTTP response, ktorý Express odošle po prijatí GET prípadne POST požiadavky. Pri tomto popise zase nie sú pre nás zaujímavé vlastnosti, ale skôr funkcie. Pomocou \verb|res.cookie(name, value [, options])| vieme nastaviť hodnotu cookie a s \verb|res.clearCookie(name [, options])| ju zase vymazať. Ďalej môžme odoslať kód, aby klient vedel akým statusom skončila požiadavka. Používa sa na to funkcia \verb|res.status(200).end()|, kde číselný kód sa určuje podľa štandardných HTTP status hodnôt. Užitočná je aj funkcia \verb|res.json({ user: 'xstark' })| pre zaslanie odpovede vo formáte JSON. V prípade, že potrebujeme sa presmerovať na inú stránku, tak použijeme \verb|res.redirect([status,] path)| funkciu \cite{nodejs-exp-response}.
+\textbf{Response} objekt predstavuje HTTP response, ktorý Express odošle po prijatí GET prípadne POST požiadavky. Pri tomto popise nie sú pre nás zaujímavé vlastnosti, ale skôr funkcie. Pomocou \verb|res.cookie(name, value [, options])| vieme nastaviť hodnotu cookie a pomocou \verb|res.clearCookie(name [, options])| ju zase vymazať. Ďalej môžeme odoslať kód, aby klient vedel akým statusom skončila požiadavka. Používa sa na to funkcia \verb|res.status(200).end()|, kde číselný kód sa určuje podľa štandardných HTTP status hodnôt. Užitočná je aj funkcia \verb|res.json({ user: 'xstark' })| pre zaslanie odpovede vo formáte JSON. V prípade, že potrebujeme presmerovanie na inú stránku, tak použijeme funkciu \verb|res.redirect([status,] path)| \cite{nodejs-exp-response}.
 
-\subsubsection{Routing}
-Routing, teda smerovanie slúži na určenie ako bude aplikácia reagovať na požiadavku klienta, čo zahŕňa URI a špecifické metódy (GET, POST, PUT, DELETE, ...) HTTP požiadavky \cite{express-tutorial}.
-Každý \verb|route| môže mať viacero callback funkcií, ktoré sa vykonajú ak je zavolaná daná route.\\
+\subsubsection{Smerovanie}
+Smerovanie (routing) slúži na určenie, ako bude aplikácia reagovať na požiadavku klienta, čo zahŕňa URI a špecifické metódy (GET, POST, PUT, DELETE, ...) HTTP požiadavky \cite{express-tutorial}.
+Každý \verb|route| môže mať viacero callback funkcií, ktoré sa vykonajú len ak je zavolané dané smerovanie.\\
 
 \noindent Definícia route má následujúcu štruktúru \verb|app.METHOD(PATH, CALLBACK)|, kde:
 \begin{itemize}
@@ -403,7 +404,7 @@ Každý \verb|route| môže mať viacero callback funkcií, ktoré sa vykonajú 
 \end{itemize}
 
 \subsubsection{Middleware}
-Funkcie označované middleware, sú také, ktoré majú prístup do request \verb|(req)|, response \verb|(res)| objektu a následnujúcej middleware funkcie. Následujúca funkcia sa bežne označuje názvom \verb|next| \cite{express-middleware}.\\
+Funkcie označované middleware, sú také, ktoré majú prístup do request \verb|(req)|, response \verb|(res)| objektu a následujúcej middleware funkcie. Následujúca funkcia sa bežne označuje názvom \verb|next| \cite{express-middleware}.\\
 
 \noindent Úlohy middleware funkcií:
 \begin{itemize}
@@ -413,7 +414,7 @@ Funkcie označované middleware, sú také, ktoré majú prístup do request \ve
 \item zavolať ďalšiu middleware funkciu v poradí. 
 \end{itemize}
 
-Obrázok \ref{img-express-middleware} popisuje vlastnosti middleware funkcie. V prípade, že middleware funkcia neukončí volanie, musí posunúť obsluhu ďalšej middleware funkcii zavolaním \verb|next()|. Inak sa request zasekne a klient bude stále čakať na odpoveď a po určitom omeškaní sa ukončí \cite{express-middleware}.
+Obrázok \ref{img-express-middleware} popisuje vlastnosti middleware funkcie. V prípade, že funkcia neukončí volanie, musí posunúť obsluhu ďalšej middleware funkcii zavolaním \verb|next()|. Inak sa request zasekne a klient bude stále čakať na odpoveď kým sa po určitom omeškaní ukončí \cite{express-middleware}.
 
 \begin{figure}[H]
   \centering
@@ -425,24 +426,24 @@ Obrázok \ref{img-express-middleware} popisuje vlastnosti middleware funkcie. V 
 \subsection{MongoDB}
 MongoDB je multiplatformová dokumentovo orientovaná databáza. Je klasifikovaná ako NoSQL databáza, čo znamená, že nepoužíva klasickú tabuľkovú štruktúru ako v relačnej databáze, ale objekty vo forme JSON dokumentov s dynamickými schémami (v MongoDB sa volá tento formát BSON). Vďaka formáte JSON dokumentov je možné ukladať dáta z rôznych aplikácií rýchlejšie a jednoduchšie \cite{mongodb-wiki}.
 
+Príklad dokumentu, ktorý sa ukladá do MongoDB vidíme na obrázku \ref{mongodb-example}. V jednoduchých prípadoch ako tento nie je vidieť žiadny rozdiel oproti klasickému JSON.
+
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/mongodb/crud-annotated-document.png}
+  \includegraphics[scale=0.5]{img/mongodb/crud-annotated-document.png}
   \caption{JSON dokument v MondoDB.}
   \label{mongodb-example}
 \end{figure}
 
-Obrázku \ref{mongodb-example} je príklad dokumentu, ktorý sa ukladá do MongoDB. V jednoduchých prípadoch ako tento nie je vidieť žiadny rozdiel oproti klasickému JSON.
-
 \subsection{Angular.js}
-Angular.js, bežne označovaný aj ako Angular je open source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku vzal pod seba Google. Bol vytvorený za účelom tvorby SPA, teda takých webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie front-end web aplikácií na báze MVC alebo MVVM architektúre.
+Angular.js, bežne označovaný aj ako Angular. Je open source framework pre web vytvorený Slovákom Miškom Hevery do verzie 1.0. Neskôr vývoj a údržbu frameworku prevzal Google. Bol vytvorený za účelom tvorby SPA, teda takých webových aplikácii, v ktorých je možné aktualizovať svoj obsah bez toho, aby si užívateľ toho vo väčšej miere všimol. Cieľom je zjednodušiť vývoj, ale aj testovanie klientských webových aplikácií na MVC alebo MVVM architektúre.
 
 Framework funguje tak, že pri prvom načítaní HTML stránky vloží k elementom vlastné atribúty. Angular interpretuje tieto atribúty ako direktívy a viaže ich vstupno-výstupné časti ako model, ktorý je reprezentovaný štandardnými premennými JavaScriptu. Hodnoty týchto premenných môžu byť manuálne nastavené v kóde, alebo získané zo statických (väčšinou uložených na súborovom systéme), dynamických (získaných z RESTful služby) JSON súborov.
 
-Slúži ako front-end súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpress.js web server framework, \textbf{A}ngular.js  a \textbf{N}ode.js ako aplikačný web server \cite{angular-wiki}\cite{angular-docs}.
+Slúži ako klientská súčasť MEAN vývojarského stacku, čo je vlastne \textbf{M}ongoDB databáza, \textbf{E}xpress.js web server framework, \textbf{A}ngular.js  a \textbf{N}ode.js ako web server \cite{angular-wiki}\cite{angular-docs}.
 
 \subsubsection{Koncept}
-Angular ako framework sa skladá z viacerých časti, z ktorých každá má svoju úlohu. Na obrázku \ref{img-angular-concept} sú zobrazené základné komponenty, z ktorých sa skladá. Nižšie si popíšeme hlavne tie, ktoré chceme využíť v našom softwarovom riešení \cite{angular-concept}.
+Angular ako framework sa skladá z viacerých časti, z ktorých každá má svoju úlohu. Na obrázku \ref{img-angular-concept} sú zobrazené základné komponenty, z ktorých sa skladá. Nižšie si popíšeme hlavne tie, ktoré chceme využíť v našom softvérovom riešení \cite{angular-concept}.
 
 \begin{figure}[H]
   \centering
@@ -452,14 +453,14 @@ Angular ako framework sa skladá z viacerých časti, z ktorých každá má svo
 \end{figure}
 
 \subsubsection{Direktívy}
-V jednoduchosti direktívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML kompilátoru - \verb|$compile|, aby priradil špecifické správanie na daný DOM element (napr. pomocou \textbf{event listenerov}), alebo dokonca transformoval DOM element na svoje dieťa. V šablónach sa spájajú informácie z modelu a kontroleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ v prehliadači.
+V jednoduchosti direktívy sú značky na DOM elemente (napr. atribút, element, komentár alebo CSS trieda), ktorá povie Angular HTML kompilátoru - \verb|$compile|, aby priradil špecifické správanie na daný DOM element (pomocou \textbf{event listenerov}), alebo dokonca transformoval DOM element na svoje dieťa. V šablónach sa spájajú informácie z modelu a kontroleru pre renderovanie dynamického obsahu, ktorý potom vidí užívateľ vo webovom prehliadači.
 
 Angular je dodávaný so vstavanými direktívami, od ktorých sa očakáva, že budú využívané často. Napr. \verb|ng-bind|, \verb|ng-model|, \verb|ng-class| \cite{angular-docs}.
 
 \subsubsection{Scope}
 Scope je objekt, ktorý odkazuje na model aplikácie. V tomto kontexte sa vykonávajú výrazy. Scopes sú usporiadané do hierarchickej štruktúry, ktorá napodobňuje DOM štruktúru aplikácie. V scope je možné sledovať model pomocou \verb|$watch| a vykonávať udalosti s \verb|$apply| cez celý systém do zobrazenia. Slúži na previazanie aplikačného kontroleru a zobrazenia. Rovnako ako kontroler aj direktívy majú prístup k scope, ale nie navzájom medzi sebou. Vďaka tomu je kontroler izolovaný od direktívy a tak isto aj od DOM.
 
-Každá aplikácia ma práve jeden \verb|$rootScope|, ale môže mať viacero detských \verb|$scope|. Aplikácia môže mať viacero scopes, pretože niektoré directívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako detský k rodičovskému scope. Tento systém vytvára stromovú štruktúru paralernú k DOM, v ktorej sú vytvorené \cite{angular-docs}.
+Každá aplikácia ma práve jeden \verb|$rootScope|, ale môže mať viacero detských \verb|$scope|. Aplikácia môže mať viacero scopes, pretože niektoré direktívy môžu vytvoriť nový detský scope, ak to potrebujeme. Keď je nový scope vytvorený, tak je priradený ako detský k rodičovskému scope. Tento systém vytvára stromovú štruktúru paralernú k DOM, v ktorej sú vytvorené \cite{angular-docs}.
 
 Často používaná operácia pre zistenie zmien na objekte v scope sa volá \textbf{dirty checking} a preto by mala byť efektívna. V závislosti od potreby môže byť dirty checking využité týmito troma stratégiami: referenciou na objekt, obsah poľa alebo na hodnoty objektu - obrázok \ref{img-angular-watch}.
 
@@ -473,14 +474,15 @@ Každá aplikácia ma práve jeden \verb|$rootScope|, ale môže mať viacero de
 \noindent Líšia sa v spôsobe sledovania zmeny a výkonostnými rozdielmi:
 \begin{itemize}
   \item \textbf{podľa referencie:} \verb|$scope.$watch(watchExpression, listener)| - detekcia zmeny, keď sa na sledovanú hodnotu nastaví nová. Ak sa zmení vnorený objekt alebo pole objektu ktorý sledujeme, zmeny vnútri nie su detekované. Toto je najrýchlejšia stratégia.
-  \item \textbf{na celej kolekcii:} \verb|$scope.$watchCollection(watchExpression, listener)| - detekcia zmien, ku ktorým dochádza vo vnútri poľa alebo objektu. Napr. keď sú položky pridané, odstránené alebo sa v nich zmenilo poradie. Detekcia je plytká, čiže nesleduje vnorené polia. Sledovanie celého obsahu kolekcie je výkonovo náročnejsie ako sledovanie na referenciu, pretože treba uchovávať kópiu obsahu. Avšak, táto stratégia sa snaží minimalizovať množstvo potrebných kopírovaní.
+  \item \textbf{na celej kolekcii:} \verb|$scope.$watchCollection(watchExpression, listener)| - detekcia zmien, ku ktorým dochádza vo vnútri poľa alebo objektu. Napr. keď sú položky pridané, odstránené alebo sa v nich zmenilo poradie. Detekcia je plytká, čiže nesleduje vnorené polia. Sledovanie celého obsahu kolekcie je výkonovo náročnejšie ako sledovanie na referenciu, pretože treba uchovávať kópiu obsahu. Avšak, táto stratégia sa snaží minimalizovať množstvo potrebných kopírovaní.
   \item \textbf{všetky položky objektu:} \verb|$scope.$watch(watchExpression, listener, true)| - detekcia akéjkoľvek zmeny v ľubovolnej vnorenej štruktúre. Táto stratégia má najväčšie možnosti detekcie zmien, ale za to je výkonovo aj pamäťovo najnáročnejšia. Je potrebné uchovávať kópiu celej vnorenej štruktúry a pri každej zmene, sa musí skopírovať do pamäte.
 \end{itemize}
 
 
 \subsubsection{Výrazy}
-Angular Expressions, sú výrazy, ktoré môžme využívať ako kúsky kódu v JavaScripte umiestnením medzi dvojité zložené zátvorky.\\
-Príklad: \verb|<span title="{{ attrBinding }}">{{ textBinding }}</span>|. Vyhodnotenie môže rovnako prebehnúť aj vo funkcii na kliknutie \verb|ng-click="functionExpression()"|.
+Výrazy (expressions) sú malé časti kódu v JavaScripte umiestnené medzi dvojité zložené zátvorky.
+
+Príklad: \verb|<span title="{{ attrBinding }}">{{ textBinding }}</span>|. Vyhodnotenie môže ale prebehnúť aj vo funkcii na kliknutie \verb|ng-click="functionExpr()"|.
 Pre príklad pridávam zopár ďalších platných výrazov, ktoré sa často môžu používať: \verb|{{ 1 + 2 }}, {{ a + b }}, {{ user.name }}, {{ items[index] }}| \cite{angular-docs}.
 
 %\textbf{Compiler}
@@ -500,14 +502,14 @@ Na obrázkoch \ref{img-angular-onedb} a \ref{img-angular-twodb} môžeme vidieť
 \caption{Data binding v Angular.js.}
 \end{figure}
 
-Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja spolu šablónu a komponenty modelu do zobrazenia. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií v zobrazení sa neprejavia automaticky. Horšie je, že zmeny ktoré úžívateľ urobí v zobrazení sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje zobrazenie s modelom a naopak.
+Mnoho šablónovacích enginov nastavujú dáta len v jednom smere: spoja šablónu a komponenty modelu spolu do zobrazenia. Keď sa dokončí spojenie, zmeny v modeli alebo jeho príslušných sekcií v zobrazení sa neprejavia automaticky. Horšie je, že zmeny ktoré úžívateľ urobí v zobrazení sa neprejavia do modelu. To znamená, že vývojár musí napísať kód, ktorý sústavne synchronizuje zobrazenie s modelom a naopak.
 
-Šablóny v Angulari fungujú inak. Šablóna (čo je neskompilovaný HTML kód spolu s ďalšími značkami a direktívami) je najprv kompilovaná vo webovom prehliadači. Tento krok už produkuje živý view. Akékoľvek zmeny v zobrazení sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do zobrazenia. Vďaka tomuto spôsobu môžeme o zobrazení hovoriť ako o okamžitej projekcii modelu.
+Šablóny v Angulari fungujú inak. Šablóna (čo je neskompilovaný HTML kód spolu s ďalšími značkami a direktívami) je najprv kompilovaná vo webovom prehliadači. Tento krok už produkuje živé zobrazenie. Akékoľvek zmeny v zobrazení sa okamžite prejavia v modeli, a akékoľvek zmeny v modeli sú poslané do zobrazenia. Vďaka tomuto spôsobu môžeme o zobrazení hovoriť ako o okamžitej projekcii modelu.
 
 Pretože zobrazenie je iba projekcia modelu, tak kontroler je kompletne separovaný od zobrazenia a nevedia o sebe. Vďaka tomu je testovanie jednoduchšie, pretože je možné testovať kontroler nezávisle od zobrazenia \cite{angular-docs}.
 
 \subsubsection{Kontroler}
-V Angulare je kontrolér definovaný funkciou konštruktoru v JavaScripte, ktorý je používaný pre rozšírenie Scope. Keď je kontrolér pripojený k DOM cez \verb|ng-controller| direktívu, tak sa vytvorí inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter do funkcie konštruktora kontroléru ako \verb|$scope|.
+V Angulare je kontroler definovaný funkciou konštruktoru v JavaScripte, ktorý je používaný pre rozšírenie Scope. Keď je kontroler pripojený k DOM cez \verb|ng-controller| direktívu, tak sa vytvorí inštancia objektu konštruktora. Bude vytvorený detský Scope a je dostupný ako parameter do funkcie konštruktora kontroléru ako \verb|$scope|.
 
 Obrázok \ref{img-angular-controller-def} ukazuje spôsob definície kontroleru v JavaScript súbore a jeho následné volanie v HTML šablóne.
 
@@ -518,43 +520,44 @@ Obrázok \ref{img-angular-controller-def} ukazuje spôsob definície kontroleru 
   \label{img-angular-controller-def}
 \end{figure}
 
-Vo všeobecnosti by kontroler nemal toho robiť veľa. Mal by obsahovať iba biznis logiku potrebnú pre konkrétne zobrazenie. Najlepší spôsob ako zachovať kontroler čo najmenší, je zabalenie niektorej úlohy do Service, ktorá tam nepatrí. Potom tieto úlohy zo Services voláme v kontroleri ako závislosť \cite{angular-docs}.
+Vo všeobecnosti by kontroler nemal toho robiť veľa. Mal by obsahovať iba biznis logiku potrebnú pre konkrétne zobrazenie. Najlepší spôsob ako zachovať kontroler čo najmenší, je zabalenie niektorej úlohy do služby (service), ktorá tam nepatrí. Potom tieto úlohy zo služieb voláme v kontroleri ako závislosť \cite{angular-docs}.\\
 
-\noindent Controller je možné používať na:
+\noindent Kontroler je možné použiť na:
 \begin{itemize}
 \item nastavenie počiatočného stavu v \verb|$scope| objekte.
 \item pridanie vlastností a správania do \verb|$scope| objektu.\\
 \end{itemize}
 
-\noindent Nepoužívať controller na:
+\noindent Nepoužívať kontroler na:
 \begin{itemize}
-\item manipuláciu s DOM, pretože controller by mal obsahovať iba business logiku. Vložením akéjkoľvek prezentačnej logiky do controlleru vo veľkej miere ovplyvňuje jeho testovanie. Na manipuláciu slúžia directívy.
+\item manipuláciu s DOM, pretože kontroler by mal obsahovať iba biznis logiku. Vložením akéjkoľvek prezentačnej logiky do kontroleru vo veľkej miere ovplyvňuje jeho testovanie. Na manipuláciu slúžia direktívy.
 \item formátovanie vstupu - použiť angular form controls.
 \item filtrovanie výstupu - použiť angular filter.
-\item zdielanie kódu alebo stavu naprieč controllermi - použiť angular service.
+\item zdielanie kódu alebo stavu naprieč kontrolermi - použiť angular service.
 \item správa životného cyklu ostatných komponentov (napr vytváranie inštancií service).
 \end{itemize}
 
 %\textbf{Dependency Injection}
 
 \subsubsection{Moduly}
-Moduly môžeme rozumieť ako kontainer pre rozličné časti našej aplikácie - \textbf{controller}, \textbf{service}, \textbf{filter}, \textbf{directive}... Každý module môže obsahovať zoznam iných modulov ako svoju závislosť. Keď závisíme na nejakom module, tak tento modul musí byť načítaný ešte pred našim modulom. Toto poradie môžme manuálne nastaviť v konfigurácií modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viacero modulov \cite{angular-docs}.
+Moduly (module) môžeme rozumieť ako kontainer pre rozličné časti našej aplikácie - \verb|controller|, \verb|service|, \verb|filter|, \verb|directive|... Každý modul môže obsahovať zoznam iných modulov ako svoju závislosť. Keď má modul zavíslosť na inom module, tak tento musí byť načítaný ešte pred našim modulom. Poradie môžeme manuálne nastaviť v konfigurácii modulov. Každý modul môže byť načítaný iba raz aj keď na ňom závisí viac modulov \cite{angular-docs}.
 
 Pri programovaní modulov musíme dávať pozor na to, aby sme si neprepísali už existujúci v pamäti. Postup vytvorenia na obrázku \ref{img-angular-module-def}.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.8]{img/code/angular-module.png}
+  \includegraphics[scale=0.7]{img/code/angular-module.png}
   \caption{Vytvorenie modulov a pridanie ich funkcionality.}
   \label{img-angular-module-def}
 \end{figure}
 
 \subsubsection{Služby}
-Angular service je nahraditeľný objekt, ktorý je možné použiť v aplikácií pomocou systému závislostí. Services môžeme použiť pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných služieb, ako napr. \verb|$http|, ale väčšina aplikácií má potrebu si vytvoriť vlastné \cite{angular-docs}.
-Poznáme dva typy services:
+Služby (service) sú nahraditeľné objekty, ktoré je možné použiť v aplikácií pomocou systému závislostí. Používajú sa pre lepšiu organizáciu a zdieľanie kódu naprieč celej aplikácie. Framework poskytuje mnoho užitočných služieb, ako napr. \verb|$http|, ale väčšina aplikácií má potrebu si vytvoriť vlastné \cite{angular-docs}.\\
+
+\noindent Poznáme dva typy služieb:
 \begin{itemize}
-\item lazily instantiated - angular vytvorí inštanciu service iba v prípade, že na nej závisí komponent/modul,
-\item singleton - každý komponent závisiaci na service získa referenciu na jedinú inštanciu generovanú zo service factory.
+\item lazily instantiated - angular vytvorí inštanciu služby iba v prípade, že na nej závisí komponent/modul,
+\item singleton - každý komponent závisiaci na službe získa referenciu na jedinú inštanciu generovanú zo service factory.
 \end{itemize}
 
 %\subsubsection{Scope}
@@ -564,9 +567,9 @@ Poznáme dva typy services:
 
 \section{Porovnanie platforiem}
 
-V predchádzajúcej sekcii sme si popísali technológie, ktoré plánujeme využiť. Keď si to všetko spojíme dohromady, tak dostaneme základný obraz, ako by mohlo vyzerať naše riešenie na platforme Node.js - obrázok \ref{img-plat-node}. Na následujúcich obrázkoch sme porovnali našu vybranú platformu s inými možnými riešeniami.
+V predchádzajúcej sekcii sme si popísali technológie, ktoré plánujeme využiť. Keď si to všetko spojíme dohromady, tak dostaneme základný obraz, ako by mohlo vyzerať naše riešenie na platforme Node.js - obrázok \ref{img-plat-node}. Na následujúcich obrázkoch sme porovnali našu vybranú platformu s inými možnými riešeniami. Tieto riešenia sú tvorené na strane servera (backend) a klientská časť (frontend) je realizovaná pomocou technológie Angular.js v prehliadači.
 
-Základná časť, na ktorej to celé je stojí je operačný systém. Ten v tomto prípade môže byť ľubovolný. Nad ním je už spomínaný Node.js, ktorý má v sebe \verb|http| modul. Ten umožnuje vytvorenie jednoduchého a rýchleho webservera. Tento modul je štandardnou súčasťou Node.js. Je možné ho vymeniť za iný, ale väčšinou nie je dôvod. Ďalej nám umožnuje pripojenie na ľubovolnú databázu pomocou dostupných modulov. Komunikácia medzi Node.js a Matlabom prebieha cez RESTful služby. Posledná časť nášho riešenia je Express.js framework pre uľahčenie práce s Node.js API. Výhoda tohoto riešenia je hlavne použitie jazyka JavaScript pre programovanie na serverovej aj klientskej časti.
+Základná časť, na ktorej to celé stojí je operačný systém. Ten v tomto prípade môže byť ľubovolný. Nad ním je už spomínaný Node.js, ktorý má v sebe \verb|http| modul. Ten umožnuje vytvorenie jednoduchého a rýchleho webového servera. Tento modul je štandardná súčasť Node.js. Je možné ho vymeniť za iný, ale väčšinou nie je na to dôvod. Ďalej nám umožnuje pripojenie na ľubovolnú databázu pomocou dostupných modulov. Komunikácia medzi Node.js a Matlabom prebieha cez RESTful služby. Posledná časť nášho riešenia je Express.js framework pre uľahčenie práce s Node.js API. Výhoda tohoto riešenia je hlavne použitie jazyka JavaScript pre programovanie na serverovej aj klientskej časti.
 
 \begin{figure}[H]
   \centering
@@ -584,7 +587,7 @@ Pre porovnanie tu máme aj WAMP riešenie - obrázok \ref{img-plat-php}, ktorý 
   \label{img-plat-php}
 \end{figure}
 
-Posledné riešenie pre porovnanie by mohlo byť na platforme Java, viď obrázok \ref{img-plat-java}. Operačný systém môže byť ľubovolný, pretože Java je multiplatformový jazyk, ktorý beži nad JVM. Pre ukážku webového servera bol vybraný Apache Tomcat, ktorý by mohol byť rovnako zmenený za iné riešenie, ako napr. GlassFish alebo Wildfly.
+Posledné riešenie pre porovnanie by mohlo byť na platforme Java, viď obrázok \ref{img-plat-java}. Operačný systém môže byť ľubovolný, pretože Java je multiplatformový jazyk, ktorý beží nad JVM. Pre ukážku webového servera bol vybraný Apache Tomcat, ktorý by mohol byť rovnako zmenený za iné riešenie, ako napr. GlassFish alebo Wildfly.
 
 \begin{figure}[H]
   \centering
@@ -607,12 +610,12 @@ V zadaní sme sa dohodli o využití Node.js platformy ako náš server. Teda ce
 
 Do workspace Matlabu sa dáta získavajú v intervaloch zo Simulinku, v ktorom bola spustená referenčná schéma generujúca dáta. Zo začiatku nebolo isté či bude možné docieliť spustenie Simulinku v reálnom čase multiplatformovo. Našli sme riešenie Simulink Real-time priamo od Mathworks, ktorá toto umožnuje ale bohužial len pre operačný systém Windows. Lenže neskôr sme našli knižnicu \verb|tos_lib.mdl|, ktorá nám túto funkcionalitu umožňuje aj pod MAC OS X. Táto knižnica poskytuje množstvo blokových schém, z ktorej sme využili len blokovú schému real-time pacer. Tá slúži na spomalenie simulácie do soft real-time.
 
-Na komunikáciu s workspace používame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Po spustení simulácie cez webového klienta užívateľom sa dáta začnú prenásať cez \verb|Socket.io| kanál. Tieto dáta budú zobrazené v grafoch vo webovom prehliadači a bude možné ich uchovať aj v databáze MongoDB pre neskoršie spracovanie.
+Na komunikáciu s workspace používame volanie RESTful služieb, ktoré podporuje aj Matlab R2015b \cite{matlab-restful}. Po spustení simulácie cez webového klienta užívateľom sa dáta začnú prenášať cez \verb|Socket.io| kanál. Tieto dáta budú zobrazené v grafoch vo webovom prehliadači a bude možné ich uchovať aj v databáze MongoDB pre neskoršie spracovanie.
 
 \subsection{Referenčný model simulácie v Matlabe}
 Funkčné softwarové riešenie síce bude mať možnosť spolupracovať s reálnymi zariadeniami, no pre jeho vývoj sme použili simuláciu dynamického systému šikmého vrhu, ktorá sa spúšta cez webové rozhranie a vykonáva v Simulinku.
 
-Pre načítanie simulácie je potrebné spustiť dva súbory. Účel prvého je inicializácia premenných potrebných pre výpočet súradníc polohy bodu v šikmom vrhu. Podľa kódu na obrázku \ref{img-matlab-function} vieme, že je potrebné zadať parametre parametre pre spustenie a jej návratová hodnota nie je žiadna. Prvý z parametrov \verb|v0| predstavuje počiatočnú rýchlosť telesa v metroch za sekundu, akou bude vymrštené z bodu \textbf{(0,0)}. Druhý parameter \verb|alfa_deg| zase určuje, pod akým uhlom v stupňoch, bude teleso vymrštené. Posledný parameter \verb|userFromWeb| nie je potrebný k samotnej simulácií, ale skôr pre identifikáciu užívateľa, ktorý spustil simuláciu. Vďaka tomu je možné mu priradiť výsledky simulácie pri neskoršom spracovaní z databázy.
+Pre načítanie simulácie je potrebné spustiť dva súbory. Účel prvého je inicializácia premenných potrebných pre výpočet súradníc polohy bodu v šikmom vrhu. Podľa kódu na obrázku \ref{img-matlab-function} vidíme, že je potrebné zadať parametre pre spustenie a jej návratová hodnota nie je žiadna. Prvý z parametrov \verb|v0| predstavuje počiatočnú rýchlosť telesa v metroch za sekundu, akou bude vymrštené z bodu \textbf{(0,0)}. Druhý parameter \verb|alfa_deg| zase určuje, pod akým uhlom v stupňoch, bude teleso vymrštené. Posledný parameter \verb|userFromWeb| nie je potrebný k samotnej simulácií, ale hlavne pre identifikáciu užívateľa, ktorý spustil simuláciu. Vďaka tomu je možné mu priradiť výsledky simulácie pri neskoršom spracovaní z databázy.
 
 \begin{figure}[H]
   \centering
@@ -623,9 +626,9 @@ Pre načítanie simulácie je potrebné spustiť dva súbory. Účel prvého je 
 
 Keď sú parametre funkcie správne zadané a spustí sa telo funkcie, tak sa nastavia a vypočítajú hodnoty ako \verb|alfa_rad, td, d, h|, ktorých popis vidíme na obrázku a sú potrebné ako vstupné parametre do simulácie.
 
-Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných do hlavného scope Matlabu, čiže workspace. Ak túto časť vynecháme, tak všetky hodnoty po skončení funkcie zaniknú, pretože sú tam lokálne premenné. Bolo by možné sa tomuto vyhnúť, v prípade že by sme nevolali funkciu \verb|Sikmy_vrh_par(80, 70, 'xstark')|, ale volali priamo len súbor, vďaka čomu by zostali všetky hodnoty v hlavnom workspace. Lenže pri tomto spôsobe riešenia by nebolo možné nastavovať inicializačné hodnoty ako parametre funkcie z webovej aplikácie, ale by museli byť natvrdo nastavené v kóde Matlabu.
+Posledná časť kódu od riadku č. 23 slúži pre prekopírovanie premenných do hlavného scope Matlabu, čiže workspace. Ak túto časť vynecháme, tak všetky hodnoty po skončení funkcie zaniknú, pretože sú tam lokálne premenné. Bolo by možné sa tomuto vyhnúť v prípade, že by sme nevolali funkciu \verb|Sikmy_vrh_par(80, 70, 'xstark')|, ale volali priamo len súbor, vďaka čomu by zostali všetky hodnoty v hlavnom workspace. Lenže pri tomto spôsobe riešenia by nebolo možné nastaviť inicializačné hodnoty ako parametre funkcie z webovej aplikácie, ale by museli byť natvrdo nastavené v kóde Matlabu.
 
-Ako sme si už povedali, hodnoty sa po spustení úspešne uložia do Matlab workspace a to vidieť aj na obrázku č. \ref{matlab-function-workspace}. Tieto hodnoty boli vygenerované po zavolaní funkcie zo špecifickými hodnotami parametrov \verb|Sikmy_vrh_par(80, 70, 'xstark')|.
+Ako sme si už povedali, hodnoty sa po spustení úspešne uložia do Matlab workspace a to vidieť aj na obrázku \ref{matlab-function-workspace}. Tieto hodnoty boli vygenerované po zavolaní funkcie so špecifickými hodnotami parametrov \verb|Sikmy_vrh_par(80, 70, 'xstark')|.
 
 \begin{figure}[H]
   \centering
@@ -637,18 +640,18 @@ Ako sme si už povedali, hodnoty sa po spustení úspešne uložia do Matlab wor
 Druhý súbor, ktorý potrebujeme spustiť po tomto je obslužný kód, vďaka ktorému vieme zaslať údaje do Node.js. Kvôli jeho dĺžke a vlastnej implementácii ho nie je možné zobraziť celý, tak si popíšeme len kľúčové vlastnosti.
 
 Pri inicializácií sa nastavi URL cesta pre Express.js API, na ktorú bude Matlab posielať dáta.
+Model sa prednačíta pomocou funkcie \verb|load_system('Sikmy_vrh_2')|. Táto funkcia vyhľadá v aktuálnom priečinku súbor \verb|Sikmy_vrh_2.mdl| a nastaví ho ako aktuálny top-level model. Po nastavení je potrebné ešte simuláciu aj spustiť. Ovládanie simulácie sa robí pomocou príkazu \verb|set_param(model, 'SimulationCommand', 'Start')|, kde posledný parameter znamená spustenie simulácie.
+Následne sa spustí \textbf{nekonečný while} cyklus, vďaka ktorému je možné zbierať údaje zo simulácie, až do stavu, kým nie je ukončená. 
 
-Prednačítavanie modelu sa vykoná pomocou funkcie \verb|load_system('Sikmy_vrh_2')|. Táto funkcia vyhľadá v aktuálnom priečinku súbor \verb|Sikmy_vrh_2.mdl| a nastaví ho ako aktuálny top-level model. Po nastavení je potrebné ešte simuláciu aj spustiť. Ovládanie simulácie sa robí pomocou príkazu \verb|set_param(model, 'SimulationCommand', 'Start')|, kde posledný parameter znamená spustenie simulácie.
-Následne sa spustí \textbf{nekonečný while} cyklus, vďaka ktorému je možné zbierať údaje zo simulácie až do stavu kým nie je ukončená. 
 Na začiatku cyklu sa volá \verb|set_param(model, 'SimulationCommand',| \\ \verb|'WriteDataLogs')| čo vlastne pristúpi k aktuálne najvyššie spustenej simulácií a snaží sa realtime zapisovať vypočítané hodnoty do Matlab workspace. Bez tohto príkazu by sa zapísali až po skončení simulácie.
 
 Medzitým sa údaje upravujú na potrebný formát a pred odoslaním na REST API je vhodné ho zabaliť do JSON štruktúry. Tú vieme vytvoriť pomocou knižnice \verb|jsonlab| v aktuálnej verzii 1.2.
 Pomocou sekvencie týchto dvoch príkazov vytvoríme požadovaný JSON formát a odošleme ho na Express.js API. Vytvorenie JSON \verb|json = savejson('result',| \\ \verb|struct('user', userFromWeb, 'status', 'running', 'data', struct('time',| \\ \verb|timeFinal, 'vy', vyFinal, 'y', yFinal, 'x',xFinal)))| a jeho následné zaslanie do služby \verb|response = webwrite(url, json, options)|.
 
-Pomocou príkazu \verb|get_param(model, 'SimulationStatus')| vieme získať aktuálny stav simulácie. V prípade, že simulácia stále beží tak získame výstup \verb|"running"| inak je ukočená a vráti reťazec \verb|"stopped"|. Hneď ako dostaneme status "stopped" tak ukončíme cyklus pomocou \verb|break| a vieme že všetky dáta su prenesené do Node.js.
+Pomocou príkazu \verb|get_param(model, 'SimulationStatus')| vieme získať aktuálny stav simulácie. V prípade, že simulácia stále beží tak získame výstup \verb|"running"| inak je ukočená a vráti reťazec \verb|"stopped"|. Hneď ako dostaneme status \verb|"stopped"| tak ukončíme cyklus pomocou \verb|break| a vieme, že všetky dáta su prenesené do Node.js.
 
 \subsection{Diagramy}
-Pred tvorbou rôznych softwarových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe software. Niektoré nám hovoria o správaní len vo všeobecnosti, čo by sa mohlo dať v systéme robiť, ako napr. \textbf{prípady použitia}. Potom existuje aj \textbf{diagram tried}, ktorý slúži na vizualizáciu jednotlivých tried, ktoré sa tvoria v objektovo orientovaných jazykoch. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžeme využiť \textbf{sekvenčné diagramy}, pretože tie nám hovoria o interakcií medzi jednotlivými komponentami, prípadne časťami kódu.
+Pred tvorbou rôznych softvérových systémov zväčša nezačneme hneď programovať, ale najprv si zadefinujeme požiadavky, ktoré by mal spĺňať. Následne na základe požiadaviek vytvoríme diagramy, podľa ktorých sa neskôr budeme riadiť pri tvorbe software. Niektoré nám hovoria o správaní len vo všeobecnosti, čo by sa mohlo dať v systéme robiť, ako napr. \textbf{prípady použitia}. Potom existuje aj \textbf{diagram tried}, ktorý slúži na vizualizáciu jednotlivých tried, ktoré sa tvoria v objektovo orientovaných jazykoch. Diagram tried v našom prípade nie je možné vytvoriť, pretože JavaScript nie je klasický objektovo orientovaný jazyk. Ale zase môžeme využiť \textbf{sekvenčné diagramy}, pretože tie nám hovoria o interakcií medzi jednotlivými komponentami, prípadne časťami kódu.
 
 \subsubsection{Prípad použitia}
 Diagram prípadov použitia sa používa k popisu chovania systému z hľadiska užívateľa a zachytáva, ktoré typy užívateľov so systémom pracujú a aké činnosti v rámci systému vykonávajú \cite{uml-usecase}.
@@ -657,50 +660,55 @@ Na obrázku \ref{img-use-case} vidíme možnosti používania systému na diagra
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/diagrams/use-case.png}
+  \includegraphics[scale=0.75]{img/diagrams/use-case.png}
   \caption{Diagram prípadu použitia na prácu zo systémom.}
   \label{img-use-case}
 \end{figure}
 
-\subsubsection{Diagram "tried" pre StarkLab}
-Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť pre JavaScript aplikáciu, ale našli sme knižnicu \verb|wavi| (https://www.npmjs.com/package/wavi), ktorá dokáže vygenerovať takýto diagram. Síce to nie je prehľadné ako pri klasickom diagrame, ale je vhodné ho vygenerovať už len pre to, aby mal programátor informáciu o základnej štruktúre aplikácie - obrázok \ref{img-class-diagram}.
+\subsubsection{Diagram tried}
+Síce sme hovorili o tom, že klasický diagram tried nie je možné vytvoriť pre JavaScript aplikáciu, ale našli sme knižnicu \verb|wavi| (https://www.npmjs.com/package/wavi), ktorá dokáže vygenerovať takýto diagram. Síce to nie je prehľadné ako pri klasickom diagrame, ale je vhodné ho vygenerovať už len pre to, aby mal programátor prehľad o základnej štruktúre aplikácie - obrázok \ref{img-class-diagram}.
 
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.34]{img/diagrams/class.png}
-  \caption{Diagram "tried" pre náš systém.}
+  \caption{Diagram štruktúry systému.}
   \label{img-class-diagram}
 \end{figure}
 
+\newpage
 \subsubsection{Sekvenčný diagram}\label{diagram-sequence-section}
 Sekvenčný diagram patrí medzi najviac používané diagramy pre zobrazenie interakcií. Zachytáva priebeh spracovania v systéme v podobe posielania správ.\\
 
 
 \noindent \textbf{Prihlásenie do LDAP}
 
+Na obrázku \ref{img-sequence-ldap-login} je spôsob prihlásenie pomocou mena a hesla do LDAP systému.
+
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/diagrams/sequence-ldap.png}
+  \includegraphics[scale=0.8]{img/diagrams/sequence-ldap.png}
   \caption{Sekvenčný diagram pre prihlásenie pomocou LDAP.}
   \label{img-sequence-ldap-login}
 \end{figure}
 
-Na obrázku \ref{img-sequence-ldap-login} je spôsob prihlásenie pomocou mena a hesla do LDAP systému. Nižšie si popíšeme kód z obrázka \ref{img-sequence-ldap-login-js}, ktorým to bolo implementované v JavaScripte. Toto je len časť kódu, ktorá sa určená pre prihlásenie do systému. Na začiatku súboru je volaná požadovaná knižnica pre prácu s LDAP ako \verb|var ldap = require("ldapjs")|.
+Nižšie si popíšeme kód z obrázka \ref{img-sequence-ldap-login-js}, ktorým to bolo implementované v JavaScripte. Toto je len časť kódu, ktorá sa určená pre prihlásenie do systému. Na začiatku súboru je volaná požadovaná knižnica pre prácu s LDAP ako \verb|var ldap = require("ldapjs")|.
 
-Keď užívateľ príjde na stránku a vyplní prihlasovacie meno a heslo do stuba ldap, tak formulár ho presmeruje na \verb|/login|, kde už sa postaral o routovanie Express.js. Z \verb|request| parametra získame zadaný username - \verb|req.body.username| a password - \verb|req.body.password|, ktoré boli vyplnené pred odoslaním formulára. Čiže ak sú oba vyplnené dostaneme sa do vnútra podmienky, kde sa vytvorí spojenie na linku \verb|ldap://ldap.stuba.sk|, a zašle RDN reťazec v tvare \verb|"uid=xstark", ou=People, DC=stuba, DC=sk"|.
+Keď užívateľ príjde na stránku a vyplní prihlasovacie meno a heslo do stuba ldap, tak formulár ho presmeruje na \verb|/login|, kde už sa postaral o routovanie Express.js. Z \verb|request| parametra získame username - \verb|req.body.username| a password - \verb|req.body.password|, ktoré boli vyplnené pred odoslaním formulára. Čiže ak sú oba vyplnené dostaneme sa do vnútra podmienky, kde sa vytvorí spojenie na linku \verb|ldap://ldap.stuba.sk|, a zašle RDN reťazec v tvare \verb|"uid=xstark", ou=People, DC=stuba, DC=sk"|.
 
-V momente keď je zostavený reťazec a máme získané heslo užívateľa, tak zavoláme ldap funkciu \verb|bind| s parametrami RDN a heslom. V prípade ak overovanie prebehlo bez chyby, tak autorizácia prebehla úspešne. Potom vytvoríme \verb|session| a \verb|cookie| pre užívateľa a presmerujeme ho na stránku, kde už môže vidieť simulácie.
+V momente, keď je zostavený reťazec a máme získané heslo užívateľa, tak zavoláme ldap funkciu \verb|bind| s parametrami RDN a heslom. V prípade ak overovanie prebehlo bez chyby, tak autorizácia prebehla úspešne. Potom vytvoríme \verb|session| a \verb|cookie| pre užívateľa a presmerujeme ho na stránku, kde už môže vidieť simulácie.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/code/ldap-login.png}
+  \includegraphics[scale=0.68]{img/code/ldap-login.png}
   \caption{Prihlásenie do aplikácie pomocou LDAP v JavaScripte.}
   \label{img-sequence-ldap-login-js}
 \end{figure}
 
 \noindent \textbf{Komunikácia komponentov v systéme}
 
-Medzi jednotlivými komponentami systému prebieha komunikácia. Síce v každej časti prebieha inak, ale ich spoločný menovateľ je komunikácia založená na HTTP protokole. Na obrázku \ref{img-sequence-realtime} vidíme, že komunikácia začína od webového klienta v prehliadači. Užívateľ zadá parametre simulácie a tie budú zaslané do StarkLab. Ten následne spustí Matlab na aktuálnom operačnom systéme s potrebnými súbormi simulácie a ich parametrami. Medzitým užívateľ čaká kým sa na pozadí spustí Matlab. Hneď po spustení začne vykonávať simuláciu a posielať údaje do StarkLab, ktorý ich pošle priamo webovému klientovi, odkiaľ bola spustená simulácia. Každé prijatie údajov sa prejaví zapísaním do grafu, animácie a tabuľky vo webovom rozhraní. Táto sekvencia sa opakuje pokiaľ platí podmienka, že je simulácia stále spustená. Po zastavení simulácie klient zašle požiadavku na zapísanie kompletných dát cez StarkLab priamo do dokumentovej databáze MongoDB.
+Medzi jednotlivými komponentami systému prebieha komunikácia. Síce v každej časti prebieha inak, ale ich spoločný menovateľ je komunikácia založená na HTTP protokole.
+
+Na obrázku \ref{img-sequence-realtime} vidíme, že komunikácia začína od webového klienta v prehliadači. Užívateľ zadá parametre simulácie a tie budú zaslané do StarkLab. Ten následne spustí Matlab na aktuálnom operačnom systéme s potrebnými súbormi simulácie a ich parametrami. Medzitým užívateľ čaká kým sa na pozadí spustí Matlab. Hneď po spustení začne vykonávať simuláciu a posielať údaje do StarkLab, ktorý ich pošle priamo webovému klientovi, odkiaľ bola simulácia spustená. Každé prijatie údajov sa prejaví zapísaním do grafu, animácie a tabuľky vo webovom rozhraní. Táto sekvencia sa opakuje pokiaľ platí podmienka \verb|SimulationStatus == "running"|. Po zastavení simulácie klient zašle požiadavku na zapísanie kompletných dát cez StarkLab priamo do dokumentovej databáze MongoDB.
 
 \begin{figure}[H]
   \centering
@@ -710,7 +718,7 @@ Medzi jednotlivými komponentami systému prebieha komunikácia. Síce v každej
 \end{figure}
 
 \subsection{Databázový model MongoDB}
-V našom zadaní sme nepoužívali štandardnú SQL databázu, čiže nie je možné využiť bežné modelovanie cez ERD diagramy. Ako už vieme MongoDB neukladá dáta ako tabuľky, ale JSON dokumenty. Keďže sa jednalo o jednoduchý model šikmého vrhu, tak v tomto prípade nebude model extra zložitý. V tejto časti si ukážeme do akého objektu ho v JavaScripte ukladáme a potom konkrétny príklad záznamu z databázy.
+V našom zadaní sme nepoužívali štandardnú SQL databázu, čiže nie je možné využiť bežné modelovanie cez ERD diagramy. Ako už vieme MongoDB neukladá dáta ako tabuľky, ale JSON dokumenty. Keďže sa jednalo o jednoduchý model šikmého vrhu, tak v tomto prípade nebude model zložitý. V tejto časti si ukážeme, do akého objektu ho v JavaScripte ukladáme a potom konkrétny príklad záznamu z databázy.
 
 \begin{figure}[H]
   \centering
@@ -733,7 +741,7 @@ Obrázok \ref{img-mongo-record} je záznam z MongoDB, kde konkrétne hodnoty tim
 %\section{Testovanie}
 
 \subsection{Node.js s frameworkom Express.js}
-Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Využívame ich posledné verzie Node.js verzie 6.1.0 a Express.js verzie 4.13.4. Je to vlastne len framework umožňujúci jednoduchšiu tvorbu REST služieb. Na začiatok si povieme čo sme použili ako \verb|middleware|. Ako už bolo napísané je to funkcia, ktorá má prístup do request a response objektu. Použili sme \verb|body-parser|, ktorý nám umožnil spracovávať telo POST požiadavky, ktorá bola zasielaná z Matlabu. Každý middleware, ktorý chceme použiť je potrebné ešte aj aktivovať v kóde \verb|app.use(bodyParser.json({limit: '2mb'}))|. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s prijatím POST requestu, keď boli dáta veľmi veľké.
+Hlavná časť tejto práce je sústredená na komunikáciu medzi Matlabom a Node.js, resp Express.js. Využívame ich posledné verzie Node.js verzie 6.1.0 a Express.js verzie 4.13.4. Je to vlastne len framework umožňujúci jednoduchšiu tvorbu REST služieb. Na začiatok si povieme, čo sme použili ako \verb|middleware|. Ako už bolo napísané je to funkcia, ktorá má prístup do request a response objektu. Použili sme \verb|body-parser|, ktorý nám umožnil spracovávať telo POST požiadavky, ktorá bola odoslaná z Matlabu. Každý middleware, ktorý chceme použiť je potrebné aj aktivovať v kóde \verb|app.use(bodyParser.json({limit: '2mb'}))|. Po viacerých testoch som zistil, že základný limit je nastavený na 1MB, kde sa vyskytoval problém s prijatím POST requestu, keď boli dáta veľmi veľké.
 
 \subsubsection{Vlastný middleware prihlasovania}
 V aktuálnom softwarovom riešení nebolo potrebné vytvoriť prihlasovanie, pretože neskôr bude integrované do \textbf{LMS Moodle}, ktorý prihlasovanie rieši vlastným spôsobom. Ale pre ukážku možností frameworku Express.js sme implementovali middleware \verb|express-session|, vďaka ktorému môžme vytvoriť reláciu pre úspešne autorizovaného užívateľa. 
@@ -749,14 +757,14 @@ Vytvorili sme vlastný middleware na obrázku \ref{img-code-express-middleware},
   \label{img-code-express-middleware}
 \end{figure}
 
-Volanie \verb|app.use| nám zabezpečí, že sa táto funkcia zaregistruje ako middleware a bude volaná pri každom requeste. Prvá časť podmienky overuje, či prichádzame z webového prehliadača a je nastavená session. Kedže Matlabu nevieme nastaviť session, pretože tá sa ukladá len na webserveri, tak sme to vyriešili iným spôsobom. V prichádzajúcom tele POST requestu od Matlabu je objekt \verb|result|, kde sú uložené simulované dáta. Priradili sme mu ďalšiu vlastnosť \verb|user|, ktorá keď je nastavená, tak vieme, že požiadavka prichádza z Matlabu a vieme jej povoliť prístup. V prípade splnenej aspoň jednej podmienky sa zavolá callback \verb|next()|, čo teda vyvolá ďalší zaregistrovaný middleware, alebo už smerovanie, na ktoré sme posielali požiadavku.
-Ak nie je splnená ani jedna z dvoch podmienok, tak nás server presmeruje na hlavnú stránku, kde sa od nás požaduje znovu prihlásenie.
+Volanie \verb|app.use| nám zabezpečí, že sa táto funkcia zaregistruje ako middleware a bude volaná pri každom requeste. Prvá časť podmienky overuje, či prichádzame z webového prehliadača a je nastavená session. Kedže Matlabu nevieme nastaviť session, pretože tá sa ukladá len na webserveri, tak sme to vyriešili iným spôsobom. V prichádzajúcom tele POST requestu od Matlabu je objekt \verb|result|, kde sú uložené simulované dáta. Priradili sme mu ďalšiu vlastnosť \verb|user|, ktorá keď je nastavená, tak vieme, že požiadavka prichádza z Matlabu a povolíme jej prístup. V prípade splnenej aspoň jednej podmienky sa zavolá callback \verb|next()|, čo vyvolá ďalší zaregistrovaný middleware, alebo už smerovanie, na ktoré sme posielali požiadavku.
+Ak nie je splnená ani jedna z dvoch podmienok, tak server nás presmeruje na hlavnú stránku, kde je znovu požadované prihlásenie.
 
 
 \subsubsection{Spustenie Matlabu z príkazového riadku}
 Zo začiatku nebolo isté ako budeme spúšťať simuláciu, pretože sme nevedeli, či Node.js umožuje vykonávať príkazy nad operačným systémom, resp. spúšťať programy. Vtedy sme komunikáciu riešili takým spôsobom, že Matlab sa otvoril ručne a v ňom sme spustili potrebné inicializačné súbory a následne samotnú simulácia. Takéto riešenie nie je postačujúce z hladiska automatizácie a samostatnosti.
 
-Potom sme zistili, že Node.js má možnosti na spustenie hocijakého software, ktorý je možné spustiť cez terminál. Pre zjednodušenie práce bol využitý modul \verb|shelljs|, ktorý takúto možnost poskytuje.
+Potom sme zistili, že Node.js má možnosti na spustenie akéhokoľvek softvéru, ktorý je možné spustiť aj cez terminál. Pre zjednodušenie práce bol využitý modul \verb|shelljs|, ktorý takúto možnost poskytuje.
 
 Na obrázku \ref{img-express-shelljs} je funkcionalita, ktorá sa vykoná po prístupe na route /matlab/run. Táto časť sa volá po odoslaní formuláru s parametrami počiatočnej rýchlosti a uhlu z webového prehliadača.
 
@@ -767,12 +775,12 @@ Na obrázku \ref{img-express-shelljs} je funkcionalita, ktorá sa vykoná po pr�
   \label{img-express-shelljs}
 \end{figure}
 
-Vstupný príkaz vo forme reťazca, ktorý chceme vykonať, musí mať správne zadanú cestu k Matlabu na súborovom systéme. Matlab spúštame v termináli s parametrami, ktoré umožnujú spustenie bez nepotrebných častí \cite{matlab-macos}. Ako napr. nepotrebujeme vidieť výsledky v okne, alebo animáciu Matlabu pri spustení. Pomocou parametra \verb|-r| vieme volať príkazy v príkazovom riadku Matlabu, napr. špecifikovať cestu, kde sa nachádza naša simulácia a potrebné súbory. Následne zavoláme funkciu \verb|Sikmy_vrh_par()|, s ktorou sa pošlú parametre počiatočnej rýchlosti, uhla a zároveň meno prihláseného používateľa. Po vykonaní tejto funkcie sa spustí súbor simulácie \verb|projectile_sim|. Po jej skončení zatvoríme Matlab pomocou príkazu \verb|exit|.
+Vstupný príkaz vo forme reťazca, ktorý chceme vykonať, musí mať správne zadanú cestu k Matlabu na súborovom systéme. Matlab spúštame v termináli s parametrami, ktoré umožnujú spustenie bez nepotrebných častí pre našu simuláciu \cite{matlab-macos}. Ako napr. nepotrebujeme vidieť výsledky v okne, alebo animáciu Matlabu pri spustení. Pomocou parametra \verb|-r| vieme volať príkazy v príkazovom riadku Matlabu, napr. špecifikovať cestu, kde sa nachádza naša simulácia a potrebné súbory. Následne zavoláme funkciu \verb|Sikmy_vrh_par()|, s ktorou sa pošlú parametre počiatočnej rýchlosti, uhla a zároveň meno prihláseného používateľa. Po vykonaní tejto funkcie sa spustí súbor simulácie \verb|projectile_sim|. Po jej skončení zatvoríme Matlab pomocou príkazu \verb|exit|.
 
 Po zostrojení tohto reťazca ako parametra funkcie \verb|exec()| a jeho spustení sa čaká na vykonávanie Matlabu. Medzitým nás server presmeruje na stránku /dashboard kde sa čaká na údaje zo simulácie. V momente načítania simulácie so vstupnými parametrami sa dáta zobrazia realtime vo webovom prehliadači.
 
 \subsubsection{Práca s dátami simulácie}
-Po načítaní simulácie je Matlab pripravený zasielať výsledky na smerovanie, ktoré vidíme na obrázku \ref{img-express-socketio}. 
+Po načítaní simulácie je Matlab pripravený poslať výsledky na smerovanie, ktoré vidíme na obrázku \ref{img-express-socketio}. 
 
 \begin{figure}[H]
   \centering
@@ -781,7 +789,7 @@ Po načítaní simulácie je Matlab pripravený zasielať výsledky na smerovani
   \label{img-express-socketio}
 \end{figure}
 
-Výsledky z Matlabu máme uložené v tele každého requestu, ktorý prijde. Následne môžeme k nim prístupiť pomocou \verb|req.body|. Pôvodne \textbf{Socket.io} odosielal údaje len na adresu "message". V takom prípade by sme ale nevedeli identifikovať, ku ktorému uživateľovi sa majú posielať údaje. Po implementácii session sme zvážili, že by ich bolo lepšie posielať priamo na adresu "message:xstark", teda s menom prihláseného užívateľa. Vždy po prijatí je potrebné odoslať status kód 200, čo v HTTP znamená OK po úspešnom prijatí dát.
+Výsledky z Matlabu máme uložené v tele každého requestu, ktorý prijde. Následne môžeme k nim prístupiť pomocou \verb|req.body|. Pôvodne \textbf{Socket.io} odosielal údaje len na kanál "message". V takom prípade by sme ale nevedeli identifikovať, ku ktorému uživateľovi sa majú posielať údaje. Po implementácii session sme zvážili, že by ich bolo lepšie posielať priamo na adresu "message:xstark", teda s menom prihláseného užívateľa. Vždy po prijatí je potrebné odoslať status kód 200, čo v HTTP znamená OK po úspešnom prijatí dát.
 
 
 \subsubsection{Zápis dát do MongoDB}
@@ -799,7 +807,7 @@ Najprv si ukážeme funkcie, ktoré vykonávajú svoju úlohu, až potom ich pou
 \end{figure}
 
 Druhá funkcia, ktorú využívame na prácu s databázou je na obrázku \ref{img-express-mongodb-find}. 
-Slúži na vyhladanie záznamu v závislosti od parametrov. Jednu funkciu vieme využiť na viacero účelov. V prípade ak zadáme parameter funkcie \verb|sim|, tak v podmienke sa skontroluje, či je dostupná vlastnosť \verb|id|. Ak áno, tak vyhľadanie v databáze prebehne na základe parametrov užívateľského mena a konkretného id simulácie, čo nám vyhľadá iba jeden záznam ak existuje. V opačnom prípade vyhľadá všetky záznamy simulácií pre daného užívateľa. Táto funkcionalita sa využíva pri zobrazení všetkých záznamov u klienta.
+Slúži na vyhladanie záznamu v závislosti od parametrov. Jednu funkciu vieme využiť na viacero účelov. V prípade ak zadáme parameter funkcie \verb|sim|, tak v podmienke sa skontroluje, či je dostupná vlastnosť \verb|id|. Ak áno, tak vyhľadanie v databáze prebehne na základe parametrov užívateľského mena a konkretného id simulácie, čo nám vyhľadá iba jeden záznam, ak existuje. V opačnom prípade vyhľadá všetky záznamy simulácií pre daného užívateľa. Táto funkcionalita sa využíva pri zobrazení všetkých záznamov u klienta.
 
 \begin{figure}[H]
   \centering
@@ -819,7 +827,7 @@ Pre vykonanie nejakej operácie nad databázou musíme vytvoriť spojenie medzi 
 \end{figure}
 
 Pre vyhľadanie záznamu na obrázku \ref{img-express-mongodb-find2} sa s pripojením nič nemení.
-Rozdiel je iba vo využití volania smerovania. Dvojbodka pred názvom \verb|:user| znamená, že tento parameter môže byť v URL dynamický. Otáznik pri parametri ako pri \verb|:id?| znamená, že tento nie je povinný, a URL može byť volaná aj bez neho. Ak sa teda v URl nachádzaju parametre, pristupujeme k nim pomocou poľa \verb|req.params|.
+Rozdiel je iba vo využití volania smerovania. Dvojbodka pred názvom \verb|:user| znamená, že tento parameter môže byť v URL dynamický. Otáznik pri parametri ako pri \verb|:id?| znamená, že tento nie je povinný, a URL može byť volaná aj bez neho. Ak sa teda v URL nachádzajú parametre, pristupujeme k nim pomocou poľa \verb|req.params|.
 
 \begin{figure}[H]
   \centering
@@ -853,7 +861,7 @@ Po zadaní rýchlosti \textbf{v0=40} a \textbf{alfa\_deg=60} sme presmerovaní n
 \subsubsection{Grafy s Chart.js}
 Pre vizualiáziu prichádzajúcich dát používame knižnicu na grafy \verb|Chart.js|, ktorá je vytvorená pomocou HTML canvas. Využívame poslednú verziu jednotkovej rady 1.1.1. \verb|<script src="/node_modules/chart.js/Chart.min.js"></script>| je zápis volania v HTML hlavičke. Ako si môžeme všimnúť, tak nie je závislá od žiadnej online CDN služby, ale jej inštalácia prebehla lokálne pomocou NPM.
 
-Vyvorili sme Angular.js directívu uiGraph, ktorá slúži pre vytvorenie grafu na potrebnom mieste. Ako template má v obsahuje \verb|<canvas id="updating-chart" width="600"| \\ \verb|height="300"></canvas>|. Na obrázku \ref{img-angular-chartjs-canvas} vidíme vytvorenie grafu a nastavenie hodnôt. Táto časť kódu sa nachádza v postLink funkcii directívy.
+Vyvorili sme Angular.js directívu \verb|uiGraph|, ktorá slúži pre vytvorenie grafu na potrebnom mieste. Ako template obsahuje \verb|<canvas id="updating-chart" width="600"| \\ \verb|height="300"></canvas>|. Na obrázku \ref{img-angular-chartjs-canvas} vidíme vytvorenie grafu a nastavenie hodnôt. Táto časť kódu sa nachádza v postLink funkcii directívy.
 
 Na začiatku je potrebné získať element z DOM, získať kontext canvasu a vytvoriť objekt \verb|startingData| s nastaveniami pre inicializačné dáta. 
 Následne je potrebné vytvoriť inštanciu grafu, kde sa ako parameter grafu použije kontext canvasu. Potom sa volá funcia čiarového grafu, ktorý tam chceme využiť. Tá zase vyžaduje ako vstupný parameter inicializačné dáta. Túto directívu zavoláme v HTML ako \verb|<ui-graph></ui-graph>| element.\\
@@ -862,16 +870,16 @@ Ak by sme chceli rozšíriť graf, resp. ak by bolo rozumné súčasne vykreslov
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.7]{img/code/angular-chartjs-code.png}
+  \includegraphics[scale=0.6]{img/code/angular-chartjs-code.png}
   \caption{Inicializácia hodnôt pre Chart.js.}
   \label{img-angular-chartjs-canvas}
 \end{figure}
 
-V sekcií \ref{section-angular-web} sme si hovorili o tom, čo musíme spraviť, aby sa generovali údaje. Po presmerovaní na stránku /matlab treba počkať, kým sa spustí Matlab so simuláciou a následne sa začnú generovať realtime dáta do prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku \ref{img-angular-chartjs} je využitá knižnica Chart.js pre zobrazenie grafov.
+Po presmerovaní na stránku /dashboard pri sekcii real-time treba počkať, kým sa spustí Matlab so simuláciou a následne sa začnú vkladať realtime dáta do webového prehliadača. Táto časť by mohla byť zrýchlená tým, že sa Matlab bude nachádzať na výkonnom serveri. Na obrázku \ref{img-angular-chartjs} je využitá knižnica Chart.js pre zobrazenie grafov.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.5]{img/code/angular-chartjs.png}
+  \includegraphics[scale=0.4]{img/code/angular-chartjs.png}
   \caption{Graf vykreslujúci závislosti [x, y] v šikmom vrhu.}
   \label{img-angular-chartjs}
 \end{figure}
@@ -891,7 +899,7 @@ Ako posledná časť sledovania dát je tabulka, ktorej údaje sa vkladajú do z
 
 \begin{figure}[H]
   \centering
-  \includegraphics[scale=0.6]{img/code/angular-table.png}
+  \includegraphics[scale=0.5]{img/code/angular-table.png}
   \caption{Tabuľka dát času, x, y a smer rýchlosti vy.}
   \label{img-angular-table}
 \end{figure}
@@ -907,6 +915,8 @@ V tomto systéme nejde len o real-time vykreslenie dát, ale aj o neskoršie zob
   \label{img-angular-results-projectile}
 \end{figure}
 
+Pri zobrazení simulácie z databázy je možné mu nastaviť vzorkovanie, teda po koľkých dátach sa vykreslí graf - obrázok \ref{img-angular-fulldata-graph}. Ako vidíme, je možné využiť dve tlačidlá: jedno na okamžité vykreslenie a druhé pre pomalé vykreslenie, kde berieme do úvahy celkový čas simulácie.
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{img/code/angular-fulldata-graph.png}
@@ -914,11 +924,13 @@ V tomto systéme nejde len o real-time vykreslenie dát, ale aj o neskoršie zob
   \label{img-angular-fulldata-graph}
 \end{figure}
 
+Posledný obrázok \ref{img-angular-fulldata-animation} je o vykreslení animácie z databázy. Berie do úvahy nastavené vzorkovanie dát a čas vykreslenia.
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.5]{img/code/angular-fulldata-animation.png}
   \caption{Animácia pre vybranú vzorku dát.}
-  \label{img-angular-fulldata-graph}
+  \label{img-angular-fulldata-animation}
 \end{figure}
 
 Na webovej stránke sa ešte pod animáciou nachádza rovnaká tabuľka ako v obrázku \ref{img-angular-table} s rozdielom, že v tejto tabuľke sú kompletné údaje a je možné ich exportovať do \verb|CSV| formátu.
